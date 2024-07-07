@@ -4,9 +4,40 @@
     --text-color: #0000;
   }
 
-  .Home-header{
-    width: 100%; /* Make the image take the full width of its container */
-    height: auto; /* Maintain the aspect ratio */
-    max-height: 500px; /* Set a max height to ensure landscape orientation */
-    object-fit: cover;
+  .navbar{
+    background-color: var(--primary);
+    z-index: 1000; /* Ensure the navbar stays on top */
   }
+  
+/* src/components/Home.css */
+
+
+*{ 
+  overflow: hidden; /* We should to remove it, it's only for testing*/
+}
+.Home-header {
+  height: 100vh; /* Full viewport height */
+  width: 100%;
+  display: flex;
+}
+
+
+
+/* src/components/Footer/Footer.css */
+
+footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  background-color: var(--primary);
+  color:#0000
+}
+
+
+footer a {
+  color: #fff;
+}
+
+footer a:hover {
+  color: #ccc;
+}
