@@ -1,6 +1,8 @@
 import './App.css';
+import './style.css'
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Pages/Home';
 
 function App() {
   const [data, setData] = useState([]);
@@ -15,7 +17,7 @@ function App() {
   return (
     <Router>
     <div className="App">
-      <h3>Hello world</h3>
+      <Home/>
     </div>
     </Router>
   );
