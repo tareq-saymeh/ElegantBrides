@@ -1,7 +1,7 @@
 :root {
-    --primary: #C0C0C0;
-    --secondary:  #F7E7CE;
-    --text-color: #0000;
+    --secondary: #C0C0C0;
+    --primary:  #161616;
+    --text-color: #fff;
   }
 
   .navbar{
@@ -12,25 +12,25 @@
 /* src/components/Home.css */
 
 
-*{ 
-  overflow: hidden; /* We should to remove it, it's only for testing*/
-}
 .Home-header {
   height: 100vh; /* Full viewport height */
   width: 100%;
   display: flex;
+  
 }
 
+*{
+  font-family: Gelion, Helvetica, "Helvetica Neue", Arial;
+}
 
 
 /* src/components/Footer/Footer.css */
 
 footer {
   width: 100%;
-  position: fixed;
   bottom: 0;
-  background-color: var(--primary);
-  color:#0000
+  background-color: var(--secondary);
+  color:var(--text-color)
 }
 
 
@@ -41,3 +41,65 @@ footer a {
 footer a:hover {
   color: #ccc;
 }
+
+
+/*  */
+.Home-Background{
+  background-color: var(--primary); /* Dark background */
+
+}
+.home-header {
+  background-color: var(--primary); /* Dark background */
+  padding: 200px;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.home-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-header-images {
+  flex: 3;
+}
+
+.home-header-image {
+  max-width: 200px;
+}
+
+.home-header-text {
+  flex: 3;
+  text-align: center;
+}
+
+.home-search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 35px;
+}
+
+.home-search-bar input {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  width: 400px;
+  margin-right: 10px;
+}
+
+.home-search-bar button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--secondary); /* Button color */
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.home-search-bar button:hover {
+  background-color: var(--primary);
+}
+
+
