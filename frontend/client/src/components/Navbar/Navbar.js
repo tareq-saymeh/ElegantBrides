@@ -27,6 +27,8 @@ function Navbar() {
             <li><a className="dropdown-item" href="#">Jewerly</a></li>
             <li><hr className="dropdown-divider"/></li>
             <li><a className="dropdown-item" href="#">Flower</a></li>
+            <li><hr className="dropdown-divider"/></li>
+            <li><a className="dropdown-item" href="#">Veils</a></li>
           </ul>
         </li>
         <li className="nav-item">
