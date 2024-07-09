@@ -29,27 +29,24 @@
 footer {
   width: 100%;
   bottom: 0;
-  background-color: var(--secondary);
+  background-color: var(--primary);
   color:var(--text-color)
 }
 
 
-footer a {
-  color: #fff;
-}
 
-footer a:hover {
-  color: #ccc;
+.icon :hover{
+  color: var(--secondary);
 }
 
 
 /*  */
 .Home-Background{
-  background-color: var(--primary); /* Dark background */
+  background-color: var(--secondary); /* Dark background */
 
 }
 .home-header {
-  background-color: var(--primary); /* Dark background */
+  background-color: var(--secondary); /* Dark background */
   padding: 150px;
   text-align: center;
   color: var(--text-color);
@@ -71,6 +68,7 @@ footer a:hover {
 
 .home-header-text {
   flex: 2;
+  color: var(--primary)
   /* text-align: center; */
 }
 
@@ -93,15 +91,14 @@ footer a:hover {
   padding: 10px 20px;
   border-radius: 5px;
   border: none;
-  background-color: var(--secondary); /* Button color */
+  background-color: var(--primary); /* Button color */
   color: var(--text-color);
   cursor: pointer;
 }
 
 .home-search-bar button:hover {
-  background-color: var(--primary);
+  color: var(--secondary);
 }
-
 
 
 .button-container {
