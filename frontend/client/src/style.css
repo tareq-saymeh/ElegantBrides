@@ -30,7 +30,9 @@ footer {
   width: 100%;
   bottom: 0;
   background-color: var(--primary);
-  color:var(--text-color)
+  color:var(--text-color);
+  
+  
 }
 
 
@@ -154,3 +156,32 @@ footer {
     font-size: 12px;
   }
 }
+
+/* Item Cars css */
+
+.ItemCard{
+  width: 200px;
+  height: 300px;
+}
+
+
+.HomeCards{
+  min-height: 550px;
+  width: 100%;
+}
+
+.imageCard{
+  height:200px
+}
+
+
+.HomePage {
+  padding: 20px;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+

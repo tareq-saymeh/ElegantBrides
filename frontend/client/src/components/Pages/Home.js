@@ -1,7 +1,6 @@
 import React from 'react'
 import Navbar from '../Navbar/Navbar'
-import image1 from '../images/tt2.jpg'
-import image2 from '../images/tt3.jpg'
+
 import dressimg from '../images/Dress.png'
 import Veilsimg from '../images/Veils.png'
 import Shoesimg from '../images/Shoes.png'
@@ -10,6 +9,9 @@ import Accessoriesimg from '../images/bag.png'
 import Flowersimg from '../images/Flowers.png'
 import Footer from '../Footer/Footer.js'
 import '../../style.css'
+import ItemCard from '../ItemCard/ItemCard.js'
+
+import contents from '../Content/Content.js'
 // import SearchBar from '../Searchbar/Searchbar.js'
 
 function Home() {
@@ -63,8 +65,59 @@ function Home() {
   </div>
   
 </div>
+<h2 className='HomeItemFilter-text'>The Most Wanted</h2>
 
-    
+    <div className="card-container">
+
+    {contents.map(contents => (
+                    <ItemCard 
+                        key={contents.id}
+                        image={contents.image}
+                        name={contents.name}
+                        price={contents.price}
+                        size={contents.size}
+                        collection={contents.collection}
+                        rating={contents.rating}
+                    />
+                ))}
+                
+            </div>
+            
+<h2 className='HomeItemFilter-text'>New collection</h2>
+
+<div className="card-container">
+
+{contents.map(contents => (
+                <ItemCard 
+                    key={contents.id}
+                    image={contents.image}
+                    name={contents.name}
+                    price={contents.price}
+                    size={contents.size}
+                    collection={contents.collection}
+                    rating={contents.rating}
+                />
+            ))}
+            
+        </div>
+        
+<h2 className='HomeItemFilter-text'>Suggestions </h2>
+
+<div className="card-container">
+
+{contents.map(contents => (
+                <ItemCard 
+                    key={contents.id}
+                    image={contents.image}
+                    name={contents.name}
+                    price={contents.price}
+                    size={contents.size}
+                    collection={contents.collection}
+                    rating={contents.rating}
+                />
+            ))}
+            
+        </div>
     <Footer/>
     </div>
     

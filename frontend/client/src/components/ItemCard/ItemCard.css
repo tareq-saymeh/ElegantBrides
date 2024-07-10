@@ -1,0 +1,87 @@
+:root {
+    --secondary: #C0C0C0;
+    --primary:  #161616;
+    --text-color: #fff;
+  }
+  
+  .productList{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 5rem;
+    border: 5px;
+  }
+  
+  .productCard{
+    position: relative;
+    background-color: var(--primary);
+    margin: 1rem;
+    flex: 1 0 25rem;
+    max-width: 30rem;
+    max-height: 40rem;
+    transition: 0.2s;
+  }
+  
+  .productCard:hover{
+    transform: translateY(-0.5rem);
+    box-shadow: 0.5rem 0.75rem 1.5rem var(--primary);
+  }
+  
+  .productImage{
+    margin-top: 1.5rem;
+    max-width: 20rem;
+    max-height: 25rem;
+    height: auto;
+  }
+  
+  .productCard__cart{
+    position: absolute;
+    right: 0;
+    margin: 1rem;
+    font-size: 1.5rem;
+    transition: 0.2s;
+    cursor: pointer;
+    color: var(--text-color);
+
+  }
+  
+
+  
+  .productCard__wishlist {
+    position: absolute;
+    cursor: pointer;
+    font-size: 1.5rem;
+    left: 0;
+    margin: 1rem;
+    fill: var(--secondary);
+  }
+  
+  .productCard__content {
+    margin: 2.5rem;
+  }
+  
+  .productName{
+    font-size: 1.5rem;
+    color: var(--text-color);
+  }
+  
+  .displayStack__1,
+  .displayStack__2{
+    margin: 2rem 1.5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+
+  }
+  
+  .productPrice{
+    font-size: 1.2rem;
+    font-weight: bold;
+    
+  }
+  
+  .productSales,
+  .productTime{
+    font-size: 1rem;
+    
+  }
