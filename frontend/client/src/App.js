@@ -3,6 +3,12 @@ import './style.css'
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Pages/Home';
+import WeddingDressPage from './components/Pages/WeddingDressPage';
+import VeilsPage from './components/Pages/VeilsPage';
+import ShoesPage from './components/Pages/ShoesPage';
+import JewerlyPage from './components/Pages/JewerlyPage';
+import FlowerPage from './components/Pages/FlowerPage';
+import AccessoriesPage from './components/Pages/AccessoriesPage';
 
 function App() {
   const [data, setData] = useState([]);
@@ -19,6 +25,12 @@ function App() {
     <div className="App">
     <Routes>
     <Route path="/" element={<Home />} />
+    <Route path="/WeddingDressPage" element={<WeddingDressPage />} />
+    <Route path="/VeilsPage" element={<VeilsPage />} />
+    <Route path="/ShoesPage" element={<ShoesPage />} />
+    <Route path="/JewerlyPage" element={<JewerlyPage />} />
+    <Route path="/FlowerPage" element={<FlowerPage />} />
+    <Route path="/AccessoriesPage" element={<AccessoriesPage />} />
     </Routes>
     </div>
     </Router>

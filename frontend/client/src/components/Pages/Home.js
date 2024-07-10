@@ -65,7 +65,10 @@ function Home() {
   </div>
   
 </div>
+<hr/>
+
 <h2 className='HomeItemFilter-text'>The Most Wanted</h2>
+<hr/>
 
     <div className="card-container">
 
@@ -82,8 +85,10 @@ function Home() {
                 ))}
                 
             </div>
+<hr/>
             
 <h2 className='HomeItemFilter-text'>New collection</h2>
+<hr/>
 
 <div className="card-container">
 
@@ -100,8 +105,10 @@ function Home() {
             ))}
             
         </div>
+<hr/>
         
 <h2 className='HomeItemFilter-text'>Suggestions </h2>
+<hr/>
 
 <div className="card-container">
 
