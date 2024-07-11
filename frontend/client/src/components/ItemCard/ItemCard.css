@@ -6,7 +6,7 @@
   
   .productList{
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     margin-top: 5rem;
     border: 5px;
   }
@@ -16,7 +16,7 @@
     background-color: var(--primary);
     margin: 1rem;
     flex: 1 0 25rem;
-    max-width: 30rem;
+    max-width: 25rem;
     max-height: 40rem;
     transition: 0.2s;
   }
