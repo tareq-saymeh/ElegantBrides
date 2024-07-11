@@ -42,7 +42,7 @@ function Navbar() {
 </svg>
 </button></Link>
 
-      <button className="btn btn-outline-secondary text-white" type="submit">Login</button>
+      <Link to='/Login'><button className="btn btn-outline-secondary text-white" type="submit">Login</button></Link>
     </div>
   </div>
 </nav>
