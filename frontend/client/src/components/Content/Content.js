@@ -4,7 +4,7 @@ const productData = [
       name: "Enchanting A-Line Bridal Gown with Floral Lace | Sophia Tolli",
       image:
         "https://dy9ihb9itgy3g.cloudfront.net/products/9181/y3101/y3101__ivory-blush_d_f.740.webp",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 220,
       rating: 5,
       collection: 'zara',
@@ -15,7 +15,7 @@ const productData = [
       name: "Essense of Australia 2024 Bridal Collection | View All Gowns",
       image:
         "https://cdn.essensedesigns.com/uploads/2024/03/D3992-01-530x845.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 169,
       rating: 5,
       collection: 'Nike',
@@ -26,7 +26,7 @@ const productData = [
       name: "Wedding Dresses & Bridal Gowns - Azazie",
       image:
         "https://cdn.galialahav.com/app/uploads/2023/04/GALIA_LAHAV_REINA_137-640x853.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 170,
       rating: 4,
       collection: 'chat',
@@ -34,10 +34,10 @@ const productData = [
     } ,
     {
       id: 4,
-      name: "Reina | Deep V Corset Long-Sleeve Wedding Ball Gown - Amor - Bridal Dresses - Galia Lahav",
+      name: "Reina | Deep V Corset Long-Sleeve Wedding Ball Gown",
       image:
         "https://d2dipuj17jpsku.cloudfront.net/media/cache/bdc753d9d1fee4a3addcd7e612656cd0/44445_FF_Sincerity-Bridal.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 420,
       rating: 2,
       collection: 'chat',
@@ -48,7 +48,7 @@ const productData = [
       name: "Wedding Dresses & Bridal Gowns - Azazie",
       image:
         "https://cdn-1.azazie.com/upimg/s360/73/89/297895639955097f6462530799c97389.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 300,
       rating: 3,
       collection: 'chat',
@@ -59,7 +59,7 @@ const productData = [
       name: "Long sleeve wedding dresses - Bridal gowns with sleeves - Leah S.",
       image:
         "https://www.leahsdesigns.com.au/wp-content/uploads/2022/02/Indi-dress-with-sleeve.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 500,
       rating: 5,
       collection: 'chat',
@@ -70,7 +70,7 @@ const productData = [
       name: "Enchanting A-Line Bridal Gown with Floral Lace | Sophia Tolli",
       image:
         "https://dy9ihb9itgy3g.cloudfront.net/products/9181/y3101/y3101__ivory-blush_d_f.740.webp",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 220,
       rating: 5,
       collection: 'zara',
@@ -81,7 +81,7 @@ const productData = [
       name: "Essense of Australia 2024 Bridal Collection | View All Gowns",
       image:
         "https://cdn.essensedesigns.com/uploads/2024/03/D3992-01-530x845.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 169,
       rating: 5,
       collection: 'Nike',
@@ -92,7 +92,7 @@ const productData = [
       name: "Wedding Dresses & Bridal Gowns - Azazie",
       image:
         "https://cdn.galialahav.com/app/uploads/2023/04/GALIA_LAHAV_REINA_137-640x853.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 170,
       rating: 4,
       collection: 'chat',
@@ -100,10 +100,10 @@ const productData = [
     } ,
     {
       id: 10,
-      name: "Reina | Deep V Corset Long-Sleeve Wedding Ball Gown - Amor - Bridal Dresses - Galia Lahav",
+      name: "Reina | Deep V Corset Long-Sleeve Wedding Ball Gown",
       image:
         "https://d2dipuj17jpsku.cloudfront.net/media/cache/bdc753d9d1fee4a3addcd7e612656cd0/44445_FF_Sincerity-Bridal.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 420,
       rating: 2,
       collection: 'chat',
@@ -114,7 +114,7 @@ const productData = [
       name: "Wedding Dresses & Bridal Gowns - Azazie",
       image:
         "https://cdn-1.azazie.com/upimg/s360/73/89/297895639955097f6462530799c97389.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 300,
       rating: 3,
       collection: 'chat',
@@ -125,7 +125,7 @@ const productData = [
       name: "Long sleeve wedding dresses - Bridal gowns with sleeves - Leah S.",
       image:
         "https://www.leahsdesigns.com.au/wp-content/uploads/2022/02/Indi-dress-with-sleeve.jpg",
-      productType: "openBackHeadphones",
+      productType: "Dress",
       price: 500,
       rating: 5,
       collection: 'chat',

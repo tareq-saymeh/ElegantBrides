@@ -1,3 +1,6 @@
+import 'mdb-react-ui-kit/dist/css/mdb.min.css';
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
 import './App.css';
 import './style.css'
 import React, { useEffect, useState } from 'react';
@@ -9,6 +12,7 @@ import ShoesPage from './components/Pages/ShoesPage';
 import JewerlyPage from './components/Pages/JewerlyPage';
 import FlowerPage from './components/Pages/FlowerPage';
 import AccessoriesPage from './components/Pages/AccessoriesPage';
+import CartPage from './components/Cart/CartPage';
 
 function App() {
   const [data, setData] = useState([]);
@@ -31,6 +35,7 @@ function App() {
     <Route path="/JewerlyPage" element={<JewerlyPage />} />
     <Route path="/FlowerPage" element={<FlowerPage />} />
     <Route path="/AccessoriesPage" element={<AccessoriesPage />} />
+    <Route path="/Cart" element={<CartPage />} />
     </Routes>
     </div>
     </Router>
