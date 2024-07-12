@@ -8,15 +8,13 @@ dotenv.config();
 // Connect to MongoDB
 connectDB();
 
-
-// Routes:
+// Route:
 const adminRoute = require('./routes/adminRoutes')
 const cartRoute = require('./routes/cartRoutes')
 const itemsRoute = require('./routes/itemRoutes')
 const logRoute = require('./routes/logRoutes')
 const reservationsRoute = require('./routes/reservationRoutes')
 const userRoute = require('./routes/userRoutes')
-
 
 const app = express();
 
@@ -34,5 +32,4 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`http://localhost:${PORT}/`);
-    // http://localhost:3000/Cart
 });
