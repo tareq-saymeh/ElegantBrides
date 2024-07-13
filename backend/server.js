@@ -9,23 +9,24 @@ dotenv.config();
 connectDB();
 
 // Route:
-const adminRoute = require('./routes/adminRoutes')
-const cartRoute = require('./routes/cartRoutes')
-const itemsRoute = require('./routes/itemRoutes')
-const logRoute = require('./routes/logRoutes')
-const reservationsRoute = require('./routes/reservationRoutes')
-const userRoute = require('./routes/userRoutes')
+const authRoutes = require('./routes/authRoutes')
+const cartRoutes = require('./routes/cartRoutes')
+const itemsRoutes = require('./routes/itemRoutes')
+const logRoutes = require('./routes/logRoutes')
+const reservationsRoutes = require('./routes/reservationRoutes')
+const userRoutes = require('./routes/userRoutes')
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use('/', adminRoute);
-app.use('/cart', cartRoute);
-app.use('/items', itemsRoute);
-app.use('/log', logRoute);
-app.use('/reservations', reservationsRoute);
-app.use('/user', userRoute);
+app.use('/api/auth', authRoutes);
+// app.use('/', authRoute);
+app.use('/cart', cartRoutes);
+app.use('/items', itemsRoutes);
+app.use('/log', logRoutes);
+app.use('/reservations', reservationsRoutes);
+app.use('/user', userRoutes);
 
 
 const PORT = process.env.PORT;
