@@ -416,3 +416,82 @@ footer {
 .filter__item input[type=checkbox]:active:after, input[type=checkbox]:focus:after {
 	color: #5583f6;
 }
+
+
+/* item page */
+
+
+/* ItemDetailPage.css */
+.allPage{
+  background-color: var(--secondary);
+  color: var(--text-color);
+}
+.item-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.item-detail__image {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin-bottom: 20px;
+  border-radius: 10px; /* Example border radius */
+}
+
+.item-detail h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.item-detail h4 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.item-detail__price {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.item-detail__actions {
+  margin-top: 20px;
+}
+
+.item-detail__actions button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+}
+
+.item-detail__details {
+  margin-top: 30px;
+}
+
+.item-detail__details h4 {
+  margin-bottom: 10px;
+}
+
+.item-detail__details dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  row-gap: 10px;
+}
+
+.item-detail__details dt {
+  font-weight: bold;
+}
+
+.item-detail__details dd {
+  margin-bottom: 10px;
+}
+
+.item-detail__description {
+  margin-top: 30px;
+}
+
+.item-detail__description p {
+  line-height: 1.6;
+}

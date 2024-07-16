@@ -77,7 +77,7 @@ function JewerlyPage() {
                 <div className="productList">
                     {filteredProducts.map((contents) => (
                         <ItemCard 
-                            key={contents.id}
+                        id={contents.id}
                             image={contents.image}
                             name={contents.name}
                             price={contents.price}

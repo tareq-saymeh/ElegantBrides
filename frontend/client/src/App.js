@@ -14,6 +14,7 @@ import FlowerPage from './components/Pages/FlowerPage';
 import AccessoriesPage from './components/Pages/AccessoriesPage';
 import CartPage from './components/Cart/CartPage';
 import Login from './components/auth/Login';
+import ItemDetailPage from './components/ItemPage/ItemDetailPage';
 
 function App() {
   const [data, setData] = useState([]);
@@ -38,6 +39,8 @@ function App() {
     <Route path="/AccessoriesPage" element={<AccessoriesPage />} />
     <Route path="/Cart" element={<CartPage />} />
     <Route path="/Login" element={<Login />} />
+    <Route path="/item/:id" element={<ItemDetailPage data={data} />} /> 
+
     </Routes>
     </div>
     </Router>
