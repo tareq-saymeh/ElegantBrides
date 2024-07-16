@@ -2,7 +2,7 @@ import './ItemCard.css';
 import { FaShoppingCart, FaRegBookmark, FaStar} from 'react-icons/fa';
 export function ItemCard(props) {
     return(
-        <div className='productList'>
+        <div className='productsList'>
             <div key={props.id} className='productCard'>
                 <img src={props.image} alt='product-img' className='productImage'></img>
 
@@ -15,7 +15,7 @@ export function ItemCard(props) {
                     <div className='displayStack__1'>
                         
                         <div className='productSales'>Size : {props.size} </div>
-                        <div className='productPrice'>${props.price}</div>
+                        <div className='productPrice'>${props.price}/Day</div>
                     </div>
                     <div className='displayStack__2'>
                     <div className='productTime'>{props.collection}'s collection</div>
