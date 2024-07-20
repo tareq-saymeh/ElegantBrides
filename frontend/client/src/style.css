@@ -495,3 +495,75 @@ footer {
 .item-detail__description p {
   line-height: 1.6;
 }
+
+/* admin panel *//* AdminPanel.css */
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.admin-navbar {
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.admin-container {
+  display: flex;
+  flex: 1;
+  margin-top: 60px; /* Adjust based on the height of your navbar */
+}
+
+
+.admin-content {
+  margin-left: 250px; /* Adjust based on the width of your sidebar */
+  padding: 20px;
+  flex: 1;
+}
+
+/* Custom styles for your dashboard */
+
+
+.DashboardCard {
+  margin-bottom: 50px;
+}
+
+
+/* Sidebar.css */
+.Adminsidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: var(--primary);
+  color: #fff;
+}
+
+.nav-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-links li {
+  margin: 20px 0;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.DashBoardChart{
+  width: 1000px;
+  height: 500px;
+}
+.SideBarContant{
+  height: 50px;
+  align-content: center;
+  border: var(--secondary);
+}
+.SideBarContant:hover{
+  background-color: var(--secondary);
+}

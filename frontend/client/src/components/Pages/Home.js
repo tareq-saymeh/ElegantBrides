@@ -28,8 +28,7 @@ function Home() {
         <div className="home-header-text">
           <h1>Discover the perfect <br/> dress for your special</h1>
           <div className="home-search-bar">
-            <input type="text" placeholder="Search for dresses" />
-            <button type="button">Search</button>
+            
           </div>
         </div>
       </div>

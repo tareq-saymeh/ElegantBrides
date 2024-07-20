@@ -15,6 +15,10 @@ import AccessoriesPage from './components/Pages/AccessoriesPage';
 import CartPage from './components/Cart/CartPage';
 import Login from './components/auth/Login';
 import ItemDetailPage from './components/ItemPage/ItemDetailPage';
+import AdminPanel from './components/AdminPanel/AdminPanelHome';
+import Dashboard from './components/AdminPanel/Dashboard';
+import Users from './components/AdminPanel/Users';
+import Settings from './components/AdminPanel/Settings';
 
 function App() {
   const [data, setData] = useState([]);
@@ -39,6 +43,10 @@ function App() {
     <Route path="/AccessoriesPage" element={<AccessoriesPage />} />
     <Route path="/Cart" element={<CartPage />} />
     <Route path="/Login" element={<Login />} />
+    <Route path="/Admin" element={<AdminPanel><Dashboard /></AdminPanel>} />
+    <Route path="/dashboard" element={<AdminPanel><Dashboard /></AdminPanel>} />
+    <Route path="/users" element={<AdminPanel><Users /></AdminPanel>} />
+    <Route path="/settings" element={<AdminPanel><Settings /></AdminPanel>} />
     <Route path="/item/:id" element={<ItemDetailPage data={data} />} /> 
 
     </Routes>
