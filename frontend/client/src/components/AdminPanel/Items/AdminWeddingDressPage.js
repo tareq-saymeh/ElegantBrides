@@ -2,6 +2,39 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 
 const AdminWeddingDressPage = () => {
+  const initialData = [
+    {
+      id: 1,
+      name: 'Necklace',
+      size: 'N/A',
+      brand: 'Tiffany',
+      color: 'Silver',
+      price: '$200',
+      description: 'Elegant silver necklace with diamonds',
+      image: 'path/to/image1.jpg',
+    },
+    {
+      id: 2,
+      name: 'Bracelet',
+      size: 'M',
+      brand: 'Pandora',
+      color: 'Gold',
+      price: '$150',
+      description: 'Gold bracelet with charms',
+      image: 'path/to/image2.jpg',
+    },
+    {
+      id: 3,
+      name: 'Earrings',
+      size: 'S',
+      brand: 'Swarovski',
+      color: 'Blue',
+      price: '$75',
+      description: 'Blue crystal earrings',
+      image: 'path/to/image3.jpg',
+    },
+  ];
+
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('Add');
   const [formData, setFormData] = useState({
@@ -15,6 +48,16 @@ const AdminWeddingDressPage = () => {
     image: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
+  const [filter, setFilter] = useState({
+    id: '',
+    name: '',
+    size: '',
+    brand: '',
+    color: '',
+    price: '',
+    description: '',
+  });
+  const [data, setData] = useState(initialData);
 
   const handleShow = (type, data) => {
     setModalType(type);
@@ -75,65 +118,85 @@ const AdminWeddingDressPage = () => {
     handleClose();
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
+  };
+
+  const filteredData = data.filter((item) =>
+    Object.keys(filter).every((key) =>
+      item[key].toString().toLowerCase().includes(filter[key].toLowerCase())
+    )
+  );
+
   return (
     <div>
       <h1>Dress Page</h1>
       <div className="d-flex justify-content-end mb-3">
-        <button className="ItemAddButn btn btn-primary" onClick={() => handleShow('Add')}>Add</button>
+        <button className="ItemAddButn btn btn-primary" onClick={() => handleShow('Add')}>
+          Add
+        </button>
       </div>
       <div>
         <table className="table table-secondary table-hover table-bordered">
           <thead>
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Size</th>
-              <th scope="col">Brand</th>
-              <th scope="col">Color</th>
-              <th scope="col">Price</th>
-              <th scope="col">Description</th>
-              <th scope="col">Image</th>
+              {Object.keys(filter).map((key) => (
+                <th key={key}>{key}
+                  <input
+                    type="text"
+                    name={key}
+                    placeholder={`Filter by ${key}`}
+                    value={filter[key]}
+                    onChange={handleFilterChange}
+                    className="form-control"
+                  />
+                </th>
+              ))}
+              <th scope="col">image</th>
               <th scope="col">Remove</th>
               <th scope="col">Edit</th>
             </tr>
+            
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Necklace</td>
-              <td>N/A</td>
-              <td>Tiffany</td>
-              <td>Silver</td>
-              <td>$200</td>
-              <td>Elegant silver necklace with diamonds</td>
-              <td>{imagePreview && <img src={imagePreview} alt="Necklace" width="50" />}</td>
-              <td><button className="btn btn-danger">Remove</button></td>
-              <td><button className="btn btn-success" onClick={() => handleShow('Edit', { id: 1, name: 'Necklace', size: 'N/A', brand: 'Tiffany', color: 'Silver', price: '$200', description: 'Elegant silver necklace with diamonds', image: imagePreview })}>Edit</button></td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Bracelet</td>
-              <td>M</td>
-              <td>Pandora</td>
-              <td>Gold</td>
-              <td>$150</td>
-              <td>Gold bracelet with charms</td>
-              <td>{imagePreview && <img src={imagePreview} alt="Bracelet" width="50" />}</td>
-              <td><button className="btn btn-danger">Remove</button></td>
-              <td><button className="btn btn-success" onClick={() => handleShow('Edit', { id: 2, name: 'Bracelet', size: 'M', brand: 'Pandora', color: 'Gold', price: '$150', description: 'Gold bracelet with charms', image: imagePreview })}>Edit</button></td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Earrings</td>
-              <td>S</td>
-              <td>Swarovski</td>
-              <td>Blue</td>
-              <td>$75</td>
-              <td>Blue crystal earrings</td>
-              <td>{imagePreview && <img src={imagePreview} alt="Earrings" width="50" />}</td>
-              <td><button className="btn btn-danger">Remove</button></td>
-              <td><button className="btn btn-success" onClick={() => handleShow('Edit', { id: 3, name: 'Earrings', size: 'S', brand: 'Swarovski', color: 'Blue', price: '$75', description: 'Blue crystal earrings', image: imagePreview })}>Edit</button></td>
-            </tr>
+            {filteredData.map((item) => (
+              <tr key={item.id}>
+                <th scope="row">{item.id}</th>
+                <td>{item.name}</td>
+                <td>{item.size}</td>
+                <td>{item.brand}</td>
+                <td>{item.color}</td>
+                <td>{item.price}</td>
+                <td>{item.description}</td>
+                <td>{item.image && <img src={item.image} alt={item.name} width="50" />}</td>
+                <td>
+                  <button className="btn btn-danger">Remove</button>
+                </td>
+                <td>
+                  <button
+                    className="btn btn-success"
+                    onClick={() =>
+                      handleShow('Edit', {
+                        id: item.id,
+                        name: item.name,
+                        size: item.size,
+                        brand: item.brand,
+                        color: item.color,
+                        price: item.price,
+                        description: item.description,
+                        image: item.image,
+                      })
+                    }
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -210,11 +273,7 @@ const AdminWeddingDressPage = () => {
             </Form.Group>
             <Form.Group controlId="formImage">
               <Form.Label>Image</Form.Label>
-              <Form.Control
-                type="file"
-                name="image"
-                onChange={handleImageChange}
-              />
+              <Form.Control type="file" name="image" onChange={handleImageChange} />
               {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
             </Form.Group>
           </Form>
