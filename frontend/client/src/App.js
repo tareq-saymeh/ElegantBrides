@@ -19,6 +19,15 @@ import AdminPanel from './components/AdminPanel/AdminPanelHome';
 import Dashboard from './components/AdminPanel/Dashboard';
 import Users from './components/AdminPanel/Users';
 import Settings from './components/AdminPanel/Settings';
+import History from './components/AdminPanel/History';
+import Reservations from './components/AdminPanel/Reservations';
+import AdminAccessoriesPage from './components/AdminPanel/Items/AdminAccessoriesPage';
+import AdminVeilsPage from './components/AdminPanel/Items/AdminVeilsPage';
+import AdminJewerlyPage from './components/AdminPanel/Items/AdminJewerlyPage';
+import AdminFlowerPage from './components/AdminPanel/Items/AdminFlowerPage';
+import AdminShoesPage from './components/AdminPanel/Items/AdminShoesPage';
+import AdminWeddingDressPage from './components/AdminPanel/Items/AdminWeddingDressPage';
+import UnderReservations from './components/AdminPanel/UnderReservations';
 
 function App() {
   const [data, setData] = useState([]);
@@ -47,8 +56,16 @@ function App() {
     <Route path="/dashboard" element={<AdminPanel><Dashboard /></AdminPanel>} />
     <Route path="/users" element={<AdminPanel><Users /></AdminPanel>} />
     <Route path="/settings" element={<AdminPanel><Settings /></AdminPanel>} />
+    <Route path="/History" element={<AdminPanel><History /></AdminPanel>} />
+    <Route path="/Reservations" element={<AdminPanel><Reservations /></AdminPanel>} />
+    <Route path="/UnderReservations" element={<AdminPanel><UnderReservations /></AdminPanel>} />
     <Route path="/item/:id" element={<ItemDetailPage data={data} />} /> 
-
+    <Route path="/items/dresses" element={<AdminPanel><AdminWeddingDressPage /></AdminPanel>} />
+    <Route path="/items/accessories" element={<AdminPanel><AdminAccessoriesPage /></AdminPanel>} />
+    <Route path="/items/shoes" element={<AdminPanel><AdminShoesPage /></AdminPanel>} />
+    <Route path="/items/flowers" element={<AdminPanel><AdminFlowerPage /></AdminPanel>} />
+    <Route path="/items/jewerly" element={<AdminPanel><AdminJewerlyPage /></AdminPanel>} />
+    <Route path="/items/veils" element={<AdminPanel><AdminVeilsPage /></AdminPanel>} />
     </Routes>
     </div>
     </Router>

@@ -14,12 +14,16 @@ const Sidebar = () => {
         <ul>
           <li>
             <h4>ElegantBridel</h4>
+            <hr/>
           </li>
           <li className='SideBarContant'>
             <Link to="/dashboard">Dashboard</Link>
           </li>
           <li className='SideBarContant'>
             <Link to="/Reservations">Reservations</Link>
+          </li>
+          <li className='SideBarContant'>
+            <Link to="/UnderReservations">Under Reservations</Link>
           </li>
           <li className='SideBarContant' onClick={toggleItems} style={{ cursor: 'pointer' }}>
             Items
@@ -41,9 +45,9 @@ const Sidebar = () => {
               </li>
               <li className='SideBarContant'>
                 <Link to="/items/Jewerly">Jewerly</Link>
-              </li>
+              </li> 
               <li className='SideBarContant'>
-                <Link to="/items/shoes">Vailes</Link>
+                <Link to="/items/veils">Vailes</Link>
               </li>
               <hr/>
             </ul>

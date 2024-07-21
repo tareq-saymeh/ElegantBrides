@@ -556,7 +556,7 @@ footer {
 }
 
 .DashBoardChart{
-  width: 1000px;
+  width: 700px;
   height: 500px;
 }
 .SideBarContant{
@@ -566,4 +566,20 @@ footer {
 }
 .SideBarContant:hover{
   background-color: var(--secondary);
+}
+
+
+/* Admin panel items */
+
+.ItemAddButn{
+  margin: 20px;
+  margin-left: 90rem;
+}
+.AdminSettingForm{
+  display: flex;
+  justify-content: space-around;
+}
+.AdminFormContant{
+  width: 40rem;
+  margin: 1rem ;
 }

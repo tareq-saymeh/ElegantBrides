@@ -1,6 +1,5 @@
 // AdminPanel.js
 import React from 'react';
-import AdminNavbar from './AdminNavbar';
 import Sidebar from './Sidebar';
 
 const AdminPanel = ({ children }) => {
