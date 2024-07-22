@@ -5,6 +5,8 @@ const Items = mongoose.model('Items', new mongoose.Schema({
     size: { type: String, trim: true },
     brand: { type: String, trim: true },
     color: { type: String, trim: true },
+    BuyAble: { type: Boolean, trim: true },
+    RentAbleAble: { type: Boolean, trim: true },
     description: { type: String, trim: true },
     type: { 
         type: String, 

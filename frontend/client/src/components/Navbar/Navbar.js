@@ -33,7 +33,6 @@ function Navbar() {
           </ul>
         </li>
         <li className="nav-item">
-          <a className="nav-link text-white" href="#">Support</a>
         </li>
       </ul>
       <Link to="/Cart">
