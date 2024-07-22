@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // Ensure you have axios installed
+import axios from 'axios';
 import './Login.css';
 import Footer from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar';
@@ -36,21 +36,37 @@ const Login = () => {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/register', registerData);
-      console.log('Registration successful:', response.data);
+      const response = await axios.post('http://localhost:5000/api/auth/register', registerData);
+      if (response && response.data) {
+        console.log('Registration successful:', response.data);
+      } else {
+        console.log('Registration failed: No response data');
+      }
     } catch (error) {
-      console.error('Registration failed:', error.response.data);
+      if (error.response && error.response.data) {
+        console.error('Registration failed:', error.response.data);
+      } else {
+        console.error('Registration failed:', error.message);
+      }
     }
   };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/login', loginData);
-      localStorage.setItem('token', response.data.token);
-      console.log('Login successful:', response.data);
+      const response = await axios.post('http://localhost:5000/api/auth/login', loginData);
+      if (response && response.data) {
+        localStorage.setItem('token', response.data.token);
+        console.log('Login successful:', response.data);
+      } else {
+        console.log('Login failed: No response data');
+      }
     } catch (error) {
-      console.error('Login failed:', error.response.data);
+      if (error.response && error.response.data) {
+        console.error('Login failed:', error.response.data);
+      } else {
+        console.error('Login failed:', error.message);
+      }
     }
   };
 
@@ -61,10 +77,6 @@ const Login = () => {
         <div className="auth-form-container auth-sign-up-container">
           <form onSubmit={handleRegisterSubmit}>
             <h1>Create Account</h1>
-            {/* <div className="auth-social-container">
-            <a href="#" className="auth-social"><i className="fab fa-facebook-f"></i></a>
-            <a href="#" className="auth-social"><i className="fab fa-linkedin-in"></i></a>
-          </div> */}
             <span>or use your email for registration</span>
             <input type="text" name="name" placeholder="Name" value={registerData.name} onChange={handleRegisterChange} />
             <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} />
@@ -76,10 +88,6 @@ const Login = () => {
         <div className="auth-form-container auth-sign-in-container">
           <form onSubmit={handleLoginSubmit}>
             <h1>Log in</h1>
-            {/* <div className="auth-social-container">
-            <a href="#" className="auth-social"><i className="fab fa-facebook-f"></i></a>
-            <a href="#" className="auth-social"><i className="fab fa-linkedin-in"></i></a>
-          </div> */}
             <span>or use your account</span>
             <input type="email" name="email" placeholder="Email" value={loginData.email} onChange={handleLoginChange} />
             <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} />
@@ -108,3 +116,4 @@ const Login = () => {
 };
 
 export default Login;
+  
