@@ -28,9 +28,11 @@ import AdminFlowerPage from './components/AdminPanel/Items/AdminFlowerPage';
 import AdminShoesPage from './components/AdminPanel/Items/AdminShoesPage';
 import AdminWeddingDressPage from './components/AdminPanel/Items/AdminWeddingDressPage';
 import UnderReservations from './components/AdminPanel/UnderReservations';
+import Preloader from './components/Preloader/Preloader'
 
 function App() {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Fetch data from the backend when the component mounts
@@ -39,9 +41,27 @@ function App() {
       .then((data) => setData(data))
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
+
+  
+  useEffect(() => {
+    if (!sessionStorage.getItem('visited')) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        sessionStorage.setItem('visited', 'true');
+      }, 5300);
+    }
+  }, []);
+
+
   return (
     <Router>
     <div className="App">
+    {loading ? (
+  <div className="loader-container">
+  <Preloader />
+  </div>
+  ):(
     <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/WeddingDressPage" element={<WeddingDressPage />} />
@@ -66,7 +86,7 @@ function App() {
     <Route path="/items/flowers" element={<AdminPanel><AdminFlowerPage /></AdminPanel>} />
     <Route path="/items/jewerly" element={<AdminPanel><AdminJewerlyPage /></AdminPanel>} />
     <Route path="/items/veils" element={<AdminPanel><AdminVeilsPage /></AdminPanel>} />
-    </Routes>
+    </Routes>)}
     </div>
     </Router>
   );
