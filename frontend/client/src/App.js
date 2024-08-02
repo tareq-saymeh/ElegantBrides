@@ -36,7 +36,7 @@ function App() {
 
   useEffect(() => {
     // Fetch data from the backend when the component mounts
-    fetch('http://localhost:3001/backend/data')
+    fetch('http://localhost:3000/backend/data')
       .then((response) => response.json())
       .then((data) => setData(data))
       .catch((error) => console.error('Error fetching data:', error));
@@ -72,7 +72,6 @@ function App() {
     <Route path="/AccessoriesPage" element={<AccessoriesPage />} />
     <Route path="/Cart" element={<CartPage />} />
     <Route path="/Login" element={<Login />} />
-    <Route path="/Admin" element={<AdminPanel><Dashboard /></AdminPanel>} />
     <Route path="/dashboard" element={<AdminPanel><Dashboard /></AdminPanel>} />
     <Route path="/users" element={<AdminPanel><Users /></AdminPanel>} />
     <Route path="/settings" element={<AdminPanel><Settings /></AdminPanel>} />
