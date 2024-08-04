@@ -1,40 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
 
 const AdminAccessoriesPage = () => {
-  const initialData = [
-    {
-      id: 1,
-      name: 'Necklace',
-      size: 'N/A',
-      brand: 'Tiffany',
-      color: 'Silver',
-      price: '$200',
-      description: 'Elegant silver necklace with diamonds',
-      image: 'path/to/image1.jpg',
-    },
-    {
-      id: 2,
-      name: 'Bracelet',
-      size: 'M',
-      brand: 'Pandora',
-      color: 'Gold',
-      price: '$150',
-      description: 'Gold bracelet with charms',
-      image: 'path/to/image2.jpg',
-    },
-    {
-      id: 3,
-      name: 'Earrings',
-      size: 'S',
-      brand: 'Swarovski',
-      color: 'Blue',
-      price: '$75',
-      description: 'Blue crystal earrings',
-      image: 'path/to/image3.jpg',
-    },
-  ];
-
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('Add');
   const [formData, setFormData] = useState({
@@ -43,9 +11,12 @@ const AdminAccessoriesPage = () => {
     size: '',
     brand: '',
     color: '',
-    price: '',
+    BuyAble: false,
+    RentAbleAble: false,
     description: '',
-    image: null,
+    type: 'Accessories',
+    price: '',
+    rating: ''
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [filter, setFilter] = useState({
@@ -55,9 +26,22 @@ const AdminAccessoriesPage = () => {
     brand: '',
     color: '',
     price: '',
-    description: '',
+    description: ''
   });
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/items');
+      setData(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   const handleShow = (type, data) => {
     setModalType(type);
@@ -71,9 +55,12 @@ const AdminAccessoriesPage = () => {
         size: '',
         brand: '',
         color: '',
-        price: '',
+        BuyAble: false,
+        RentAbleAble: false,
         description: '',
-        image: null,
+        type: 'Accessories',
+        price: '',
+        rating: ''
       });
       setImagePreview(null);
     }
@@ -88,9 +75,12 @@ const AdminAccessoriesPage = () => {
       size: '',
       brand: '',
       color: '',
-      price: '',
+      BuyAble: false,
+      RentAbleAble: false,
       description: '',
-      image: null,
+      type: 'Accessories',
+      price: '',
+      rating: ''
     });
     setImagePreview(null);
   };
@@ -112,10 +102,27 @@ const AdminAccessoriesPage = () => {
     setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = () => {
-    // Add logic to handle form submission (add or edit the data)
-    console.log(formData);
+  const handleSubmit = async () => {
+    try {
+      if (modalType === 'Add') {
+        await axios.post('http://localhost:3000/api/items', formData);
+      } else {
+        await axios.put(`http://localhost:3000/api/items/${formData.id}`, formData);
+      }
+      fetchData();
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
     handleClose();
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/items/${id}`);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
   };
 
   const handleFilterChange = (e) => {
@@ -127,8 +134,8 @@ const AdminAccessoriesPage = () => {
   };
 
   const filteredData = data.filter((item) =>
-    Object.keys(filter).every((key) =>
-      item[key].toString().toLowerCase().includes(filter[key].toLowerCase())
+    item.type === 'Accessories' && Object.keys(filter).every((key) =>
+      item[key]?.toString().toLowerCase().includes(filter[key].toLowerCase())
     )
   );
 
@@ -156,15 +163,14 @@ const AdminAccessoriesPage = () => {
                   />
                 </th>
               ))}
-              <th scope="col">image</th>
+              <th scope="col">Image</th>
               <th scope="col">Remove</th>
               <th scope="col">Edit</th>
             </tr>
-            
           </thead>
           <tbody>
             {filteredData.map((item) => (
-              <tr key={item.id}>
+              <tr key={item._id}>
                 <th scope="row">{item.id}</th>
                 <td>{item.name}</td>
                 <td>{item.size}</td>
@@ -174,20 +180,24 @@ const AdminAccessoriesPage = () => {
                 <td>{item.description}</td>
                 <td>{item.image && <img src={item.image} alt={item.name} width="50" />}</td>
                 <td>
-                  <button className="btn btn-danger">Remove</button>
+                  <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Remove</button>
                 </td>
                 <td>
                   <button
                     className="btn btn-success"
                     onClick={() =>
                       handleShow('Edit', {
-                        id: item.id,
+                        id: item._id,
                         name: item.name,
                         size: item.size,
                         brand: item.brand,
                         color: item.color,
-                        price: item.price,
+                        BuyAble: item.BuyAble,
+                        RentAbleAble: item.RentAbleAble,
                         description: item.description,
+                        type: item.type,
+                        price: item.price,
+                        rating: item.rating,
                         image: item.image,
                       })
                     }
@@ -207,16 +217,6 @@ const AdminAccessoriesPage = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formId">
-              <Form.Label>ID</Form.Label>
-              <Form.Control
-                type="text"
-                name="id"
-                value={formData.id}
-                onChange={handleChange}
-                readOnly={modalType === 'Edit'}
-              />
-            </Form.Group>
             <Form.Group controlId="formName">
               <Form.Label>Name</Form.Label>
               <Form.Control
