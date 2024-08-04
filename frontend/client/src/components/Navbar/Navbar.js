@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -10,10 +11,15 @@ function Navbar() {
     setIsAuthenticated(!!token); // Set isAuthenticated to true if token exists
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-    navigate('/Login');
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://localhost:3000/api/auth/logout', {}, { withCredentials: true });
+      localStorage.removeItem('token');
+      setIsAuthenticated(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (

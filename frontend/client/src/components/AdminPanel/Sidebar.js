@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Sidebar = () => {
   const [isItemsOpen, setIsItemsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleItems = () => {
     setIsItemsOpen(!isItemsOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://localhost:3000/api/auth/logout', {}, { withCredentials: true });
+      localStorage.removeItem('token');
+      navigate('/Login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -60,6 +72,9 @@ const Sidebar = () => {
           </li>
           <li className='SideBarContant'>
             <Link to="/settings">Settings</Link>
+          </li>
+          <li className='SideBarContant' onClick={handleLogout} style={{ cursor: 'pointer' }}>
+            Logout
           </li>
         </ul>
       </nav>

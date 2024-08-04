@@ -40,7 +40,7 @@ const Login = () => {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/register', registerData);
+      const response = await axios.post('http://localhost:3000/api/auth/register', registerData, { withCredentials: true });
       console.log('Registration successful:', response.data);
       navigate('/'); // Redirect to home after registration
     } catch (error) {
@@ -55,7 +55,7 @@ const Login = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', loginData);
+      const response = await axios.post('http://localhost:3000/api/auth/login', loginData, { withCredentials: true });
       console.log('Login response:', response.data); // Log the response to debug
 
       if (response.data.token) {
@@ -63,8 +63,10 @@ const Login = () => {
         console.log('Login successful:', response.data);
         if (response.data.role === 'Admin') { // Ensure the role matches exactly with what the backend sends
           navigate('/dashboard'); // Redirect to dashboard if admin
+          console.log("Admin logged in");
         } else {
           navigate('/'); // Redirect to home if user
+          console.log("User logged in");
         }
       } else {
         console.log('Login failed: No token in response');
