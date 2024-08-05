@@ -1,20 +1,55 @@
-const mongoose = require('mongoose');
+    const mongoose = require('mongoose');
 
-const Items = mongoose.model('Items', new mongoose.Schema({
-    name: { type: String, required: true, trim: true , min:0,max:50},
-    size: { type: String, trim: true },
-    brand: { type: String, trim: true },
-    color: { type: String, trim: true },
-    BuyAble: { type: Boolean, trim: true },
-    RentAbleAble: { type: Boolean, trim: true },
-    description: { type: String, trim: true },
-    type: { 
-        type: String, 
-        required: true, 
-        enum: ['Accessories', 'Jewelry', 'Flower', 'Veils', 'WeddingDress', 'Shoes'] 
-    },
-    price: { type: Number, required: true, min: 0 },
-    rating: { type: Number, min: 0, max: 5 }
-}));
+    const itemSchema = new mongoose.Schema({
+        name: { 
+            type: String, 
+            required: true, 
+            trim: true, 
+            maxlength: 50 
+        },
+        size: { 
+            type: String, 
+            trim: true 
+        },
+        brand: { 
+            type: String, 
+            trim: true 
+        },
+        color: { 
+            type: String, 
+            trim: true 
+        },
+        BuyAble: { 
+            type: Boolean 
+        },
+        RentAble: { 
+            type: Boolean 
+        },
+        description: { 
+            type: String, 
+            trim: true 
+        },
+        type: { 
+            type: String, 
+            required: true, 
+            enum: ['Accessories', 'Jewelry', 'Flower', 'Veils', 'WeddingDress', 'Shoes'] 
+        },
+        price: { 
+            type: Number, 
+            required: true, 
+            min: 0 
+        },
+        rating: { 
+            type: Number, 
+            min: 0, 
+            max: 5 
+        },
+        image: { 
+            type: String, // Store the URL or file path of the image
+            trim: true
+        }
+    });
 
-module.exports = Items;
+    const Item = mongoose.model('Item', itemSchema);
+
+    module.exports = Item;

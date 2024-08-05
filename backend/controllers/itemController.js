@@ -1,10 +1,11 @@
 const Items = require('../models/Items');
+const mongoose = require('mongoose');
 
-// Get all accessories
-exports.getAllAccessories = async (req, res) => {
+// Get all items
+exports.getAllItems = async (req, res) => {
   try {
-    const accessories = await Items.find({ type: 'Accessories' });
-    res.json(accessories);
+    const items = await Items.find();
+    res.json(items);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -12,18 +13,22 @@ exports.getAllAccessories = async (req, res) => {
 
 // Create a new item
 exports.createItem = async (req, res) => {
-  const { name, size, brand, color, BuyAble, RentAbleAble, description, type, price, rating } = req.body;
-  const newItem = new Items({ name, size, brand, color, BuyAble, RentAbleAble, description, type, price, rating });
+  const { name, size, brand, color, BuyAble, RentAble, description, type, price, rating, image } = req.body;
+  console.log(req.body);
+  if (!name || !price) {
+    return res.status(400).json({ message: 'Name, type, and price are required.' });
+  }
 
   try {
+    const newItem = new Items({ name, size, brand, color, BuyAble, RentAble, description, type, price, rating, image });
     const savedItem = await newItem.save();
+    console.log("Item saved:", savedItem);
     res.status(201).json(savedItem);
   } catch (error) {
+    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
-
-// Update an item
 exports.updateItem = async (req, res) => {
   try {
     const updatedItem = await Items.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -35,6 +40,8 @@ exports.updateItem = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+
 
 // Delete an item
 exports.deleteItem = async (req, res) => {

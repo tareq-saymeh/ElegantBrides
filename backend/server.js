@@ -4,6 +4,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const path = require('path');
+const bodyParser = require('body-parser');
 
 dotenv.config();
 
@@ -17,7 +19,10 @@ app.use(cors({
   origin: 'http://localhost:3001', // Allow requests from this origin
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 }));
+app.use(bodyParser.json());
+
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'uploads'))); // Serve static files from the uploads directory
 app.use(
   session({
     store: MongoStore.create({
@@ -27,7 +32,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 3 * 60 * 60 * 1000 }, // 3 hours
+    cookie: { maxAge:  60 * 60 * 1000 }, // 3 hours
   })
 );
 
