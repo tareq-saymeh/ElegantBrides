@@ -1,79 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
 
 const AdminWeddingDressPage = () => {
-  const initialData = [
-    {
-      id: 1,
-      name: 'Necklace',
-      size: 'N/A',
-      brand: 'Tiffany',
-      color: 'Silver',
-      price: '$200',
-      description: 'Elegant silver necklace with diamonds',
-      image: 'path/to/image1.jpg',
-    },
-    {
-      id: 2,
-      name: 'Bracelet',
-      size: 'M',
-      brand: 'Pandora',
-      color: 'Gold',
-      price: '$150',
-      description: 'Gold bracelet with charms',
-      image: 'path/to/image2.jpg',
-    },
-    {
-      id: 3,
-      name: 'Earrings',
-      size: 'S',
-      brand: 'Swarovski',
-      color: 'Blue',
-      price: '$75',
-      description: 'Blue crystal earrings',
-      image: 'path/to/image3.jpg',
-    },
-  ];
-
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('Add');
   const [formData, setFormData] = useState({
-    id: '',
     name: '',
     size: '',
     brand: '',
     color: '',
-    price: '',
+    BuyAble: true,
+    RentAble: false,
     description: '',
-    image: null,
+    type: 'WeddingDress',
+    price: '',
+    image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
-  const [filter, setFilter] = useState({
-    id: '',
-    name: '',
-    size: '',
-    brand: '',
-    color: '',
-    price: '',
-    description: '',
-  });
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/items');
+      console.log('Fetched Data:', response.data);
+      const filteredData = response.data.filter(item => item.type === 'WeddingDress');
+      setData(filteredData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   const handleShow = (type, data) => {
     setModalType(type);
     if (type === 'Edit') {
-      setFormData(data);
-      setImagePreview(data.image);
+      setFormData({
+        ...data,
+        image: null
+      });
+      setImagePreview(`http://localhost:3000/uploads/${data.image}`);
     } else {
       setFormData({
-        id: '',
         name: '',
         size: '',
         brand: '',
         color: '',
-        price: '',
+        BuyAble: true,
+        RentAble: false,
         description: '',
-        image: null,
+        type: 'WeddingDress',
+        price: '',
+        image: null
       });
       setImagePreview(null);
     }
@@ -83,23 +64,25 @@ const AdminWeddingDressPage = () => {
   const handleClose = () => {
     setShowModal(false);
     setFormData({
-      id: '',
       name: '',
       size: '',
       brand: '',
       color: '',
-      price: '',
+      BuyAble: true,
+      RentAble: false,
       description: '',
-      image: null,
+      type: 'WeddingDress',
+      price: '',
+      image: null
     });
     setImagePreview(null);
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -112,29 +95,55 @@ const AdminWeddingDressPage = () => {
     setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = () => {
-    // Add logic to handle form submission (add or edit the data)
-    console.log(formData);
+  const handleSubmit = async () => {
+    const dataToSubmit = new FormData();
+  
+    dataToSubmit.append('name', formData.name);
+    dataToSubmit.append('size', formData.size);
+    dataToSubmit.append('brand', formData.brand);
+    dataToSubmit.append('color', formData.color);
+    dataToSubmit.append('BuyAble', formData.BuyAble);
+    dataToSubmit.append('RentAble', formData.RentAble);
+    dataToSubmit.append('description', formData.description);
+    dataToSubmit.append('type', formData.type);
+    dataToSubmit.append('price', formData.price);
+    if (formData.image) {
+      dataToSubmit.append('image', formData.image);
+    }
+  
+    try {
+      if (modalType === 'Add') {
+        await axios.post('http://localhost:3000/api/items/add', dataToSubmit, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } else {
+        await axios.put(`http://localhost:3000/api/items/edit/${formData._id}`, dataToSubmit, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+      fetchData();
+    } catch (error) {
+      console.error('Error saving data:', error.response ? error.response.data : error.message);
+    }
     handleClose();
   };
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilter((prevFilter) => ({
-      ...prevFilter,
-      [name]: value,
-    }));
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/items/${id}`);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
   };
-
-  const filteredData = data.filter((item) =>
-    Object.keys(filter).every((key) =>
-      item[key].toString().toLowerCase().includes(filter[key].toLowerCase())
-    )
-  );
 
   return (
     <div>
-      <h1>Dress Page</h1>
+      <h1>Wedding Dress Page</h1>
       <div className="d-flex justify-content-end mb-3">
         <button className="ItemAddButn btn btn-primary" onClick={() => handleShow('Add')}>
           Add
@@ -144,79 +153,76 @@ const AdminWeddingDressPage = () => {
         <table className="table table-secondary table-hover table-bordered">
           <thead>
             <tr>
-              {Object.keys(filter).map((key) => (
-                <th key={key}>{key}
-                  <input
-                    type="text"
-                    name={key}
-                    placeholder={`Filter by ${key}`}
-                    value={filter[key]}
-                    onChange={handleFilterChange}
-                    className="form-control"
-                  />
-                </th>
-              ))}
-              <th scope="col">image</th>
+              <th scope="col">ID</th>
+              <th scope="col">Name</th>
+              <th scope="col">Size</th>
+              <th scope="col">Brand</th>
+              <th scope="col">Color</th>
+              <th scope="col">Price</th>
+              <th scope="col">Description</th>
+              <th scope="col">Buyable</th>
+              <th scope="col">Rentable</th>
+              <th scope="col">Image</th>
               <th scope="col">Remove</th>
               <th scope="col">Edit</th>
             </tr>
-            
           </thead>
           <tbody>
-            {filteredData.map((item) => (
-              <tr key={item.id}>
-                <th scope="row">{item.id}</th>
-                <td>{item.name}</td>
-                <td>{item.size}</td>
-                <td>{item.brand}</td>
-                <td>{item.color}</td>
-                <td>{item.price}</td>
-                <td>{item.description}</td>
-                <td>{item.image && <img src={item.image} alt={item.name} width="50" />}</td>
-                <td>
-                  <button className="btn btn-danger">Remove</button>
-                </td>
-                <td>
-                  <button
-                    className="btn btn-success"
-                    onClick={() =>
-                      handleShow('Edit', {
-                        id: item.id,
-                        name: item.name,
-                        size: item.size,
-                        brand: item.brand,
-                        color: item.color,
-                        price: item.price,
-                        description: item.description,
-                        image: item.image,
-                      })
-                    }
-                  >
-                    Edit
-                  </button>
-                </td>
+            {data.length > 0 ? (
+              data.map((item) => (
+                <tr key={item._id}>
+                  <th scope="row">{item._id}</th>
+                  <td>{item.name}</td>
+                  <td>{item.size}</td>
+                  <td>{item.brand}</td>
+                  <td>{item.color}</td>
+                  <td>{item.price}</td>
+                  <td>{item.description}</td>
+                  <td>{item.BuyAble ? 'Yes' : 'No'}</td>
+                  <td>{item.RentAble ? 'Yes' : 'No'}</td>
+                  <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
+                  <td>
+                    <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Remove</button>
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-success"
+                      onClick={() =>
+                        handleShow('Edit', {
+                          _id: item._id,
+                          name: item.name,
+                          size: item.size,
+                          brand: item.brand,
+                          color: item.color,
+                          BuyAble: item.BuyAble,
+                          RentAble: item.RentAble,
+                          description: item.description,
+                          type: item.type,
+                          price: item.price,
+                          image: item.image,
+                        })
+                      }
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="12">No data available</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType} Accessory</Modal.Title>
+          <Modal.Title>{modalType} Wedding Dress</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formId">
-              <Form.Label>ID</Form.Label>
-              <Form.Control
-                type="text"
-                name="id"
-                value={formData.id}
-                onChange={handleChange}
-                readOnly={modalType === 'Edit'}
-              />
-            </Form.Group>
             <Form.Group controlId="formName">
               <Form.Label>Name</Form.Label>
               <Form.Control
@@ -268,6 +274,24 @@ const AdminWeddingDressPage = () => {
                 type="text"
                 name="description"
                 value={formData.description}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="formBuyAble">
+              <Form.Check 
+                type="checkbox"
+                name="BuyAble"
+                label="Buyable"
+                checked={formData.BuyAble}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="formRentAble">
+              <Form.Check 
+                type="checkbox"
+                name="RentAble"
+                label="Rentable"
+                checked={formData.RentAble}
                 onChange={handleChange}
               />
             </Form.Group>

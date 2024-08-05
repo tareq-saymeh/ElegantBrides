@@ -39,11 +39,7 @@
             required: true, 
             min: 0 
         },
-        rating: { 
-            type: Number, 
-            min: 0, 
-            max: 5 
-        },
+        
         image: { 
             type: String, // Store the URL or file path of the image
             trim: true

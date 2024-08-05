@@ -40,6 +40,7 @@ app.use(
 app.use(loginMiddleware);
 app.use('/api/auth', authRoutes);
 app.use('/api/items', ItemsRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB connection
 mongoose
