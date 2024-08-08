@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const Log = mongoose.model('Log', new mongoose.Schema({
-    itemId: [{ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Item' }],
+    items: [{ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Item' }],  // Allow multiple items
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
     receivedDate: { type: Date, required: true },
     returnDate: { 
@@ -13,7 +13,7 @@ const Log = mongoose.model('Log', new mongoose.Schema({
             },
             message: 'Return date must be after received date'
         }
-    }
+    },
 }));
 
 module.exports = Log;

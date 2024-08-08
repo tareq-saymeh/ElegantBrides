@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const Reservations = mongoose.model('Reservations', new mongoose.Schema({
-    itemId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Item' },
+    items: [{ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Item' }],  // Allow multiple items
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
     receivedDate: { type: Date, required: true },
     returnDate: { 
@@ -13,7 +13,8 @@ const Reservations = mongoose.model('Reservations', new mongoose.Schema({
             },
             message: 'Return date must be after received date'
         }
-    }
+    },
+    isReceived: { type: Boolean, default: false },  // Track if the customer has received the item(s)
 }));
 
 module.exports = Reservations;

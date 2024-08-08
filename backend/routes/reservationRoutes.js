@@ -1,9 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const { getFutureReservations, getUnderReservations, updateReservationStatus ,returnReservation} = require('../controllers/reservationController');
 
-// Example routes for Reservation model
-router.get('/', (req, res) => {
-    res.send('Reservation Route');
-});
+// Route to get all future reservations
+router.get('/future', getFutureReservations);
+
+// Route to get all under reservations
+router.get('/under', getUnderReservations);
+
+// Route to update reservation status
+router.patch('/:id/status', updateReservationStatus);
+
+// Route to Return reservation status
+router.post('/return/:id', returnReservation);
 
 module.exports = router;
