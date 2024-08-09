@@ -1,9 +1,9 @@
+// routes/logRoute.js
 const express = require('express');
 const router = express.Router();
+const logController = require('../controllers/logController');
 
-// Example routes for Log model
-router.get('/', (req, res) => {
-    res.send('Log Route');
-});
+// Get all logs
+router.get('/', logController.getAllLogs);
 
 module.exports = router;

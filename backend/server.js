@@ -16,6 +16,7 @@ const { loginMiddleware } = require('./middleware/authMiddleware');
 const ReservationsRoutes = require('./routes/reservationRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const Logs = require('./routes/logRoutes');
 
 // Middleware
 app.use(cors({
@@ -47,6 +48,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/reservations', ReservationsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/logs', Logs);
 
 
 
