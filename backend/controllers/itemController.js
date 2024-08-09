@@ -5,12 +5,15 @@ const path = require('path');
 // Get all items
 exports.getAllItems = async (req, res) => {
   try {
-    const items = await Items.find();
+    const { type } = req.query;
+    const filter = type ? { type } : {};
+    const items = await Items.find(filter);
     res.json(items);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Create a new item
 exports.createItem = async (req, res) => {

@@ -22,11 +22,7 @@ export function ItemCard(props) {
           </div>
           <div className='displayStack__2'>
             <div className='productTime'>{props.collection}'s collection</div>
-            <div className='productRating'>
-              {Array.from({ length: props.rating }, (_, index) => (
-                <FaStar id={index + 1} key={index} />
-              ))}
-            </div>
+            
           </div>
         </div>
       </div>
