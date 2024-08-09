@@ -117,6 +117,18 @@ const UnderReservations = () => {
                 Return Date
                 <span>{sortConfig.key === 'returnDate' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
               </th>
+              <th scope="col">
+                Phone Number
+                <input
+                  type="text"
+                  name="Phone"
+                  value={filter.Phone}
+                  onChange={handleFilterChange}
+                  placeholder="Filter by Phone Number"
+                  className="form-control"
+                />
+              </th>
+
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -131,6 +143,8 @@ const UnderReservations = () => {
                 </td>
                 <td>{new Date(reservation.receivedDate).toLocaleDateString()}</td>
                 <td>{new Date(reservation.returnDate).toLocaleDateString()}</td>
+                <td>{reservation.userId.Phone}</td>
+
                 <td>
                   <button 
                     onClick={() => handleReturn(reservation._id)} 

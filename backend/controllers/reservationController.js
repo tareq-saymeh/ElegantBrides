@@ -10,7 +10,7 @@ const getFutureReservations = async (req, res) => {
             isReceived: false
         })
         .populate('items') // Populate items field with Item documents
-        .populate('userId', 'name email') // Populate userId field with User documents (selecting only name and email)
+        .populate('userId', 'name email Phone') // Populate userId field with User documents (selecting only name and email)
         .exec();
 
         res.json(reservations);

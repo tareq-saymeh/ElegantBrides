@@ -6,7 +6,7 @@ const Reservations = () => {
     items: '',
     receivedDate: '',
     returnDate: '',
-    phoneNumber: '',
+    Phone: '',
   });
   
   const [reservations, setReservations] = useState([]);
@@ -54,7 +54,7 @@ const Reservations = () => {
       (!filter.items || reservation.items.some(item => item.name.toLowerCase().includes(filter.items.toLowerCase()))) &&
       (!filter.receivedDate || reservation.receivedDate.includes(filter.receivedDate)) &&
       (!filter.returnDate || reservation.returnDate.includes(filter.returnDate)) &&
-      (!filter.phoneNumber || reservation.userId.phoneNumber.includes(filter.phoneNumber))
+      (!filter.Phone || reservation.userId.Phone.includes(filter.Phone))
     );
   });
   const handleMarkReceived = (id) => {
@@ -112,8 +112,8 @@ const Reservations = () => {
                 Phone Number
                 <input
                   type="text"
-                  name="phoneNumber"
-                  value={filter.phoneNumber}
+                  name="Phone"
+                  value={filter.Phone}
                   onChange={handleFilterChange}
                   placeholder="Filter by Phone Number"
                   className="form-control"
@@ -135,7 +135,7 @@ const Reservations = () => {
                 </td>
                 <td>{new Date(reservation.receivedDate).toLocaleDateString()}</td>
                 <td>{new Date(reservation.returnDate).toLocaleDateString()}</td>
-                <td>{reservation.userId.phoneNumber}</td>
+                <td>{reservation.userId.Phone}</td>
                 <td>
                   {reservation.isReceived ? (
                     'Received'

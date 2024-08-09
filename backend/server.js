@@ -14,6 +14,7 @@ const authRoutes = require('./routes/authRoutes');
 const ItemsRoutes = require('./routes/itemRoutes');
 const { loginMiddleware } = require('./middleware/authMiddleware');
 const ReservationsRoutes = require('./routes/reservationRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 // Middleware
 app.use(cors({
@@ -43,6 +44,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/items', ItemsRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/reservations', ReservationsRoutes);
+app.use('/api/users', userRoutes);
+
+
+
+
+
+
+
 
 // MongoDB connection
 mongoose

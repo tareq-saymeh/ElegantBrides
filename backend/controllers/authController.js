@@ -19,7 +19,7 @@ const generateToken = (user, role) => {
 };
 
 exports.register = async (req, res) => {
-  const { name, email, password, birthday } = req.body;
+  const { name, email, password, birthday,Phone } = req.body;
 
   try {
     if (await User.findOne({ email })) {
@@ -27,7 +27,7 @@ exports.register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword, birthday });
+    const newUser = new User({ name, email, password: hashedPassword, birthday, Phone });
 
     await newUser.save();
 
