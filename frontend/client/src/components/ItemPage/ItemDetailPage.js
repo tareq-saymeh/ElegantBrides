@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import Footer from '../Footer/Footer.js';
 import Navbar from '../Navbar/Navbar.js';
-import './ItemDetailPage.css'
+import './ItemDetailPage.css';
 
 function ItemDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -33,7 +34,7 @@ function ItemDetailPage() {
   }, [id]);
 
   if (!item) {
-    return <div>No Item Found </div>;
+    return <div>No Item Found</div>;
   }
 
   const handleDateChange = (dates) => {
@@ -62,6 +63,28 @@ function ItemDetailPage() {
   const handleCancelRent = () => {
     setShowDatePicker(false);
   };
+
+  const handleBuy = async () => {
+    console.log("in handle");
+    
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:3000/api/cart/add', 
+        { itemId: id }, 
+        { 
+          withCredentials: true, 
+          headers: { 
+            'Authorization': `Bearer ${token}` // Ensure the token is sent in the header
+          }
+        }
+      );
+      console.log('Item added to cart successfully!');
+      navigate('/Cart'); // Redirect to the cart page
+    } catch (error) {
+      console.error('Error adding item to cart', error);
+    }
+  };
+  
 
   return (
     <div className='allPage'>
@@ -117,8 +140,8 @@ function ItemDetailPage() {
                       filterDate={(date) => !isDateUnavailable(date)}
                       inline
                     />
-                      <p>** Gray days unavailable</p>
-                      <div className="calendar-buttons">
+                    <p>** Gray days unavailable</p>
+                    <div className="calendar-buttons">
                       <button className="btn btn-dark py-2 mt-2" onClick={handleCompleteRent}>
                         Complete Rent
                       </button>
@@ -128,9 +151,9 @@ function ItemDetailPage() {
                     </div>
                   </div>
                 )}
-                <Link to='/Cart'>
-                  <button className="btn btn-dark py-2 mt-2">Buy</button>
-                </Link>
+                <button className="btn btn-dark py-2 mt-2" onClick={handleBuy} >
+                  Buy
+                </button>
               </div>
             </div>
           </div>

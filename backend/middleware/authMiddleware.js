@@ -12,6 +12,7 @@ loginMiddleware.use(cookieParser());
 const setSession = (req, userData) => {
   req.session.role = userData.model;
   req.session.user_id = userData.user._id;
+
 };
 
 // Destroy session
@@ -28,25 +29,20 @@ const destroySession = (req, res) => {
 };
 
 // Authentication middleware
-const auth = async (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+const auth = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Extract token
 
   if (!token) {
-    return res.status(401).json({ error: 'No token, authorization denied' });
+    return res.status(401).json({ message: 'No token, authorization denied' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.id;
-
-    const user = await User.findById(req.user) || await Admin.findById(req.user);
-    if (!user) {
-      return res.status(401).json({ error: 'Authorization denied' });
-    }
-
+    req.user = decoded.id; // Set user id to req.user
     next();
-  } catch (err) {
-    res.status(401).json({ error: 'Token is not valid' });
+  } catch (error) {
+    res.status(401).json({ message: 'Token is not valid' });
   }
 };
 

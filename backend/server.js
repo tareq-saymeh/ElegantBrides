@@ -17,6 +17,7 @@ const ReservationsRoutes = require('./routes/reservationRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const Logs = require('./routes/logRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 // Middleware
 app.use(cors({
@@ -49,7 +50,7 @@ app.use('/api/reservations', ReservationsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/logs', Logs);
-
+app.use('/api/cart', cartRoutes);
 
 
 
