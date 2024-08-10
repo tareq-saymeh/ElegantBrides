@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import ItemCard from '../ItemCard/ItemCard';
 import Filter from '../Filter/Filter';
-import contents from '../Content/Content.js';
 import Navbar from '../Navbar/Navbar.js';
 import Footer from '../Footer/Footer.js';
+import axios from 'axios';
+
 
 function WeddingDressPage() {
-    const [filters, setFilters] = useState({ size: '', collection: '', rating: '' });
+    const [items, setItems] = useState([]);
+    const [filters, setFilters] = useState({ size: '', brand: ''});
     const [search, setSearch] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1550);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 720);
-
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('http://localhost:3000/api/items?type=WeddingDress');
+            setItems(response.data);
+          } catch (error) {
+            console.error('Error fetching items', error);
+          }
+        };
+        fetchData();
+      }, []);
     useEffect(() => {
         const handleResize = () => {
             setIsSidebarOpen(window.innerWidth > 1550);
@@ -36,12 +48,11 @@ function WeddingDressPage() {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    const filteredProducts = contents.filter((contents) => {
+    const filteredProducts = items.filter((items) => {
         return (
-            (filters.size === '' || contents.size === filters.size) &&
-            (filters.collection === '' || contents.collection === filters.collection) &&
-            (filters.rating === '' || contents.rating === parseInt(filters.rating)) &&
-            (search === '' || contents.name.toLowerCase().includes(search.toLowerCase()))
+            (filters.size === '' || items.size === filters.size) &&
+            (filters.brand === '' || items.brand === filters.brand) &&
+            (search === '' || items.name.toLowerCase().includes(search.toLowerCase()))
         );
     });
 
@@ -71,20 +82,21 @@ function WeddingDressPage() {
                                 onChange={handleSearchChange} 
                             />
                         </div>
-                        <Filter filters={filters} onFilterChange={handleFilterChange} />
+                        <Filter filters={filters} type="WeddingDress" onFilterChange={handleFilterChange} />
                     </div>
                 )}
                 <div className="productList">
-                    {filteredProducts.map((contents) => (
-                        <ItemCard 
-                        id={contents.id}
-                            image={contents.image}
-                            name={contents.name}
-                            price={contents.price}
-                            size={contents.size}
-                            collection={contents.collection}
-                            rating={contents.rating}
+                    {filteredProducts.map((items) => (
+                        <div key={items._id} className="col-lg-4 col-md-6 col-sm-6 mb-4">
+                        <ItemCard
+                          id={items._id}
+                          image={`http://localhost:3000/${items.image}`}
+                          name={items.name}
+                          price={items.price}
+                          size={items.size}
+                          brand={items.brand}
                         />
+                      </div>
                     ))}
                 </div>
             </div>

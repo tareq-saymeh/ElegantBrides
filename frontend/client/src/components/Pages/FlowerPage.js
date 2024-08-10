@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import ItemCard from '../ItemCard/ItemCard';
 import Filter from '../Filter/Filter';
-import contents from '../Content/Content.js';
 import Navbar from '../Navbar/Navbar.js';
 import Footer from '../Footer/Footer.js';
+import axios from 'axios';
 
 function FlowerPage() {
-    const [filters, setFilters] = useState({ size: '', collection: '', rating: '' });
+    const [items, setItems] = useState([]);
+    const [filters, setFilters] = useState({ size: '', brand: '' });
     const [search, setSearch] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1550);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 720);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/api/items?type=Flower');
+                setItems(response.data);
+            } catch (error) {
+                console.error('Error fetching items', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -36,12 +49,11 @@ function FlowerPage() {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    const filteredProducts = contents.filter((contents) => {
+    const filteredProducts = items.filter((item) => {
         return (
-            (filters.size === '' || contents.size === filters.size) &&
-            (filters.collection === '' || contents.collection === filters.collection) &&
-            (filters.rating === '' || contents.rating === parseInt(filters.rating)) &&
-            (search === '' || contents.name.toLowerCase().includes(search.toLowerCase()))
+            (filters.size === '' || item.size === filters.size) &&
+            (filters.brand === '' || item.brand === filters.brand) &&
+            (search === '' || item.name.toLowerCase().includes(search.toLowerCase()))
         );
     });
 
@@ -62,7 +74,7 @@ function FlowerPage() {
                 </button>
                 {isSidebarOpen && (
                     <div className={`sidebar ${isSmallScreen ? 'sidebar-top' : 'sidebar-left'}`}>
-                        <h1>Flower</h1>
+                        <h1>Flowers</h1>
                         <div className="search-bar">
                             <input 
                                 type="text" 
@@ -71,20 +83,21 @@ function FlowerPage() {
                                 onChange={handleSearchChange} 
                             />
                         </div>
-                        <Filter filters={filters} onFilterChange={handleFilterChange} />
+                        <Filter filters={filters} type="Flower" onFilterChange={handleFilterChange} />
                     </div>
                 )}
                 <div className="productList">
-                    {filteredProducts.map((contents) => (
-                        <ItemCard 
-                        id={contents.id}
-                            image={contents.image}
-                            name={contents.name}
-                            price={contents.price}
-                            size={contents.size}
-                            collection={contents.collection}
-                            rating={contents.rating}
-                        />
+                    {filteredProducts.map((item) => (
+                        <div key={item._id} className="col-lg-4 col-md-6 col-sm-6 mb-4">
+                            <ItemCard
+                                id={item._id}
+                                image={`http://localhost:3000/${item.image}`}
+                                name={item.name}
+                                price={item.price}
+                                size={item.size}
+                                brand={item.brand}
+                            />
+                        </div>
                     ))}
                 </div>
             </div>

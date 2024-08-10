@@ -15,7 +15,7 @@ import Flowersimg from '../images/Flowers.png';
 const Home = () => {
   const [weddingDresses, setWeddingDresses] = useState([]);
   const [shoes, setShoes] = useState([]);
-  const [accessories, setAccessories] = useState([]);
+  const [Jewelry, setJewelry] = useState([]);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -28,9 +28,9 @@ const Home = () => {
         const shoesData = await resShoes.json();
         setShoes(shoesData.slice(0, 12));
 
-        const resAccessories = await fetch('http://localhost:3000/api/items?type=Accessories');
-        const accessoriesData = await resAccessories.json();
-        setAccessories(accessoriesData.slice(0, 12));
+        const resJewelry = await fetch('http://localhost:3000/api/items?type=Jewelry');
+        const JewelryData = await resJewelry.json();
+        setJewelry(JewelryData.slice(0, 12));
       } catch (error) {
         console.error('Failed to fetch items:', error);
       }
@@ -92,7 +92,7 @@ const Home = () => {
                 name={item.name}
                 price={item.price}
                 size={item.size}
-                collection={item.collection}
+                brand={item.brand}
               />
             </div>
           ))}
@@ -113,7 +113,7 @@ const Home = () => {
                 name={item.name}
                 price={item.price}
                 size={item.size}
-                collection={item.collection}
+                brand={item.brand}
               />
             </div>
           ))}
@@ -123,10 +123,10 @@ const Home = () => {
       <hr />
 
       <div className="container-fluid">
-        <h2 className='HomeItemFilter-text'>Accessories</h2>
+        <h2 className='HomeItemFilter-text'>Jewelry</h2>
         <hr />
         <div className="row">
-          {accessories.map(item => (
+          {Jewelry.map(item => (
             <div key={item._id} className="col-md-3 col-sm-6 mb-4">
               <ItemCard
                 id={item._id}
@@ -134,7 +134,7 @@ const Home = () => {
                 name={item.name}
                 price={item.price}
                 size={item.size}
-                collection={item.collection}
+                brand={item.brand}
               />
             </div>
           ))}

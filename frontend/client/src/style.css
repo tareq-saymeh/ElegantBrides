@@ -509,3 +509,7 @@ footer {
 
 
 
+.itemSidebar{
+  background-color: var(--primary);
+  color: var(--text-color);
+}

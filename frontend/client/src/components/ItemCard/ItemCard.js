@@ -21,7 +21,7 @@ export function ItemCard(props) {
             <div className='productPrice'>${props.price}/Day</div>
           </div>
           <div className='displayStack__2'>
-            <div className='productTime'>{props.collection}'s collection</div>
+            <div className='productTime'>{props.brand}'s collection</div>
             
           </div>
         </div>

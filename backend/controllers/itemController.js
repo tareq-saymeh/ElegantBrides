@@ -68,3 +68,15 @@ exports.deleteItem = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// Get a single item by ID
+exports.getItemById = async (req, res) => {
+  try {
+    const item = await Items.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import productData from '../Content/Content.js';
+import axios from 'axios';
 import Footer from '../Footer/Footer.js';
 import Navbar from '../Navbar/Navbar.js';
 import './ItemDetailPage.css'
 
 function ItemDetailPage() {
   const { id } = useParams();
-  const item = productData.find((item) => item.id.toString() === id);
+  const [item, setItem] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [unavailableDates, setUnavailableDates] = useState([
@@ -19,8 +19,21 @@ function ItemDetailPage() {
   ]);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/items/${id}`);
+        setItem(response.data);
+      } catch (error) {
+        console.error('Error fetching item', error);
+      }
+    };
+
+    fetchItem();
+  }, [id]);
+
   if (!item) {
-    return <div>Item not found</div>;
+    return <div>No Item Found </div>;
   }
 
   const handleDateChange = (dates) => {
@@ -54,42 +67,38 @@ function ItemDetailPage() {
     <div className='allPage'>
       <Navbar />
       <div className="item-detail">
-        <div class="container text-center">
-          <div class="row">
-            <div class="col">
-              <img src={item.image} alt={item.name} className="item-detail__image" />
+        <div className="container text-center">
+          <div className="row">
+            <div className="col">
+              <img src={`http://localhost:3000/${item.image}`} alt={item.name} className="item-detail__image" />
             </div>
-            <div class="col">
+            <div className="col">
               <h2>{item.name}</h2>
-              <div class="container text-center">
-                <div class="row">
-                  <div class="col">
-                    <h4 className="text item-detail__Collection">{item.collection}'s collection</h4>
+              <div className="container text-center">
+                <div className="row">
+                  <div className="col">
+                    <h4 className="text item-detail__brand">{item.brand}'s brand</h4>
                   </div>
-                  <div class="col">
+                  <div className="col">
                     <h4 className="item-detail__price">${item.price}/Day</h4>
                   </div>
-
                 </div>
               </div>
               <div className="item-detail__details">
-                <div class="container ">
-                  <div class="row">
-                    <div class="col-6">
+                <div className="container ">
+                  <div className="row">
+                    <div className="col-6">
                       <dt>Size: {item.size}</dt>
                     </div>
-                    <div class="col-6">
-                      <dt>Color: {item.Color}</dt>
+                    <div className="col-6">
+                      <dt>Color: {item.color}</dt>
                     </div>
-
                   </div>
                 </div>
               </div>
-
               <div className="item-detail__description">
                 <p>{item.description}</p>
               </div>
-
               <div className="item-detail__actions">
                 <button
                   className="btn btn-dark py-2 mt-2"
@@ -124,13 +133,8 @@ function ItemDetailPage() {
                 </Link>
               </div>
             </div>
-
           </div>
         </div>
-        
-
-
-
       </div>
       <Footer />
     </div>

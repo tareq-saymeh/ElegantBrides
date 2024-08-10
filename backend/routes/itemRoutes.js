@@ -21,5 +21,7 @@ router.post('/add', upload.single('image'), itemsController.createItem);
 router.put('/edit/:id', upload.single('image'), itemsController.updateItem); // correct route name from 'edite' to 'edit'
 router.get('/', itemsController.getAllItems);
 router.delete('/:id', itemsController.deleteItem);
+router.get('/:id', itemsController.getItemById); 
+
 
 module.exports = router;
