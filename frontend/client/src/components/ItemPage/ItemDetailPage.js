@@ -13,6 +13,7 @@ function ItemDetailPage() {
   const [item, setItem] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const [unavailableDates, setUnavailableDates] = useState([
     new Date('2024-07-25'),
     new Date('2024-07-26'),
@@ -54,9 +55,33 @@ function ItemDetailPage() {
     );
   };
 
-  const handleCompleteRent = () => {
-    // Logic to handle the rental process with selected dates
-    console.log('Renting from:', startDate, 'to:', endDate);
+  const handleCompleteRent = async () => {
+    if (!startDate || !endDate) {
+      console.error('Please select the rental dates');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const rentDuration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // Calculate days
+
+      await axios.post('http://localhost:3000/api/cart/add', 
+        {
+          items: { itemId: id, receivedDate: startDate, returnDate: endDate, quantity: rentDuration }
+        }, 
+        { 
+          withCredentials: true, 
+          headers: { 
+            'Authorization': `Bearer ${token}` 
+          }
+        }
+      );
+
+      console.log('Item added to cart successfully!');
+      navigate('/Cart');
+    } catch (error) {
+      console.error('Error adding item to cart', error);
+    }
     setShowDatePicker(false);
   };
 
@@ -65,26 +90,28 @@ function ItemDetailPage() {
   };
 
   const handleBuy = async () => {
-    console.log("in handle");
-    
     try {
       const token = localStorage.getItem('token');
+      console.log("on handel");
+      
       await axios.post('http://localhost:3000/api/cart/add', 
-        { itemId: id }, 
+        {
+          items: { itemId: id, quantity: quantity }
+        }, 
         { 
           withCredentials: true, 
           headers: { 
-            'Authorization': `Bearer ${token}` // Ensure the token is sent in the header
+            'Authorization': `Bearer ${token}` 
           }
         }
       );
+
       console.log('Item added to cart successfully!');
-      navigate('/Cart'); // Redirect to the cart page
+      navigate('/Cart');
     } catch (error) {
       console.error('Error adding item to cart', error);
     }
   };
-  
 
   return (
     <div className='allPage'>
@@ -123,12 +150,14 @@ function ItemDetailPage() {
                 <p>{item.description}</p>
               </div>
               <div className="item-detail__actions">
-                <button
-                  className="btn btn-dark py-2 mt-2"
-                  onClick={() => setShowDatePicker(!showDatePicker)}
-                >
-                  Rent
-                </button>
+                {item.RentAble && (
+                  <button
+                    className="btn btn-dark py-2 mt-2"
+                    onClick={() => setShowDatePicker(!showDatePicker)}
+                  >
+                    Rent
+                  </button>
+                )}
                 {showDatePicker && (
                   <div className="collapsible">
                     <DatePicker
@@ -151,9 +180,22 @@ function ItemDetailPage() {
                     </div>
                   </div>
                 )}
-                <button className="btn btn-dark py-2 mt-2" onClick={handleBuy} >
-                  Buy
-                </button>
+                {item.BuyAble && (
+                  <div className="buy-section">
+                    <label htmlFor="quantity">Quantity:</label>
+                    <input 
+                      type="number" 
+                      id="quantity" 
+                      value={quantity} 
+                      min="1" 
+                      max={item.quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                    />
+                    <button className="btn btn-dark py-2 mt-2" onClick={handleBuy}>
+                      Buy
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

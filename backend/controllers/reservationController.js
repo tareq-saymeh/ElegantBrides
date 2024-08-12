@@ -1,9 +1,11 @@
 const Reservations = require('../models/Reservations');
+const mongoose = require('mongoose');
 const Log = require('../models/log');  // Assuming the Log model is set up similarly to the Reservations model
 const Items = require('../models/Items');
 const User = require('../models/User');
 
 // Get all future reservations (receivedDate is today or later, and isReceived is false)
+
 const getFutureReservations = async (req, res) => {
     try {
         const reservations = await Reservations.find({
@@ -38,15 +40,17 @@ const getUnderReservations = async (req, res) => {
 // Update reservation status to mark as received
 const updateReservationStatus = async (req, res) => {
     const { id } = req.params;
-    const today = new Date().setHours(0, 0, 0, 0);
+    const now = new Date(); // Get current date and time
+
     try {
         const reservation = await Reservations.findByIdAndUpdate(
             id,
-            { isReceived: true,receivedDate:today },
+            { isReceived: true, receivedDate: now }, // Use `now` for current date and time
             { new: true }
         )
         .populate('items')
-        .populate('userId');
+        .populate('userId')
+        .exec();
 
         if (!reservation) {
             return res.status(404).json({ error: 'Reservation not found' });
@@ -54,9 +58,12 @@ const updateReservationStatus = async (req, res) => {
 
         res.json(reservation);
     } catch (error) {
+        console.error('Error updating reservation:', error);
         res.status(500).json({ error: 'Failed to update reservation status' });
     }
 };
+
+
 
 // Return a reservation, move it to the log, and delete from reservations
 const returnReservation = async (req, res) => {
@@ -97,5 +104,5 @@ module.exports = {
     getFutureReservations,
     getUnderReservations,
     updateReservationStatus,
-    returnReservation
+    returnReservation,
 };

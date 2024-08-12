@@ -61,13 +61,26 @@ const Reservations = () => {
     fetch(`http://localhost:3000/api/reservations/${id}/status`, {
       method: 'PATCH',
       credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((updatedReservation) => {
-        setReservations(reservations.map(res => res._id === id ? updatedReservation : res));
+        setReservations((prevReservations) =>
+          prevReservations.map((res) =>
+            res._id === id ? updatedReservation : res
+          )
+        );
       })
       .catch((error) => console.error('Error updating reservation status:', error));
   };
+  
   return (
     <div>
       <h1>Future Reservations</h1>
