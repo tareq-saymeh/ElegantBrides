@@ -94,6 +94,7 @@ function AccessoriesPage() {
                                 image={`http://localhost:3000/${item.image}`}
                                 name={item.name}
                                 price={item.price}
+                                quantity={item.quantity}
                                 size={item.size}
                                 brand={item.brand}
                             />

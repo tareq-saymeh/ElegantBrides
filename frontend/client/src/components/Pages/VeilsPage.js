@@ -95,6 +95,7 @@ function VeilsPage() {
                                 name={item.name}
                                 price={item.price}
                                 size={item.size}
+                                quantity={item.quantity}
                                 brand={item.brand}
                             />
                         </div>

@@ -97,6 +97,7 @@ function ShoesPage() {
                                 price={item.price}
                                 size={item.size}
                                 brand={item.brand}
+                                quantity={item.quantity}
                             />
                         </div>
                     ))}

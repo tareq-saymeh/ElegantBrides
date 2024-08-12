@@ -15,6 +15,7 @@ const AdminAccessoriesPage = () => {
     description: '',
     type: 'Accessories',
     price: '',
+    quantity: '', // Add quantity field
     image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -54,6 +55,8 @@ const AdminAccessoriesPage = () => {
         description: '',
         type: 'Accessories',
         price: '',
+        quantity: '', // Add quantity field
+
         image: null
       });
       setImagePreview(null);
@@ -73,6 +76,7 @@ const AdminAccessoriesPage = () => {
       description: '',
       type: 'Accessories',
       price: '',
+      quantity: '', // Add quantity field
       image: null
     });
     setImagePreview(null);
@@ -107,6 +111,7 @@ const AdminAccessoriesPage = () => {
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
     dataToSubmit.append('price', formData.price);
+    dataToSubmit.append('quantity', formData.quantity); // Append quantity
     if (formData.image) {
       dataToSubmit.append('image', formData.image);
     }
@@ -159,6 +164,7 @@ const AdminAccessoriesPage = () => {
               <th scope="col">Brand</th>
               <th scope="col">Color</th>
               <th scope="col">Price</th>
+              <th scope="col">Quantity</th> {/* Add Quantity column */}
               <th scope="col">Description</th>
               <th scope="col">Image</th>
               <th scope="col">Remove</th>
@@ -175,6 +181,7 @@ const AdminAccessoriesPage = () => {
                   <td>{item.brand}</td>
                   <td>{item.color}</td>
                   <td>{item.price}</td>
+                  <td>{item.quantity}</td> {/* Display Quantity */}
                   <td>{item.description}</td>
                   <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
@@ -195,6 +202,7 @@ const AdminAccessoriesPage = () => {
                           description: item.description,
                           type: item.type,
                           price: item.price,
+                          quantity: item.quantity, // Pass quantity to Edit form
                           image: item.image,
                         })
                       }
@@ -261,6 +269,15 @@ const AdminAccessoriesPage = () => {
                 type="text"
                 name="price"
                 value={formData.price}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="formQuantity">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="text"
+                name="quantity"
+                value={formData.quantity}
                 onChange={handleChange}
               />
             </Form.Group>

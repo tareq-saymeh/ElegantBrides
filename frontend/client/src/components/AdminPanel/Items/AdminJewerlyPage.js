@@ -15,6 +15,7 @@ const AdminJewerlyPage = () => {
     description: '',
     type: 'Jewelry',
     price: '',
+    quantity: '', // Reset quantity for 'Add' mode
     image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -53,6 +54,7 @@ const AdminJewerlyPage = () => {
         RentAble: false,
         description: '',
         type: 'Jewelry',
+        quantity: '', // Reset quantity for 'Add' mode
         price: '',
         image: null
       });
@@ -72,6 +74,7 @@ const AdminJewerlyPage = () => {
       RentAble: false,
       description: '',
       type: 'Jewelry',
+      quantity: '', // Added quantity field
       price: '',
       image: null
     });
@@ -106,6 +109,7 @@ const AdminJewerlyPage = () => {
     dataToSubmit.append('RentAble', formData.RentAble);
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
+    dataToSubmit.append('quantity', formData.quantity); // Include quantity
     dataToSubmit.append('price', formData.price);
     if (formData.image) {
       dataToSubmit.append('image', formData.image);
@@ -160,6 +164,7 @@ const AdminJewerlyPage = () => {
               <th scope="col">Color</th>
               <th scope="col">Price</th>
               <th scope="col">Description</th>
+              <th scope="col">Quantity</th> 
               <th scope="col">Image</th>
               <th scope="col">Remove</th>
               <th scope="col">Edit</th>
@@ -176,6 +181,7 @@ const AdminJewerlyPage = () => {
                   <td>{item.color}</td>
                   <td>{item.price}</td>
                   <td>{item.description}</td>
+                  <td>{item.quantity}</td>
                   <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
                     <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Remove</button>
@@ -195,6 +201,7 @@ const AdminJewerlyPage = () => {
                           description: item.description,
                           type: item.type,
                           price: item.price,
+                          quantity: item.quantity, 
                           image: item.image,
                         })
                       }
@@ -261,6 +268,15 @@ const AdminJewerlyPage = () => {
                 type="text"
                 name="price"
                 value={formData.price}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="formQuantity">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="text"
+                name="quantity"
+                value={formData.quantity}
                 onChange={handleChange}
               />
             </Form.Group>

@@ -3,11 +3,12 @@ import axios from 'axios';
 
 const History = () => {
   const [filter, setFilter] = useState({
-    id: '',
     customer: '',
     items: '',
     receivedDate: '',
-    returnDate: ''
+    returnDate: '',
+    phone: '',
+    email: ''
   });
   
   const [data, setData] = useState([]);
@@ -36,27 +37,47 @@ const History = () => {
 
   const sortData = (field) => {
     const direction = sortConfig.key === field && sortConfig.direction === 'asc' ? 'desc' : 'asc';
-    const sortedData = [...data].sort((a, b) => {
-      const valueA = new Date(a[field]);
-      const valueB = new Date(b[field]);
+    let sortedData;
 
-      return direction === 'asc' ? valueA - valueB : valueB - valueA;
-    });
+    if (field === 'finalAmount') {
+      sortedData = [...data].sort((a, b) => {
+        const amountA = calculateFinalAmount(a.items);
+        const amountB = calculateFinalAmount(b.items);
+
+        return direction === 'asc' ? amountA - amountB : amountB - amountA;
+      });
+    } else {
+      sortedData = [...data].sort((a, b) => {
+        const valueA = new Date(a[field]);
+        const valueB = new Date(b[field]);
+
+        return direction === 'asc' ? valueA - valueB : valueB - valueA;
+      });
+    }
 
     setSortConfig({ key: field, direction });
     setData(sortedData);
   };
 
+  const calculateFinalAmount = (items) => {
+    return items.reduce((total, item) => {
+      const price = item.itemId.price || 0;
+      const quantity = item.quantity || 1;
+      return total + (price * quantity);
+    }, 0);
+  };
+
   const filteredData = data.filter((row) => {
-    const rowReceivedDate = new Date(row.receivedDate).toLocaleDateString();
-    const rowReturnDate = new Date(row.returnDate).toLocaleDateString();
+    const rowReceivedDates = row.items.map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : '').join(', ');
+    const rowReturnDates = row.items.map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : '').join(', ');
 
     return (
-      (!filter.id || row._id.toString().includes(filter.id)) &&
       (!filter.customer || (row.userId && row.userId.name.toLowerCase().includes(filter.customer.toLowerCase()))) &&
-      (!filter.items || (row.items && row.items.some(item => item.name.toLowerCase().includes(filter.items.toLowerCase())))) &&
-      (!filter.receivedDate || rowReceivedDate.includes(filter.receivedDate)) &&
-      (!filter.returnDate || rowReturnDate.includes(filter.returnDate))
+      (!filter.items || (row.items && row.items.some(item => item.itemId.name.toLowerCase().includes(filter.items.toLowerCase())))) &&
+      (!filter.receivedDate || rowReceivedDates.includes(filter.receivedDate)) &&
+      (!filter.returnDate || rowReturnDates.includes(filter.returnDate)) &&
+      (!filter.phone || (row.userId && row.userId.phone.toLowerCase().includes(filter.phone.toLowerCase()))) &&
+      (!filter.email || (row.userId && row.userId.email.toLowerCase().includes(filter.email.toLowerCase())))
     );
   });
 
@@ -70,17 +91,6 @@ const History = () => {
         <table className="table table-secondary table-hover table-bordered">
           <thead>
             <tr>
-              <th scope="col">
-                ID
-                <input
-                  type="text"
-                  name="id"
-                  value={filter.id}
-                  onChange={handleFilterChange}
-                  placeholder="Filter by ID"
-                  className="form-control"
-                />
-              </th>
               <th scope="col">
                 Customer
                 <input
@@ -106,25 +116,61 @@ const History = () => {
               <th scope="col" onClick={() => sortData('receivedDate')}>
                 Received Date
                 <span>{sortConfig.key === 'receivedDate' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
-                
               </th>
               <th scope="col" onClick={() => sortData('returnDate')}>
                 Return Date
                 <span>{sortConfig.key === 'returnDate' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
-               
+              </th>
+              <th scope="col">
+                Phone
+                <input
+                  type="text"
+                  name="phone"
+                  value={filter.phone}
+                  onChange={handleFilterChange}
+                  placeholder="Filter by Phone"
+                  className="form-control"
+                />
+              </th>
+              <th scope="col">
+                Email
+                <input
+                  type="text"
+                  name="email"
+                  value={filter.email}
+                  onChange={handleFilterChange}
+                  placeholder="Filter by Email"
+                  className="form-control"
+                />
+              </th>
+              <th scope="col" onClick={() => sortData('finalAmount')}>
+                Final Amount
+                <span>{sortConfig.key === 'finalAmount' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
               </th>
             </tr>
           </thead>
           <tbody>
             {filteredData.map((row) => (
               <tr key={row._id}>
-                <th scope="row">{row._id}</th>
                 <td>{row.userId ? row.userId.name : 'N/A'}</td>
                 <td>
-                  {row.items ? row.items.map(item => item.name).join(', ') : 'N/A'}
+                  {row.items ? row.items.map(item => item.itemId.name).join(', ') : 'N/A'}
                 </td>
-                <td>{new Date(row.receivedDate).toLocaleDateString()}</td>
-                <td>{new Date(row.returnDate).toLocaleDateString()}</td>
+                <td>
+                  {row.items && row.items.length > 0 ? 
+                    row.items.map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'Buy').join(', ') :
+                    'N/A'
+                  }
+                </td>
+                <td>
+                  {row.items && row.items.length > 0 ? 
+                    row.items.map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'Buy').join(', ') :
+                    'N/A'
+                  }
+                </td>
+                <td>{row.userId ? row.userId.Phone : 'N/A'}</td>
+                <td>{row.userId ? row.userId.email : 'N/A'}</td>
+                <td>{calculateFinalAmount(row.items).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>

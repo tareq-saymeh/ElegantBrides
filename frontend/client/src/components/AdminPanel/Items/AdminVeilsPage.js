@@ -15,6 +15,7 @@ const AdminVeilsPage = () => {
     description: '',
     type: 'Veils',
     price: '',
+    quantity: '', // Added quantity field
     image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -54,6 +55,7 @@ const AdminVeilsPage = () => {
         description: '',
         type: 'Veils',
         price: '',
+        quantity: '', // Reset quantity for 'Add' mode
         image: null
       });
       setImagePreview(null);
@@ -73,6 +75,7 @@ const AdminVeilsPage = () => {
       description: '',
       type: 'Veils',
       price: '',
+      quantity: '', // Reset quantity
       image: null
     });
     setImagePreview(null);
@@ -107,6 +110,7 @@ const AdminVeilsPage = () => {
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
     dataToSubmit.append('price', formData.price);
+    dataToSubmit.append('quantity', formData.quantity); // Include quantity
     if (formData.image) {
       dataToSubmit.append('image', formData.image);
     }
@@ -160,6 +164,7 @@ const AdminVeilsPage = () => {
               <th scope="col">Color</th>
               <th scope="col">Price</th>
               <th scope="col">Description</th>
+              <th scope="col">Quantity</th> {/* Added quantity column */}
               <th scope="col">Image</th>
               <th scope="col">Remove</th>
               <th scope="col">Edit</th>
@@ -176,6 +181,7 @@ const AdminVeilsPage = () => {
                   <td>{item.color}</td>
                   <td>{item.price}</td>
                   <td>{item.description}</td>
+                  <td>{item.quantity}</td> {/* Display quantity */}
                   <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
                     <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Remove</button>
@@ -195,6 +201,7 @@ const AdminVeilsPage = () => {
                           description: item.description,
                           type: item.type,
                           price: item.price,
+                          quantity: item.quantity, // Include quantity
                           image: item.image,
                         })
                       }
@@ -206,7 +213,7 @@ const AdminVeilsPage = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="10">No data available</td>
+                <td colSpan="11">No data available</td>
               </tr>
             )}
           </tbody>
@@ -215,7 +222,7 @@ const AdminVeilsPage = () => {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType} Accessory</Modal.Title>
+          <Modal.Title>{modalType} Veil</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -261,6 +268,15 @@ const AdminVeilsPage = () => {
                 type="text"
                 name="price"
                 value={formData.price}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="formQuantity">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="text"
+                name="quantity"
+                value={formData.quantity}
                 onChange={handleChange}
               />
             </Form.Group>

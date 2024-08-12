@@ -94,6 +94,7 @@ function JewerlyPage() {
                                 image={`http://localhost:3000/${item.image}`}
                                 name={item.name}
                                 price={item.price}
+                                quantity={item.quantity}
                                 size={item.size}
                                 collection={item.collection}
                             />

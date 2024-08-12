@@ -8,7 +8,7 @@ export function ItemCard(props) {
   const addToCart = async () => {
     try {
       const token = localStorage.getItem('token'); // Retrieve token from localStorage
-      const response = await axios.post('http://localhost:3000/api/cart/add', 
+      const response = await axios.post('http://localhost:3000/api/cart/adqd', 
         { itemId: props.id }, 
         { 
           headers: { 'Authorization': `Bearer ${token}` } // Include token in request header
@@ -45,6 +45,7 @@ export function ItemCard(props) {
           </div>
           <div className='displayStack__2'>
             <div className='productTime'>{props.brand}'s collection</div>
+            <div className='productTime'>quantity: {props.quantity}</div>
           </div>
         </div>
       </div>

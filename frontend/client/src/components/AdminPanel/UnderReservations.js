@@ -7,7 +7,7 @@ const UnderReservations = () => {
     items: '',
     receivedDate: '',
     returnDate: '',
-    phoneNumber: '',
+    Phone: '',
   });
   const [sortConfig, setSortConfig] = useState({ key: 'receivedDate', direction: 'asc' });
 
@@ -57,8 +57,8 @@ const UnderReservations = () => {
   const sortReservations = (field) => {
     const direction = sortConfig.key === field && sortConfig.direction === 'asc' ? 'desc' : 'asc';
     const sortedReservations = [...reservations].sort((a, b) => {
-      const valueA = new Date(a[field]);
-      const valueB = new Date(b[field]);
+      const valueA = field === 'finalAmount' ? getFinalAmount(a) : new Date(a.items[0][field] || 0);
+      const valueB = field === 'finalAmount' ? getFinalAmount(b) : new Date(b.items[0][field] || 0);
 
       return direction === 'asc' ? valueA - valueB : valueB - valueA;
     });
@@ -67,13 +67,21 @@ const UnderReservations = () => {
     setReservations(sortedReservations);
   };
 
+  const getFinalAmount = (reservation) => {
+    return reservation.items.reduce((total, item) => {
+      const quantity = item.quantity || 1;
+      const price = item.itemId.price || 0;
+      return total + (quantity * price);
+    }, 0);
+  };
+
   const filteredReservations = reservations.filter(reservation => {
     return (
       (!filter.customer || reservation.userId.name.toLowerCase().includes(filter.customer.toLowerCase())) &&
-      (!filter.items || reservation.items.some(item => item.name.toLowerCase().includes(filter.items.toLowerCase()))) &&
-      (!filter.receivedDate || reservation.receivedDate.includes(filter.receivedDate)) &&
-      (!filter.returnDate || reservation.returnDate.includes(filter.returnDate)) &&
-      (!filter.phoneNumber || reservation.userId.phoneNumber.includes(filter.phoneNumber))
+      (!filter.items || reservation.items.some(item => item.itemId.name.toLowerCase().includes(filter.items.toLowerCase()))) &&
+      (!filter.receivedDate || reservation.items.some(item => item.receivedDate && new Date(item.receivedDate).toLocaleDateString().includes(filter.receivedDate))) &&
+      (!filter.returnDate || reservation.items.some(item => item.returnDate && new Date(item.returnDate).toLocaleDateString().includes(filter.returnDate))) &&
+      (!filter.Phone || reservation.userId.Phone.includes(filter.Phone))
     );
   });
 
@@ -110,12 +118,16 @@ const UnderReservations = () => {
                 />
               </th>
               <th scope="col" onClick={() => sortReservations('receivedDate')}>
-                Received Date
+                Received Dates
                 <span>{sortConfig.key === 'receivedDate' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
               </th>
               <th scope="col" onClick={() => sortReservations('returnDate')}>
-                Return Date
+                Return Dates
                 <span>{sortConfig.key === 'returnDate' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
+              </th>
+              <th scope="col" onClick={() => sortReservations('finalAmount')}>
+                Final Amount
+                <span>{sortConfig.key === 'finalAmount' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
               </th>
               <th scope="col">
                 Phone Number
@@ -128,7 +140,6 @@ const UnderReservations = () => {
                   className="form-control"
                 />
               </th>
-
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -138,11 +149,29 @@ const UnderReservations = () => {
                 <td>{reservation.userId.name}</td>
                 <td>
                   {reservation.items.map(item => (
-                    <span key={item._id}>{item.name}</span>
+                    <span key={item._id}>{item.itemId.name}</span>
                   )).reduce((prev, curr) => [prev, ', ', curr])}
                 </td>
-                <td>{new Date(reservation.receivedDate).toLocaleDateString()}</td>
-                <td>{new Date(reservation.returnDate).toLocaleDateString()}</td>
+                <td>
+                  {reservation.items.length > 0 ? (
+                    reservation.items
+                      .map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : null)
+                      .filter(date => date !== null)
+                      .join(', ')
+                  ) : (
+                    'N/A'
+                  )}
+                </td>
+                <td>
+                  {reservation.items.length > 0 ? (
+                    reservation.items
+                      .map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'Buy')
+                      .join(', ')
+                  ) : (
+                    'N/A'
+                  )}
+                </td>
+                <td>{getFinalAmount(reservation).toFixed(2)}</td>
                 <td>{reservation.userId.Phone}</td>
 
                 <td>

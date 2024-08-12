@@ -114,6 +114,8 @@ const Home = () => {
                 price={item.price}
                 size={item.size}
                 brand={item.brand}
+                quantity={item.quantity}
+
               />
             </div>
           ))}
@@ -135,6 +137,8 @@ const Home = () => {
                 price={item.price}
                 size={item.size}
                 brand={item.brand}
+                quantity={item.quantity}
+
               />
             </div>
           ))}

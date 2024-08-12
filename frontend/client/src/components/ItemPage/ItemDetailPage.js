@@ -143,6 +143,9 @@ function ItemDetailPage() {
                     <div className="col-6">
                       <dt>Color: {item.color}</dt>
                     </div>
+                    <div className="col-6">
+                      <dt>quantity: {item.quantity}</dt>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -15,6 +15,7 @@ const AdminShoesPage = () => {
     description: '',
     type: 'Shoes',
     price: '',
+    quantity: '',  // Add quantity field
     image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -40,7 +41,7 @@ const AdminShoesPage = () => {
     if (type === 'Edit') {
       setFormData({
         ...data,
-        image: null
+        image: null,
       });
       setImagePreview(`http://localhost:3000/uploads/${data.image}`);
     } else {
@@ -54,7 +55,8 @@ const AdminShoesPage = () => {
         description: '',
         type: 'Shoes',
         price: '',
-        image: null
+        quantity: '',  // Reset quantity field
+        image: null,
       });
       setImagePreview(null);
     }
@@ -73,7 +75,8 @@ const AdminShoesPage = () => {
       description: '',
       type: 'Shoes',
       price: '',
-      image: null
+      quantity: '',  // Reset quantity field
+      image: null,
     });
     setImagePreview(null);
   };
@@ -107,6 +110,7 @@ const AdminShoesPage = () => {
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
     dataToSubmit.append('price', formData.price);
+    dataToSubmit.append('quantity', formData.quantity);  // Append quantity field
     if (formData.image) {
       dataToSubmit.append('image', formData.image);
     }
@@ -159,6 +163,7 @@ const AdminShoesPage = () => {
               <th scope="col">Brand</th>
               <th scope="col">Color</th>
               <th scope="col">Price</th>
+              <th scope="col">Quantity</th> {/* Add Quantity column */}
               <th scope="col">Description</th>
               <th scope="col">Image</th>
               <th scope="col">Remove</th>
@@ -175,6 +180,7 @@ const AdminShoesPage = () => {
                   <td>{item.brand}</td>
                   <td>{item.color}</td>
                   <td>{item.price}</td>
+                  <td>{item.quantity}</td> {/* Display Quantity */}
                   <td>{item.description}</td>
                   <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
@@ -195,6 +201,7 @@ const AdminShoesPage = () => {
                           description: item.description,
                           type: item.type,
                           price: item.price,
+                          quantity: item.quantity,  // Include quantity for edit
                           image: item.image,
                         })
                       }
@@ -206,7 +213,7 @@ const AdminShoesPage = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="10">No data available</td>
+                <td colSpan="11">No data available</td>
               </tr>
             )}
           </tbody>
@@ -215,7 +222,7 @@ const AdminShoesPage = () => {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType} Accessory</Modal.Title>
+          <Modal.Title>{modalType} Shoes</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -264,33 +271,43 @@ const AdminShoesPage = () => {
                 onChange={handleChange}
               />
             </Form.Group>
-            <Form.Group controlId="formDescription">
-              <Form.Label>Description</Form.Label>
+            <Form.Group controlId="formQuantity">
+              <Form.Label>Quantity</Form.Label>
               <Form.Control
-                type="text"
-                name="description"
-                value={formData.description}
+                type="number"
+                name="quantity"
+                value={formData.quantity}
                 onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formImage">
-              <Form.Label>Image</Form.Label>
-              <Form.Control type="file" name="image" onChange={handleImageChange} />
-              {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
-  );
-};
-
-export default AdminShoesPage;
+                />
+              </Form.Group>
+              <Form.Group controlId="formDescription">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="formImage">
+                <Form.Label>Image</Form.Label>
+                <Form.Control type="file" name="image" onChange={handleImageChange} />
+                {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleSubmit}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    );
+  };
+  
+  export default AdminShoesPage;
+  

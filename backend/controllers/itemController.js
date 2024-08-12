@@ -6,7 +6,13 @@ const path = require('path');
 exports.getAllItems = async (req, res) => {
   try {
     const { type } = req.query;
-    const filter = type ? { type } : {};
+    // Build the filter object
+    const filter = {
+      ...(type && { type }), // Include type filter if provided
+      quantity: { $ne: 0 }   // Exclude items with quantity equal to 0
+    };
+
+    // Fetch items from the database with the constructed filter
     const items = await Items.find(filter);
     res.json(items);
   } catch (error) {
@@ -17,7 +23,7 @@ exports.getAllItems = async (req, res) => {
 
 // Create a new item
 exports.createItem = async (req, res) => {
-  const { name, size, brand, color, BuyAble, RentAble, description, type, price } = req.body;
+  const { name, size, brand, color, BuyAble, RentAble, description, type, price,quantity } = req.body;
   const image = req.file ? req.file.path : null;
 
   if (!name || !price) {
@@ -25,7 +31,7 @@ exports.createItem = async (req, res) => {
   }
 
   try {
-    const newItem = new Items({ name, size, brand, color, BuyAble, RentAble, description, type, price, image });
+    const newItem = new Items({ name, size, brand, color, BuyAble,quantity, RentAble, description, type, price, image });
     const savedItem = await newItem.save();
     res.status(201).json(savedItem);
   } catch (error) {
@@ -36,13 +42,13 @@ exports.createItem = async (req, res) => {
 // Update an item
 exports.updateItem = async (req, res) => {
   const { id } = req.params;
-  const { name, size, brand, color, BuyAble, RentAble, description, type, price } = req.body;
+  const { name, size, brand, color, BuyAble, RentAble, description, type, price,quantity } = req.body;
   const image = req.file ? req.file.path : null;
 
   try {
     const updatedItem = await Items.findByIdAndUpdate(
       id,
-      { name, size, brand, color, BuyAble, RentAble, description, type, price, ...(image && { image }) },
+      { name, size, brand, color, BuyAble, RentAble, description, type,quantity, price, ...(image && { image }) },
       { new: true }
     );
 

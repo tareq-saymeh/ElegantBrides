@@ -11,13 +11,13 @@ const getFutureReservations = async (req, res) => {
         const reservations = await Reservations.find({
             isReceived: false
         })
-        .populate('items') // Populate items field with Item documents
+        .populate('items.itemId') // Populate items field with Item documents
         .populate('userId', 'name email Phone') // Populate userId field with User documents (selecting only name and email)
         .exec();
 
         res.json(reservations);
     } catch (error) {
-        console.error(error);
+        console.error(error);q
         res.status(500).json({ error: 'Failed to fetch future reservations' });
     }
 };
@@ -28,8 +28,9 @@ const getUnderReservations = async (req, res) => {
         const reservations = await Reservations.find({
             isReceived: true
         })
-        .populate('items')
-        .populate('userId');
+        .populate('items.itemId') // Populate items field with Item documents
+        .populate('userId', 'name email Phone') // Populate userId field with User documents (selecting only name and email)
+        .exec();
 
         res.json(reservations);
     } catch (error) {
@@ -43,20 +44,51 @@ const updateReservationStatus = async (req, res) => {
     const now = new Date(); // Get current date and time
 
     try {
-        const reservation = await Reservations.findByIdAndUpdate(
-            id,
-            { isReceived: true, receivedDate: now }, // Use `now` for current date and time
-            { new: true }
-        )
-        .populate('items')
-        .populate('userId')
-        .exec();
-
+        // Find the reservation and populate necessary fields
+        const reservation = await Reservations.findById(id).populate('items').populate('userId').exec();
+        
         if (!reservation) {
             return res.status(404).json({ error: 'Reservation not found' });
         }
 
-        res.json(reservation);
+        // Check if the reservation has already been received
+        if (reservation.isReceived) {
+            return res.status(400).json({ error: 'Reservation already received' });
+        }
+
+        // Check if all items are buyable
+        const allBuyable = reservation.items.every(item => !item.itemId.RentAble);
+
+        if (allBuyable) {
+            // Create a log entry for the reservation
+            const logEntry = new Log({
+                items: reservation.items,
+                userId: reservation.userId,
+                receivedDate: now,
+                returnDate: now // Since all items are buyable, returnDate is set to now
+            });
+            console.log("History saved");
+
+            await logEntry.save();
+
+            // Delete the reservation
+            await Reservations.findByIdAndDelete(id);
+
+            return res.json({ message: 'Reservation processed, logged, and deleted successfully' });
+        } else {
+            // Update the reservation for rent-able items
+            reservation.isReceived = true;
+            reservation.items.forEach(item => {
+                if (item.itemId.RentAble) { // Check if the item is rent-able
+                    item.receivedDate = now; // Set the receivedDate to the current date and time
+                }
+            });
+
+            // Save the updated reservation
+            await reservation.save();
+
+            res.json(reservation);
+        }
     } catch (error) {
         console.error('Error updating reservation:', error);
         res.status(500).json({ error: 'Failed to update reservation status' });
@@ -65,40 +97,52 @@ const updateReservationStatus = async (req, res) => {
 
 
 
+
+
 // Return a reservation, move it to the log, and delete from reservations
 const returnReservation = async (req, res) => {
     const { id } = req.params;
+    const now = new Date(); // Get current date and time
 
     try {
-    const today = new Date().setHours(0, 0, 0, 0);
-
-        const reservation = await Reservations.findById(id)
-            .populate('items')
-            .populate('userId');
-            
+        // Find the reservation and populate necessary fields
+        const reservation = await Reservations.findById(id).populate('items').populate('userId').exec();
+        
         if (!reservation) {
             return res.status(404).json({ error: 'Reservation not found' });
         }
+
+        // Update returnDate for each item if the item is rent-able
+        reservation.items.forEach(item => {
+            if (item.itemId.RentAble) { // Check if the item is rent-able
+                item.returnDate = now; // Set the returnDate to the current date and time
+            }
+        });
+
+        // Save the updated reservation
+        await reservation.save();
 
         // Create a log entry
         const logEntry = new Log({
             items: reservation.items,
             userId: reservation.userId,
             receivedDate: reservation.receivedDate,
-            returnDate: new Date()
+            returnDate: now
         });
         console.log("History saved");
 
         await logEntry.save();
-        
+
         // Delete the reservation
         await Reservations.findByIdAndDelete(id);
 
         res.json({ message: 'Reservation returned and logged successfully' });
     } catch (error) {
+        console.error('Failed to return reservation:', error);
         res.status(500).json({ error: 'Failed to return reservation' });
     }
 };
+
 
 module.exports = {
     getFutureReservations,
