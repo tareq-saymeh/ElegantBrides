@@ -93,6 +93,7 @@ const Home = () => {
                 price={item.price}
                 size={item.size}
                 brand={item.brand}
+                RentAble={item.RentAble}
               />
             </div>
           ))}

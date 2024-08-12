@@ -8,7 +8,7 @@ export function ItemCard(props) {
   const addToCart = async () => {
     try {
       const token = localStorage.getItem('token'); // Retrieve token from localStorage
-      const response = await axios.post('http://localhost:3000/api/cart/adqd', 
+      const response = await axios.post('http://localhost:3000/api/cart/add', 
         { itemId: props.id }, 
         { 
           headers: { 'Authorization': `Bearer ${token}` } // Include token in request header
@@ -24,7 +24,6 @@ export function ItemCard(props) {
       alert('There was an error adding the item to the cart.');
     }
   };
-  
 
   return (
     <div className='productsList'>
@@ -41,16 +40,24 @@ export function ItemCard(props) {
           <h3 className='productName'>{props.name}</h3>
           <div className='displayStack__1'>
             <div className='productSales'>Size : {props.size} </div>
-            <div className='productPrice'>${props.price}/Day</div>
+            {props.RentAble  ? (
+              <div className='productPrice'>${props.price}/Day</div>
+            ) : (
+              <div className='productPrice'>${props.price}</div>
+            )}
           </div>
           <div className='displayStack__2'>
             <div className='productTime'>{props.brand}'s collection</div>
-            <div className='productTime'>quantity: {props.quantity}</div>
+            {props.RentAble  ? (
+              <div className='productTime'>  </div>
+            ) : (
+              <div className='productTime'> quantity: {props.quantity}</div>
+            )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default ItemCard;

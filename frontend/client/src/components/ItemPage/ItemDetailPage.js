@@ -144,7 +144,11 @@ function ItemDetailPage() {
                       <dt>Color: {item.color}</dt>
                     </div>
                     <div className="col-6">
-                      <dt>quantity: {item.quantity}</dt>
+                    {item.RentAble  ? (
+                      <dt></dt>
+                    ) : (
+              <dt>quantity: {item.quantity}</dt>
+            )}
                     </div>
                   </div>
                 </div>
