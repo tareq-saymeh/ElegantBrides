@@ -29,6 +29,7 @@ import AdminShoesPage from './components/AdminPanel/Items/AdminShoesPage';
 import AdminWeddingDressPage from './components/AdminPanel/Items/AdminWeddingDressPage';
 import UnderReservations from './components/AdminPanel/UnderReservations';
 import Preloader from './components/Preloader/Preloader'
+import Profile from './components/Profile/Profile';
 
 function App() {
   const [data, setData] = useState([]);
@@ -64,6 +65,7 @@ function App() {
   ):(
     <Routes>
     <Route path="/" element={<Home />} />
+    <Route path="/Profile" element={<Profile />} />
     <Route path="/WeddingDressPage" element={<WeddingDressPage />} />
     <Route path="/VeilsPage" element={<VeilsPage />} />
     <Route path="/ShoesPage" element={<ShoesPage />} />

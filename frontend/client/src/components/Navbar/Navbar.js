@@ -4,22 +4,60 @@ import axios from 'axios';
 
 function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [warningShown, setWarningShown] = useState(false); // State to control warning visibility
   const navigate = useNavigate();
+  
+  // Function to display the warning message
+  const showWarning = () => {
+    alert('Your session is about to expire. Please save your work and log in again.');
+    setWarningShown(true);
+  };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token); // Set isAuthenticated to true if token exists
-  }, []);
-
+  // Clear the session expiration timer when logging out
   const handleLogout = async () => {
     try {
       await axios.post('http://localhost:3000/api/auth/logout', {}, { withCredentials: true });
       localStorage.removeItem('token');
+      localStorage.removeItem('sessionExpiry'); // Clear session expiry time from localStorage
       setIsAuthenticated(false);
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
     }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const sessionExpiry = localStorage.getItem('sessionExpiry');
+
+    if (token) {
+      setIsAuthenticated(true);
+
+      if (sessionExpiry) {
+        const expiryTime = new Date(sessionExpiry).getTime();
+        const currentTime = new Date().getTime();
+
+        if (expiryTime > currentTime) {
+          const timeRemaining = expiryTime - currentTime;
+          const warningTime = timeRemaining - 15 * 60 * 1000; // 15 minutes before expiry
+
+          if (warningTime > 0) {
+            const warningTimer = setTimeout(showWarning, warningTime);
+
+            return () => clearTimeout(warningTimer);
+          }
+        } else {
+          handleLogout(); // Automatically log out if session has expired
+        }
+      }
+    }
+  }, []);
+
+  // Set session expiry time when user logs in (set in login component)
+  const setSessionExpiry = () => {
+    const expiryTime = new Date();
+    expiryTime.setHours(expiryTime.getHours() + 3); // Session lasts for 3 hours
+    localStorage.setItem('sessionExpiry', expiryTime.toISOString());
   };
 
   return (
