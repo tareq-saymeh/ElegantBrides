@@ -4,8 +4,23 @@ const Log = require('../models/log');  // Assuming the Log model is set up simil
 const Items = require('../models/Items');
 const User = require('../models/User');
 
-// Get all future reservations (receivedDate is today or later, and isReceived is false)
+const getUserData = async (req, res) => {
+    try {
+        // Assuming req.user contains the user ID
+        const reservations = await Reservations.find({ userId: req.user })
+            .populate('items.itemId') // Populate items field with Item documents
+            .exec();
 
+        res.json(reservations);
+    } catch (error) { // Pass the error object to the catch block
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch this user\'s reservations' });
+    }
+};
+
+
+
+// Get all future reservations (receivedDate is today or later, and isReceived is false)
 const getFutureReservations = async (req, res) => {
     try {
         const reservations = await Reservations.find({
@@ -17,7 +32,7 @@ const getFutureReservations = async (req, res) => {
 
         res.json(reservations);
     } catch (error) {
-        console.error(error);q
+        console.error(error);
         res.status(500).json({ error: 'Failed to fetch future reservations' });
     }
 };
@@ -56,30 +71,11 @@ const updateReservationStatus = async (req, res) => {
             return res.status(400).json({ error: 'Reservation already received' });
         }
 
-        // Check if all items are buyable
-        const allBuyable = reservation.items.every(item => !item.itemId.RentAble);
-
-        if (allBuyable) {
-            // Create a log entry for the reservation
-            const logEntry = new Log({
-                items: reservation.items,
-                userId: reservation.userId,
-                receivedDate: now,
-                returnDate: now // Since all items are buyable, returnDate is set to now
-            });
-            console.log("History saved");
-
-            await logEntry.save();
-
-            // Delete the reservation
-            await Reservations.findByIdAndDelete(id);
-
-            return res.json({ message: 'Reservation processed, logged, and deleted successfully' });
-        } else {
+        
             // Update the reservation for rent-able items
             reservation.isReceived = true;
             reservation.items.forEach(item => {
-                if (item.itemId.RentAble) { // Check if the item is rent-able
+                if (item.itemId.RentAble) { 
                     item.receivedDate = now; // Set the receivedDate to the current date and time
                 }
             });
@@ -88,7 +84,7 @@ const updateReservationStatus = async (req, res) => {
             await reservation.save();
 
             res.json(reservation);
-        }
+        
     } catch (error) {
         console.error('Error updating reservation:', error);
         res.status(500).json({ error: 'Failed to update reservation status' });
@@ -149,4 +145,5 @@ module.exports = {
     getUnderReservations,
     updateReservationStatus,
     returnReservation,
+    getUserData
 };

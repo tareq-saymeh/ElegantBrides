@@ -3,6 +3,7 @@ const router = express.Router();
 const itemsController = require('../controllers/itemController');
 const multer = require('multer');
 const path = require('path');
+const { auth } = require('../middleware/authMiddleware');
 
 // Set up Multer storage and file filter
 const storage = multer.diskStorage({
@@ -22,6 +23,8 @@ router.put('/edit/:id', upload.single('image'), itemsController.updateItem); // 
 router.get('/', itemsController.getAllItems);
 router.delete('/:id', itemsController.deleteItem);
 router.get('/:id', itemsController.getItemById); 
+router.post('/saved',auth,itemsController.savedItem)
+
 
 
 module.exports = router;

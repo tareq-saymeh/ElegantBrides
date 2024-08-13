@@ -90,6 +90,11 @@ function Navbar() {
                 <li><a className="dropdown-item" href="/VeilsPage">Veils</a></li>
               </ul>
             </li>
+            {isAuthenticated && (
+              <li className="nav-item">
+                <a className="nav-link active text-white" aria-current="page" href="/Profile">Profile</a>
+              </li>
+            )}
           </ul>
           <Link to="/Cart">
             <button className="btn btns-secondary text-white cart-butn" type="submit">

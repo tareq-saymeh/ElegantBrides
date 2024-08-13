@@ -1,5 +1,7 @@
 const Items = require('../models/Items');
 const mongoose = require('mongoose');
+const User = require('../models/User');
+
 const path = require('path');
 
 // Get all items
@@ -18,7 +20,52 @@ exports.getAllItems = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};exports.savedItem = async (req, res) => {
+  try {
+    // Extract item ID from the request body
+    const { id } = req.body;
+    const userId = req.user;
+    
+    // Validate the provided item ID
+    if (!id) {
+      return res.status(400).json({ message: 'Item ID is required' });
+    }
+
+    // Find the item by ID
+    const item = await Items.findById(id);
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the item is already saved by the user
+    const itemIndex = user.SavedItems.indexOf(item._id);
+    if (itemIndex !== -1) {
+      // Item is already saved, remove it
+      user.SavedItems.splice(itemIndex, 1);
+    } else {
+      // Item is not saved, add it
+      user.SavedItems.push(item._id);
+    }
+
+    // Save the updated user
+    await user.save();
+
+    // Return the updated user and a success message
+    res.status(200).json({ message: 'Item saved status toggled successfully', user });
+  } catch (error) {
+    console.error('Error saving item:', error); // Log the error for debugging
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
+
+
+
 
 
 // Create a new item
