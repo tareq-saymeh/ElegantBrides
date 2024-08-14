@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as XLSX from 'xlsx';
 
 const UnderReservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -85,11 +86,27 @@ const UnderReservations = () => {
     );
   });
 
+  const downloadExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredReservations.map(reservation => ({
+      Customer: reservation.userId.name,
+      Items: reservation.items.map(item => item.itemId.name).join(', '),
+      ReceivedDates: reservation.items.map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A').join(', '),
+      ReturnDates: reservation.items.map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A').join(', '),
+      FinalAmount: getFinalAmount(reservation).toFixed(2),
+      PhoneNumber: reservation.userId.Phone
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Under Reservations');
+    XLSX.writeFile(workbook, 'Under_Reservations.xlsx');
+  };
+
   return (
     <div>
       <h1>Under Reservations</h1>
       <div className="d-flex justify-content-end mb-3">
-        {/* Add additional buttons or filters if needed */}
+        <button onClick={downloadExcel} className="btn btn-primary">
+          Download as Excel
+        </button>
       </div>
       <div>
         <table className="table table-secondary table-hover table-bordered">
@@ -155,8 +172,7 @@ const UnderReservations = () => {
                 <td>
                   {reservation.items.length > 0 ? (
                     reservation.items
-                      .map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : null)
-                      .filter(date => date !== null)
+                      .map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A')
                       .join(', ')
                   ) : (
                     'N/A'
@@ -165,7 +181,7 @@ const UnderReservations = () => {
                 <td>
                   {reservation.items.length > 0 ? (
                     reservation.items
-                      .map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'Buy')
+                      .map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A')
                       .join(', ')
                   ) : (
                     'N/A'

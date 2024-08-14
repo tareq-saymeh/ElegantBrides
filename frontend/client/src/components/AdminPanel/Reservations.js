@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import * as XLSX from 'xlsx';
 
-const Reservations = () => {
+const UnderReservations = () => {
+  const [reservations, setReservations] = useState([]);
   const [filter, setFilter] = useState({
     customer: '',
     items: '',
@@ -8,15 +10,13 @@ const Reservations = () => {
     returnDate: '',
     Phone: '',
   });
-
-  const [reservations, setReservations] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: 'receivedDate', direction: 'asc' });
 
   useEffect(() => {
-    // Fetch future reservations from the server
+    // Fetch under reservations from the server
     const fetchReservations = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/reservations/future');
+        const response = await fetch('http://localhost:3000/api/reservations/under');
         const data = await response.json();
         setReservations(data);
       } catch (error) {
@@ -35,35 +35,31 @@ const Reservations = () => {
     });
   };
 
-  const handleMarkReceived = (id) => {
-    fetch(`http://localhost:3000/api/reservations/${id}/status`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((updatedReservation) => {
-        setReservations((prevReservations) =>
-          prevReservations.map((res) =>
-            res._id === id ? updatedReservation : res
-          )
-        );
-      })
-      .catch((error) => console.error('Error updating reservation status:', error));
+  const handleReturn = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/reservations/return/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Update the state to remove the returned reservation from the list
+        setReservations(reservations.filter(reservation => reservation._id !== id));
+      } else {
+        console.error('Failed to return the reservation');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const sortReservations = (field) => {
     const direction = sortConfig.key === field && sortConfig.direction === 'asc' ? 'desc' : 'asc';
     const sortedReservations = [...reservations].sort((a, b) => {
-      const valueA = field === 'finalAmount' ? getFinalAmount(a) : new Date(a[field]);
-      const valueB = field === 'finalAmount' ? getFinalAmount(b) : new Date(b[field]);
+      const valueA = field === 'finalAmount' ? getFinalAmount(a) : new Date(a.items[0][field] || 0);
+      const valueB = field === 'finalAmount' ? getFinalAmount(b) : new Date(b.items[0][field] || 0);
 
       return direction === 'asc' ? valueA - valueB : valueB - valueA;
     });
@@ -90,11 +86,27 @@ const Reservations = () => {
     );
   });
 
+  const downloadExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredReservations.map(reservation => ({
+      Customer: reservation.userId.name,
+      Items: reservation.items.map(item => item.itemId.name).join(', '),
+      ReceivedDates: reservation.items.map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A').join(', '),
+      ReturnDates: reservation.items.map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A').join(', '),
+      FinalAmount: getFinalAmount(reservation).toFixed(2),
+      PhoneNumber: reservation.userId.Phone
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Under Reservations');
+    XLSX.writeFile(workbook, 'Under_Reservations.xlsx');
+  };
+
   return (
     <div>
-      <h1>Future Reservations</h1>
+      <h1>Under Reservations</h1>
       <div className="d-flex justify-content-end mb-3">
-        {/* Add additional buttons or filters if needed */}
+        <button onClick={downloadExcel} className="btn btn-primary">
+          Download as Excel
+        </button>
       </div>
       <div>
         <table className="table table-secondary table-hover table-bordered">
@@ -145,9 +157,7 @@ const Reservations = () => {
                   className="form-control"
                 />
               </th>
-              <th scope="col">
-                Status
-              </th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -155,43 +165,38 @@ const Reservations = () => {
               <tr key={reservation._id}>
                 <td>{reservation.userId.name}</td>
                 <td>
+                  {reservation.items.map(item => (
+                    <span key={item._id}>{item.itemId.name}</span>
+                  )).reduce((prev, curr) => [prev, ', ', curr])}
+                </td>
+                <td>
                   {reservation.items.length > 0 ? (
-                    reservation.items.map(item => (
-                      <span key={item._id}>{item.itemId.name}</span>
-                    )).reduce((prev, curr) => [prev, ', ', curr])
+                    reservation.items
+                      .map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A')
+                      .join(', ')
                   ) : (
-                    'Buy'
+                    'N/A'
                   )}
                 </td>
                 <td>
                   {reservation.items.length > 0 ? (
                     reservation.items
-                      .map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : null)
-                      .filter(date => date !== null)
+                      .map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A')
                       .join(', ')
                   ) : (
-                    'Buy'
-                  )}
-                </td>
-                <td>
-                  {reservation.items.length > 0 ? (
-                    reservation.items
-                      .map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'Buy')
-                      .join(', ')
-                  ) : (
-                    'Buy'
+                    'N/A'
                   )}
                 </td>
                 <td>{getFinalAmount(reservation).toFixed(2)}</td>
                 <td>{reservation.userId.Phone}</td>
+
                 <td>
-                  {reservation.isReceived ? (
-                    'Received'
-                  ) : (
-                    <button onClick={() => handleMarkReceived(reservation._id)} className="btn btn-success">
-                      Mark as Received
-                    </button>
-                  )}
+                  <button 
+                    onClick={() => handleReturn(reservation._id)} 
+                    className="btn btn-success"
+                  >
+                    Return
+                  </button>
                 </td>
               </tr>
             ))}
@@ -202,4 +207,4 @@ const Reservations = () => {
   );
 };
 
-export default Reservations;
+export default UnderReservations;

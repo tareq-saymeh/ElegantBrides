@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 const History = () => {
   const [filter, setFilter] = useState({
@@ -7,7 +8,7 @@ const History = () => {
     items: '',
     receivedDate: '',
     returnDate: '',
-    phone: '',
+    Phone: '',
     email: ''
   });
   
@@ -76,16 +77,33 @@ const History = () => {
       (!filter.items || (row.items && row.items.some(item => item.itemId.name.toLowerCase().includes(filter.items.toLowerCase())))) &&
       (!filter.receivedDate || rowReceivedDates.includes(filter.receivedDate)) &&
       (!filter.returnDate || rowReturnDates.includes(filter.returnDate)) &&
-      (!filter.phone || (row.userId && row.userId.phone.toLowerCase().includes(filter.phone.toLowerCase()))) &&
+      (!filter.Phone || (row.userId && row.userId.Phone.toLowerCase().includes(filter.Phone.toLowerCase()))) &&
       (!filter.email || (row.userId && row.userId.email.toLowerCase().includes(filter.email.toLowerCase())))
     );
   });
+
+  const downloadExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredData.map(row => ({
+      Customer: row.userId ? row.userId.name : 'N/A',
+      Items: row.items ? row.items.map(item => item.itemId.name).join(', ') : 'N/A',
+      ReceivedDates: row.items ? row.items.map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A').join(', ') : 'N/A',
+      ReturnDates: row.items ? row.items.map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A').join(', ') : 'N/A',
+      Phone: row.userId ? row.userId.Phone : 'N/A',
+      Email: row.userId ? row.userId.email : 'N/A',
+      FinalAmount: calculateFinalAmount(row.items).toFixed(2)
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'History');
+    XLSX.writeFile(workbook, 'History.xlsx');
+  };
 
   return (
     <div>
       <h1>History</h1>
       <div className="d-flex justify-content-end mb-3">
-        {/* Add additional buttons or filters if needed */}
+        <button onClick={downloadExcel} className="btn btn-primary">
+          Download as Excel
+        </button>
       </div>
       <div>
         <table className="table table-secondary table-hover table-bordered">
@@ -126,7 +144,7 @@ const History = () => {
                 <input
                   type="text"
                   name="phone"
-                  value={filter.phone}
+                  value={filter.Phone}
                   onChange={handleFilterChange}
                   placeholder="Filter by Phone"
                   className="form-control"
@@ -158,13 +176,13 @@ const History = () => {
                 </td>
                 <td>
                   {row.items && row.items.length > 0 ? 
-                    row.items.map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'Buy').join(', ') :
+                    row.items.map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A').join(', ') :
                     'N/A'
                   }
                 </td>
                 <td>
                   {row.items && row.items.length > 0 ? 
-                    row.items.map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'Buy').join(', ') :
+                    row.items.map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A').join(', ') :
                     'N/A'
                   }
                 </td>
