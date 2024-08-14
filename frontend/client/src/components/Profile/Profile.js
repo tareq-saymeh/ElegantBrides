@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Table, Form } from 'react-bootstrap';
+import { Button, Card, Table, Form, Alert } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import Footer from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar';
@@ -12,6 +12,67 @@ function Profile() {
   const [savedItems, setSavedItems] = useState([]); // State for saved items
   const [logs, setLogs] = useState([]); // State for logs data
   const [redirect, setRedirect] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertVariant, setAlertVariant] = useState('');
+
+  const handlePasswordToggle = () => {
+    setShowPasswordFields(!showPasswordFields);
+  };
+
+  const handleSaveChanges = async () => {
+    const updatedData = {
+      name,
+      email,
+      phone,
+    };
+
+    if (showPasswordFields && password === confirmPassword) {
+      updatedData.password = password;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setRedirect(true);
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        'http://localhost:3000/api/users/update', 
+        updatedData, 
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      // Show success message
+      setAlertMessage('Profile updated successfully!');
+      setAlertVariant('success');
+
+    } catch (error) {
+      if (error.response) {
+        // Show error message
+        setAlertMessage('Update failed: ' + error.response.data.message);
+        setAlertVariant('danger');
+      } else {
+        // Show error message
+        setAlertMessage('Update failed: ' + error.message);
+        setAlertVariant('danger');
+      }
+    }
+  };
+
+  
+  // Other useEffect hooks for fetching reservations, saved items, and logs...
 
   useEffect(() => {
     const userReservations = async () => {
@@ -36,14 +97,14 @@ function Profile() {
 
         const data = await response.json();
         setReservations(data);
-
+        
       } catch (error) {
         console.error('Failed to fetch reservations:', error);
       }
     };
 
     userReservations();
-  }, []); // Empty dependency array, runs once on mount
+  }, []);
 
   const fetchSavedItems = async () => {
     try {
@@ -193,6 +254,17 @@ function Profile() {
           </Table>
 
           {/* Account Settings */}
+          
+          
+        
+          {/* Show alert if there is a message */}
+          {alertMessage && (
+            <Alert variant={alertVariant} onClose={() => setAlertMessage('')} dismissible>
+              {alertMessage}
+            </Alert>
+          )}
+
+          
           <div className="col-12">
             <Card>
               <Card.Header>
@@ -202,35 +274,66 @@ function Profile() {
                 <Form>
                   <Form.Group className="mb-3" controlId="formName">
                     <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" defaultValue="Sara Ahmad" />
+                    <Form.Control
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
                   </Form.Group>
 
                   <Form.Group className="mb-3" controlId="formEmail">
                     <Form.Label>Email</Form.Label>
-                    <Form.Control type="email" defaultValue="Sara@acme.com" />
+                    <Form.Control
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </Form.Group>
 
                   <Form.Group className="mb-3" controlId="formPhone">
                     <Form.Label>Phone</Form.Label>
-                    <Form.Control type="text" defaultValue="+970 xxx xxx xxx" />
+                    <Form.Control
+                      type="text"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
                   </Form.Group>
 
-                  <Form.Group className="mb-3" controlId="formPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" />
-                  </Form.Group>
+                  <Button variant="secondary" onClick={handlePasswordToggle}>
+                    {showPasswordFields ? 'Hide Password Fields' : 'Change Password'}
+                  </Button>
 
-                  <Form.Group className="mb-3" controlId="formConfirmPassword">
-                    <Form.Label>Confirm Password</Form.Label>
-                    <Form.Control type="password" />
-                  </Form.Group>
+                  {showPasswordFields && (
+                    <>
+                      <Form.Group className="mb-3" controlId="formPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                      </Form.Group>
 
-                  <Button variant="primary">Save Changes</Button>
+                      <Form.Group className="mb-3" controlId="formConfirmPassword">
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                      </Form.Group>
+                    </>
+                  )}
+
+                  <Button variant="primary" onClick={handleSaveChanges}>
+                    Save Changes
+                  </Button>
                 </Form>
               </Card.Body>
             </Card>
           </div>
-        </div>
+
+
         {/* Saved Items */}
         <div className="col-12 mb-4">
           <Card>
@@ -260,6 +363,7 @@ function Profile() {
             </Card.Body>
           </Card>
         </div>
+      </div>
       </div>
       <Footer />
     </>

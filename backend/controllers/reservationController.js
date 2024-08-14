@@ -9,6 +9,7 @@ const getUserData = async (req, res) => {
         // Assuming req.user contains the user ID
         const reservations = await Reservations.find({ userId: req.user })
             .populate('items.itemId') // Populate items field with Item documents
+            .populate('userId', 'name email Phone') // Populate items field with Item documents
             .exec();
 
         res.json(reservations);

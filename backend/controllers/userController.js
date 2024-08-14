@@ -1,5 +1,6 @@
 // controllers/userController.js
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 // Get all users
 const getAllUsers = async (req, res) => {
@@ -28,11 +29,37 @@ const getSavedItems = async (req, res) => {
   }
 };
 
-
+const updateUser = async (req, res) => {
+    try {
+        
+      const { name, email, phone, password } = req.body;
+      const user = await User.findById({ _id: req.user })
+  
+      if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+      }
+  
+      user.name = name || user.name;
+      user.email = email || user.email;
+      user.Phone = phone || user.Phone;
+  
+      if (password) {
+        user.password = await bcrypt.hash(password, 10);
+      }
+  
+      await user.save();
+      res.json({ msg: 'Profile updated successfully', user });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  };
+  
 
 
 // Export the functions
 module.exports = {
     getAllUsers,
-    getSavedItems
+    getSavedItems,
+    updateUser
 };
