@@ -1,6 +1,7 @@
 const Items = require('../models/Items');
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const Reservation = require('../models/Reservations');
 
 const path = require('path');
 
@@ -122,13 +123,35 @@ exports.deleteItem = async (req, res) => {
   }
 };
 // Get a single item by ID
+
+
 exports.getItemById = async (req, res) => {
   try {
     const item = await Items.findById(req.params.id);
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json(item);
+
+    // Fetch reservations for this item
+    const reservations = await Reservation.find({ "items.itemId": req.params.id });
+
+    // Extract unavailable dates from the reservations
+    let unavailableDates = [];
+    reservations.forEach(reservation => {
+      reservation.items.forEach(item => {
+        if (item.itemId.toString() === req.params.id) {
+          let current = new Date(item.receivedDate);
+          const end = new Date(item.returnDate);
+          while (current <= end) {
+            unavailableDates.push(new Date(current));
+            current.setDate(current.getDate() + 1); // Increment day by day
+          }
+        }
+      });
+    });
+ 
+    
+    res.json({ item, unavailableDates });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

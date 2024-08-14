@@ -14,29 +14,32 @@ function ItemDetailPage() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [unavailableDates, setUnavailableDates] = useState([
-    new Date('2024-07-25'),
-    new Date('2024-07-26'),
-    // Add more unavailable dates as needed
-  ]);
+  const [unavailableDates, setUnavailableDates] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
-    const fetchItem = async () => {
+    const fetchItemData = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/items/${id}`);
-        setItem(response.data);
+        console.log(response.data); // Debugging: Log the fetched data
+        setItem(response.data.item);
+        if (response.data.unavailableDates) {
+          setUnavailableDates(response.data.unavailableDates.map(date => new Date(date)
+        ));
+        }
       } catch (error) {
         console.error('Error fetching item', error);
       }
     };
-
-    fetchItem();
+  
+    fetchItemData();
   }, [id]);
-
+  
+  // In the JSX part
   if (!item) {
-    return <div>No Item Found</div>;
+    return <div>No Item Found</div>; // Or loading spinner, etc.
   }
+  
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -47,10 +50,11 @@ function ItemDetailPage() {
   const isDateUnavailable = (date) => {
     return (
       date < new Date() ||
-      unavailableDates.some((unavailableDate) =>
+      !unavailableDates.some((unavailableDate) =>
         date.getFullYear() === unavailableDate.getFullYear() &&
         date.getMonth() === unavailableDate.getMonth() &&
         date.getDate() === unavailableDate.getDate()
+        
       )
     );
   };
@@ -65,14 +69,15 @@ function ItemDetailPage() {
       const token = localStorage.getItem('token');
       const rentDuration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // Calculate days
 
-      await axios.post('http://localhost:3000/api/cart/add', 
+      await axios.post(
+        'http://localhost:3000/api/cart/add',
         {
           items: { itemId: id, receivedDate: startDate, returnDate: endDate, quantity: rentDuration }
-        }, 
-        { 
-          withCredentials: true, 
-          headers: { 
-            'Authorization': `Bearer ${token}` 
+        },
+        {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
         }
       );
@@ -92,16 +97,16 @@ function ItemDetailPage() {
   const handleBuy = async () => {
     try {
       const token = localStorage.getItem('token');
-      console.log("on handel");
-      
-      await axios.post('http://localhost:3000/api/cart/add', 
+
+      await axios.post(
+        'http://localhost:3000/api/cart/add',
         {
           items: { itemId: id, quantity: quantity }
-        }, 
-        { 
-          withCredentials: true, 
-          headers: { 
-            'Authorization': `Bearer ${token}` 
+        },
+        {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
         }
       );
@@ -135,7 +140,7 @@ function ItemDetailPage() {
                 </div>
               </div>
               <div className="item-detail__details">
-                <div className="container ">
+                <div className="container">
                   <div className="row">
                     <div className="col-6">
                       <dt>Size: {item.size}</dt>
@@ -143,13 +148,15 @@ function ItemDetailPage() {
                     <div className="col-6">
                       <dt>Color: {item.color}</dt>
                     </div>
-                    <div className="col-6">
-                    {item.RentAble  ? (
-                      <dt></dt>
+                    {item.RentAble ? (
+                      <div className="col-6">
+                        <dt></dt>
+                      </div>
                     ) : (
-              <dt>quantity: {item.quantity}</dt>
-            )}
-                    </div>
+                      <div className="col-6">
+                        <dt>Quantity: {item.quantity}</dt>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -173,7 +180,7 @@ function ItemDetailPage() {
                       startDate={startDate}
                       endDate={endDate}
                       selectsRange
-                      filterDate={(date) => !isDateUnavailable(date)}
+                      filterDate={isDateUnavailable}
                       inline
                     />
                     <p>** Gray days unavailable</p>
@@ -190,11 +197,11 @@ function ItemDetailPage() {
                 {item.BuyAble && (
                   <div className="buy-section">
                     <label htmlFor="quantity">Quantity:</label>
-                    <input 
-                      type="number" 
-                      id="quantity" 
-                      value={quantity} 
-                      min="1" 
+                    <input
+                      type="number"
+                      id="quantity"
+                      value={quantity}
+                      min="1"
                       max={item.quantity}
                       onChange={(e) => setQuantity(e.target.value)}
                     />

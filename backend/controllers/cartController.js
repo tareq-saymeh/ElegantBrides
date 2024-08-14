@@ -1,5 +1,6 @@
 const Cart = require('../models/Cart');
 const Item = require('../models/Items');
+const Reservations = require('../models/Reservations');
 
 // Get cart items
 const getCart = async (req, res) => {
@@ -25,13 +26,46 @@ const confirmCart = async (req, res) => {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    // Set the confirm field to true
+    // Check if the cart has items
+    if (cart.items.length === 0) {
+      return res.status(400).json({
+        message: 'Cannot confirm an empty cart.',
+      });
+    }
+
+    // Iterate through the items in the cart
+    for (const cartItem of cart.items) {
+      if (cartItem.receivedDate && cartItem.returnDate) {
+        // Check for overlapping reservations
+        const overlappingReservations = await Reservations.find({
+          'items.itemId': cartItem.itemId,
+          $or: [
+            {
+              $and: [
+                { 'items.receivedDate': { $lte: cartItem.returnDate } },
+                { 'items.returnDate': { $gte: cartItem.receivedDate } },
+              ],
+            },
+          ],
+        });
+
+        if (overlappingReservations.length > 0) {
+          return res.status(400).json({
+            message: `Item with ID ${cartItem.itemId} is already reserved during the selected dates.`,
+          });
+        }
+      }
+    }
+
+    // If no conflicts were found and the cart is not empty, set the confirm field to true
     cart.confirm = true;
 
     // Save the updated cart
     await cart.save();
 
+    // Optionally, delete the cart after confirmation
     await Cart.findByIdAndDelete(cart._id);
+
     // Send a success response
     res.status(200).json({ message: 'Cart confirmed successfully' });
   } catch (error) {
@@ -40,6 +74,8 @@ const confirmCart = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
 
 
 // Add item to cart
