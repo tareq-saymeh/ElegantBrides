@@ -19,6 +19,20 @@
     margin-bottom: 20px;
     border-radius: 10px; /* Example border radius */
   }
+  @media only screen and (max-width: 1000px) {
+    .item-detail__image {
+      max-width: 300px;
+      max-height: 600px;
+    }
+    
+  }
+  @media only screen and (min-width: 1000px) {
+    .detail__image{
+    top: 100px;
+  
+    }
+  
+  }
   
   .item-detail h2 {
     font-size: 24px;
@@ -104,4 +118,6 @@
     justify-content: flex-start!important;
     width: 50px!important;
   }
+  
+
   

@@ -6,6 +6,7 @@ import axios from 'axios';
 import Footer from '../Footer/Footer.js';
 import Navbar from '../Navbar/Navbar.js';
 import './ItemDetailPage.css';
+import { Container } from 'react-bootstrap';
 
 function ItemDetailPage() {
   const { id } = useParams();
@@ -119,13 +120,26 @@ function ItemDetailPage() {
   };
 
   return (
+    
     <div className='allPage'>
       <Navbar />
+      <Container 
+      fluid 
+      style={{ 
+        backgroundColor: '#C0C0C0', 
+        padding: '20px', 
+        borderRadius: '10px', 
+        maxWidth: '1500px', 
+        margin: 'auto', 
+        marginTop: '50px', 
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' 
+      }}
+    >
       <div className="item-detail">
         <div className="container text-center">
           <div className="row">
             <div className="col">
-              <img src={`http://localhost:3000/${item.image}`} alt={item.name} className="item-detail__image" />
+              <img src={`http://localhost:3000/${item.image}`} alt={item.name} className="item-detail__image " />
             </div>
             <div className="col">
               <h2>{item.name}</h2>
@@ -146,7 +160,19 @@ function ItemDetailPage() {
                       <dt>Size: {item.size}</dt>
                     </div>
                     <div className="col-6">
-                      <dt>Color: {item.color}</dt>
+                    <dt>Available Color: {item.color} </dt>
+              
+                <span 
+                  style={{
+                    backgroundColor: item.color.toLowerCase(), 
+                    border: '1px solid #161616', 
+                    borderRadius: '50%', 
+                    width: '30px', 
+                    height: '30px', 
+                    display: 'inline-block'
+                  }}
+                  title={item.color}
+                />
                     </div>
                     {item.RentAble ? (
                       <div className="col-6">
@@ -215,6 +241,7 @@ function ItemDetailPage() {
           </div>
         </div>
       </div>
+      </Container>
       <Footer />
     </div>
   );
