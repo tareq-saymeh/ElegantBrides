@@ -46,7 +46,7 @@
             min: 0 // Ensures that quantity cannot be negative
         },
         image: { 
-            type: [String], // Store the URL or file path of the image
+            type: String, // Store the URL or file path of the image
             trim: true
         }
     });
