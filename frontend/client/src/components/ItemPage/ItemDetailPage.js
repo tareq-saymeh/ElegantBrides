@@ -17,6 +17,7 @@ function ItemDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [currentImage, setCurrentImage] = useState(0); // State for managing the current image
 
   const language = localStorage.getItem('language') || 'ar'; // Get the current language or default to Arabic
 
@@ -167,7 +168,22 @@ function ItemDetailPage() {
           <div className="container text-center">
             <div className="row">
               <div className="col">
-                <img src={`http://localhost:3000/${item.image}`} alt={item.name} className="item-detail__image " />
+                <img 
+                  src={`http://localhost:3000/${item.image[currentImage]}`} 
+                  alt={item.name} 
+                  className="item-detail__image"
+                />
+                <div className="thumbnail-container">
+                  {item.image && item.image.map((img, index) => (
+                    <img 
+                      key={index}
+                      src={`http://localhost:3000/${img}`} 
+                      alt={`thumbnail-${index}`}
+                      className={`thumbnail ${currentImage === index ? 'active' : ''}`}
+                      onClick={() => setCurrentImage(index)}
+                    />
+                  ))}
+                </div>
               </div>
               <div className="col">
                 <h2>{item.name}</h2>
@@ -177,14 +193,11 @@ function ItemDetailPage() {
                       <h4 className="text item-detail__brand">{item.brand}{translations[language].brand}</h4>
                     </div>
                     <div className="col">
-                    {item.RentAble ? (
-                      <h4 className="item-detail__price">₪ {item.price}/{translations[language].pricePerDay}</h4>
-
-                    ):(
-                      <h4 className="item-detail__price">₪ {item.price}</h4>
-
-                    )}
-
+                      {item.RentAble ? (
+                        <h4 className="item-detail__price">₪ {item.price}/{translations[language].pricePerDay}</h4>
+                      ) : (
+                        <h4 className="item-detail__price">₪ {item.price}</h4>
+                      )}
                     </div>
                   </div>
                 </div>

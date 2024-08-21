@@ -96,7 +96,7 @@ function WeddingDressPage() {
                         <div key={items._id} className="col-lg-4 col-md-6 col-sm-6 mb-4">
                         <ItemCard
                           id={items._id}
-                          image={`http://localhost:3000/${items.image}`}
+                          image={items.image && items.image.length > 0 ? `http://localhost:3000/${items.image[0]}` : "dressimg"}
                           name={items.name}
                           price={items.price}
                           size={items.size}

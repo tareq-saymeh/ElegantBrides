@@ -392,7 +392,8 @@ function Profile() {
                       <div key={item._id} className="col-md-4 col-sm-6 mb-4"> {/* Adjust column class */}
                         <ItemCard
                           id={item._id}
-                          image={`http://localhost:3000/${item.image}`}
+                          image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : "dressimg"}
+                          quantity={item.quantity}
                           name={item.name}
                           price={item.price}
                           size={item.size}

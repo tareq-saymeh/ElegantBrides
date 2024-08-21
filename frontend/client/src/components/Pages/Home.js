@@ -113,7 +113,7 @@ const Home = () => {
             <div key={item._id} className="col-md-3 col-sm-6 mb-4">
               <ItemCard
                 id={item._id}
-                image={`http://localhost:3000/${item.image}`}
+                image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : dressimg}
                 name={item.name}
                 price={item.price}
                 size={item.size}
@@ -135,7 +135,7 @@ const Home = () => {
             <div key={item._id} className="col-md-3 col-sm-6 mb-4">
               <ItemCard
                 id={item._id}
-                image={`http://localhost:3000/${item.image}`}
+                image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : Shoesimg}
                 name={item.name}
                 price={item.price}
                 size={item.size}
@@ -157,7 +157,7 @@ const Home = () => {
             <div key={item._id} className="col-md-3 col-sm-6 mb-4">
               <ItemCard
                 id={item._id}
-                image={`http://localhost:3000/${item.image}`}
+                image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : Jewelryimg}
                 name={item.name}
                 price={item.price}
                 size={item.size}

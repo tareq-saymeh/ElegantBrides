@@ -1,14 +1,14 @@
-import './ItemCard.css'; 
+import './ItemCard.css';
 import { FaShoppingCart, FaRegBookmark, FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import axios from 'axios';  // Import axios for making HTTP requests
-import { useState } from 'react'; // Import useState for managing state
+import axios from 'axios';  
+import { useState } from 'react'; 
 
 export function ItemCard(props) {
-  const [saved, setSaved] = useState(false); // State to track if item is saved
-  const language = localStorage.getItem('language') || 'ar'; // Get the current language or default to Arabic
-
-  // Translation object
+  const [saved, setSaved] = useState(false); 
+  const [currentImage, setCurrentImage] = useState(0); 
+  const language = localStorage.getItem('language') || 'ar'; 
+  
   const translations = {
     en: {
       size: 'Size',
@@ -36,11 +36,11 @@ export function ItemCard(props) {
 
   const addToCart = async () => {
     try {
-      const token = localStorage.getItem('token'); // Retrieve token from localStorage
+      const token = localStorage.getItem('token'); 
       const response = await axios.post('http://localhost:3000/api/cart/add', 
         { itemId: props.id }, 
         { 
-          headers: { 'Authorization': `Bearer ${token}` } // Include token in request header
+          headers: { 'Authorization': `Bearer ${token}` }
         }
       );
       if (response.status === 200) {
@@ -56,15 +56,15 @@ export function ItemCard(props) {
 
   const saveItem = async () => {
     try {
-      const token = localStorage.getItem('token'); // Retrieve token from localStorage
+      const token = localStorage.getItem('token'); 
       const response = await axios.post('http://localhost:3000/api/items/saved', 
         { id: props.id }, 
         { 
-          headers: { 'Authorization': `Bearer ${token}` } // Include token in request header
+          headers: { 'Authorization': `Bearer ${token}` }
         }
       );
       if (response.status === 200) {
-        setSaved(true); // Update saved state
+        setSaved(true); 
         alert(translations[language].alertSuccess);
       } else {
         alert(translations[language].alertFailed);
@@ -75,25 +75,41 @@ export function ItemCard(props) {
     }
   };
 
+  const handleMouseEnter = () => {
+    if (props.image && props.image.length > 1) {
+      setCurrentImage((prevImage) => (prevImage + 1) % props.image.length);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setCurrentImage(0); 
+  };
+
+
   return (
     <div className='productsList'>
       <div key={props.id} className='productCard'>
         <Link to={`/item/${props.id}`}>
-          <img src={props.image} alt='product-img' className='productImage'></img>
+          <img 
+            src={ props.image } 
+            alt='product-img' 
+            className='productImage'
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          />
         </Link>
 
-        {/* Connect the addToCart function to the onClick event */}
         <FaRegBookmark 
           className={"productCard__wishlist"} 
           onClick={saveItem}
-          style={{ color: saved ? 'gold' : 'gray' }} // Change color if saved
+          style={{ color: saved ? 'gold' : 'gray' }} 
         />
         
         <div className='productCard__content'>
           <h3 className='productName'>{props.name}</h3>
           <div className='displayStack__1'>
-            <div className='productSales'>{translations[language].size} : {props.size} </div>
-            {props.RentAble  ? (
+            <div className='productSales'>{translations[language].size} : {props.size}</div>
+            {props.RentAble ? (
               <div className='productPrice'>₪ {props.price}{translations[language].rentPerDay}</div>
             ) : (
               <div className='productPrice'>₪ {props.price}</div>
@@ -101,7 +117,7 @@ export function ItemCard(props) {
           </div>
           <div className='displayStack__2'>
             <div className='productTime'>{props.brand} {translations[language].collection}</div>
-            {props.RentAble  ? (
+            {props.RentAble ? (
               <div className='productTime'></div>
             ) : (
               <div className='productTime'>{translations[language].quantity}: {props.quantity}</div>

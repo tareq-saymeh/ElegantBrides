@@ -15,9 +15,9 @@ const AdminWeddingDressPage = () => {
     description: '',
     type: 'WeddingDress',
     price: '',
-    image: null
+    image: []
   });
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState([]); // Changed to handle multiple previews
   const [data, setData] = useState([]);
 
   // Translation object
@@ -88,9 +88,9 @@ const AdminWeddingDressPage = () => {
     if (type === 'Edit') {
       setFormData({
         ...data,
-        image: null
+        image: []
       });
-      setImagePreview(`http://localhost:3000/uploads/${data.image}`);
+      setImagePreviews(`http://localhost:3000/uploads/${data.image}`);
     } else {
       setFormData({
         name: '',
@@ -102,9 +102,9 @@ const AdminWeddingDressPage = () => {
         description: '',
         type: 'WeddingDress',
         price: '',
-        image: null
+        image:  []
       });
-      setImagePreview(null);
+      setImagePreviews([]);
     }
     setShowModal(true);
   };
@@ -121,9 +121,9 @@ const AdminWeddingDressPage = () => {
       description: '',
       type: 'WeddingDress',
       price: '',
-      image: null
+      image: []
     });
-    setImagePreview(null);
+    setImagePreviews([]);
   };
 
   const handleChange = (e) => {
@@ -135,12 +135,12 @@ const AdminWeddingDressPage = () => {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const files = Array.from(e.target.files);
     setFormData((prevData) => ({
       ...prevData,
-      image: file,
+      image: files,
     }));
-    setImagePreview(URL.createObjectURL(file));
+    setImagePreviews(files.map(file => URL.createObjectURL(file)));
   };
 
   const handleSubmit = async () => {
@@ -155,9 +155,9 @@ const AdminWeddingDressPage = () => {
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
     dataToSubmit.append('price', formData.price);
-    if (formData.image) {
-      dataToSubmit.append('image', formData.image);
-    }
+    Array.from(formData.image).forEach((image, index) => {
+      dataToSubmit.append('images', image);
+    });
   
     try {
       if (modalType === 'Add') {
@@ -228,7 +228,7 @@ const AdminWeddingDressPage = () => {
                   <td>{item.description}</td>
                   <td>{item.BuyAble ? translations[language].buyable : 'No'}</td>
                   <td>{item.RentAble ? translations[language].rentable : 'No'}</td>
-                  <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
+                  <td>{item.image && <img src={`http://localhost:3000/${item.image[0]}`} alt={item.name} width="50" />}</td>
                   <td>
                     <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>
                       {translations[language].remove}
@@ -347,8 +347,11 @@ const AdminWeddingDressPage = () => {
             </Form.Group>
             <Form.Group controlId="formImage">
               <Form.Label>{translations[language].image}</Form.Label>
-              <Form.Control type="file" name="image" onChange={handleImageChange} />
-              {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
+              <Form.Control
+                type="file"
+                multiple
+                onChange={handleImageChange} name="images"  />
+              {imagePreviews && <img src={imagePreviews} alt="Preview" width="100" className="mt-2" />}
             </Form.Group>
           </Form>
         </Modal.Body>

@@ -95,7 +95,7 @@ function AccessoriesPage() {
                         <div key={item._id} className="col-lg-4 col-md-6 col-sm-6 mb-4">
                             <ItemCard
                                 id={item._id}
-                                image={`http://localhost:3000/${item.image}`}
+                                image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : "dressimg"}
                                 name={item.name}
                                 price={item.price}
                                 quantity={item.quantity}

@@ -6,7 +6,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const path = require('path');
 const bodyParser = require('body-parser');
-
+const upload = require('./middleware/multerConfig');
 dotenv.config();
 
 const app = express();
@@ -19,6 +19,16 @@ const adminRoutes = require('./routes/adminRoutes');
 const Logs = require('./routes/logRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 
+
+// Example route to upload files
+app.post('/upload', upload.array('images', 5), (req, res) => {
+  // 'images' should match the name attribute of the file input in your form
+  // Handle the request and files here
+  if (!req.files) {
+    return res.status(400).send('No files uploaded.');
+  }
+  res.send('Files uploaded successfully.');
+});
 // Middleware
 app.use(cors({
   origin: 'http://localhost:3001', // Allow requests from this origin
