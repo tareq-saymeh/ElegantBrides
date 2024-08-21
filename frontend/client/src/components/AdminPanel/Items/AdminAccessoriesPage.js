@@ -15,11 +15,57 @@ const AdminAccessoriesPage = () => {
     description: '',
     type: 'Accessories',
     price: '',
-    quantity: '', // Add quantity field
+    quantity: '',
     image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [data, setData] = useState([]);
+
+  // Translation object
+  const translations = {
+    en: {
+      accessoriesPage: 'Accessories Page',
+      add: 'Add',
+      id: 'ID',
+      name: 'Name',
+      size: 'Size',
+      brand: 'Brand',
+      color: 'Color',
+      price: 'Price',
+      quantity: 'Quantity',
+      description: 'Description',
+      image: 'Image',
+      remove: 'Remove',
+      edit: 'Edit',
+      noData: 'No data available',
+      saveChanges: 'Save Changes',
+      close: 'Close',
+      addAccessory: 'Add Accessory',
+      editAccessory: 'Edit Accessory'
+    },
+    ar: {
+      accessoriesPage: 'الاكسسوارات',
+      add: 'إضافة',
+      id: 'الرقم التعريفي',
+      name: 'الاسم',
+      size: 'الحجم',
+      brand: 'العلامة التجارية',
+      color: 'اللون',
+      price: 'السعر',
+      quantity: 'الكمية',
+      description: 'الوصف',
+      image: 'الصورة',
+      remove: 'إزالة',
+      edit: 'تعديل',
+      noData: 'لا توجد بيانات متاحة',
+      saveChanges: 'حفظ التغييرات',
+      close: 'إغلاق',
+      addAccessory: 'إضافة ملحق',
+      editAccessory: 'تعديل ملحق'
+    }
+  };
+
+  const language = localStorage.getItem('language') || 'en'; // Default to English
 
   useEffect(() => {
     fetchData();
@@ -28,7 +74,6 @@ const AdminAccessoriesPage = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/items');
-      console.log('Fetched Data:', response.data);
       const filteredData = response.data.filter(item => item.type === 'Accessories');
       setData(filteredData);
     } catch (error) {
@@ -55,8 +100,7 @@ const AdminAccessoriesPage = () => {
         description: '',
         type: 'Accessories',
         price: '',
-        quantity: '', // Add quantity field
-
+        quantity: '',
         image: null
       });
       setImagePreview(null);
@@ -76,7 +120,7 @@ const AdminAccessoriesPage = () => {
       description: '',
       type: 'Accessories',
       price: '',
-      quantity: '', // Add quantity field
+      quantity: '',
       image: null
     });
     setImagePreview(null);
@@ -101,7 +145,7 @@ const AdminAccessoriesPage = () => {
 
   const handleSubmit = async () => {
     const dataToSubmit = new FormData();
-  
+
     dataToSubmit.append('name', formData.name);
     dataToSubmit.append('size', formData.size);
     dataToSubmit.append('brand', formData.brand);
@@ -111,11 +155,11 @@ const AdminAccessoriesPage = () => {
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
     dataToSubmit.append('price', formData.price);
-    dataToSubmit.append('quantity', formData.quantity); // Append quantity
+    dataToSubmit.append('quantity', formData.quantity);
     if (formData.image) {
       dataToSubmit.append('image', formData.image);
     }
-  
+
     try {
       if (modalType === 'Add') {
         await axios.post('http://localhost:3000/api/items/add', dataToSubmit, {
@@ -148,27 +192,27 @@ const AdminAccessoriesPage = () => {
 
   return (
     <div>
-      <h1>Accessories Page</h1>
+      <h1>{translations[language].accessoriesPage}</h1>
       <div className="d-flex justify-content-end mb-3">
         <button className="ItemAddButn btn btn-primary" onClick={() => handleShow('Add')}>
-          Add
+          {translations[language].add}
         </button>
       </div>
       <div>
         <table className="table table-secondary table-hover table-bordered">
           <thead>
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Size</th>
-              <th scope="col">Brand</th>
-              <th scope="col">Color</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th> {/* Add Quantity column */}
-              <th scope="col">Description</th>
-              <th scope="col">Image</th>
-              <th scope="col">Remove</th>
-              <th scope="col">Edit</th>
+              <th scope="col">{translations[language].id}</th>
+              <th scope="col">{translations[language].name}</th>
+              <th scope="col">{translations[language].size}</th>
+              <th scope="col">{translations[language].brand}</th>
+              <th scope="col">{translations[language].color}</th>
+              <th scope="col">{translations[language].price}</th>
+              <th scope="col">{translations[language].quantity}</th>
+              <th scope="col">{translations[language].description}</th>
+              <th scope="col">{translations[language].image}</th>
+              <th scope="col">{translations[language].remove}</th>
+              <th scope="col">{translations[language].edit}</th>
             </tr>
           </thead>
           <tbody>
@@ -181,11 +225,13 @@ const AdminAccessoriesPage = () => {
                   <td>{item.brand}</td>
                   <td>{item.color}</td>
                   <td>{item.price}</td>
-                  <td>{item.quantity}</td> {/* Display Quantity */}
+                  <td>{item.quantity}</td>
                   <td>{item.description}</td>
                   <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
-                    <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Remove</button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>
+                      {translations[language].remove}
+                    </button>
                   </td>
                   <td>
                     <button
@@ -202,19 +248,19 @@ const AdminAccessoriesPage = () => {
                           description: item.description,
                           type: item.type,
                           price: item.price,
-                          quantity: item.quantity, // Pass quantity to Edit form
+                          quantity: item.quantity,
                           image: item.image,
                         })
                       }
                     >
-                      Edit
+                      {translations[language].edit}
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="10">No data available</td>
+                <td colSpan="11">{translations[language].noData}</td>
               </tr>
             )}
           </tbody>
@@ -223,12 +269,12 @@ const AdminAccessoriesPage = () => {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType} Accessory</Modal.Title>
+          <Modal.Title>{modalType === 'Add' ? translations[language].addAccessory : translations[language].editAccessory}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>{translations[language].name}</Form.Label>
               <Form.Control
                 type="text"
                 name="name"
@@ -237,7 +283,7 @@ const AdminAccessoriesPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formSize">
-              <Form.Label>Size</Form.Label>
+              <Form.Label>{translations[language].size}</Form.Label>
               <Form.Control
                 type="text"
                 name="size"
@@ -246,7 +292,7 @@ const AdminAccessoriesPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formBrand">
-              <Form.Label>Brand</Form.Label>
+              <Form.Label>{translations[language].brand}</Form.Label>
               <Form.Control
                 type="text"
                 name="brand"
@@ -255,7 +301,7 @@ const AdminAccessoriesPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formColor">
-              <Form.Label>Color</Form.Label>
+              <Form.Label>{translations[language].color}</Form.Label>
               <Form.Control
                 type="text"
                 name="color"
@@ -264,7 +310,7 @@ const AdminAccessoriesPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formPrice">
-              <Form.Label>Price</Form.Label>
+              <Form.Label>{translations[language].price}</Form.Label>
               <Form.Control
                 type="text"
                 name="price"
@@ -273,7 +319,7 @@ const AdminAccessoriesPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formQuantity">
-              <Form.Label>Quantity</Form.Label>
+              <Form.Label>{translations[language].quantity}</Form.Label>
               <Form.Control
                 type="text"
                 name="quantity"
@@ -282,7 +328,7 @@ const AdminAccessoriesPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formDescription">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>{translations[language].description}</Form.Label>
               <Form.Control
                 type="text"
                 name="description"
@@ -291,7 +337,7 @@ const AdminAccessoriesPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formImage">
-              <Form.Label>Image</Form.Label>
+              <Form.Label>{translations[language].image}</Form.Label>
               <Form.Control type="file" name="image" onChange={handleImageChange} />
               {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
             </Form.Group>
@@ -299,10 +345,10 @@ const AdminAccessoriesPage = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            {translations[language].close}
           </Button>
           <Button variant="primary" onClick={handleSubmit}>
-            Save Changes
+            {translations[language].saveChanges}
           </Button>
         </Modal.Footer>
       </Modal>

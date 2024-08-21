@@ -20,6 +20,54 @@ const AdminWeddingDressPage = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [data, setData] = useState([]);
 
+  // Translation object
+  const translations = {
+    en: {
+      weddingDressPage: 'Wedding Dress Page',
+      add: 'Add',
+      id: 'ID',
+      name: 'Name',
+      size: 'Size',
+      brand: 'Brand',
+      color: 'Color',
+      price: 'Price',
+      description: 'Description',
+      buyable: 'Buyable',
+      rentable: 'Rentable',
+      image: 'Image',
+      remove: 'Remove',
+      edit: 'Edit',
+      noData: 'No data available',
+      saveChanges: 'Save Changes',
+      close: 'Close',
+      addWeddingDress: 'Add Wedding Dress',
+      editWeddingDress: 'Edit Wedding Dress'
+    },
+    ar: {
+      weddingDressPage: 'صفحة فستان الزفاف',
+      add: 'إضافة',
+      id: 'الرقم التعريفي',
+      name: 'الاسم',
+      size: 'الحجم',
+      brand: 'العلامة التجارية',
+      color: 'اللون',
+      price: 'السعر',
+      description: 'الوصف',
+      buyable: 'قابل للشراء',
+      rentable: 'قابل للإيجار',
+      image: 'الصورة',
+      remove: 'إزالة',
+      edit: 'تعديل',
+      noData: 'لا توجد بيانات متاحة',
+      saveChanges: 'حفظ التغييرات',
+      close: 'إغلاق',
+      addWeddingDress: 'إضافة فستان زفاف',
+      editWeddingDress: 'تعديل فستان زفاف'
+    }
+  };
+
+  const language = localStorage.getItem('language') || 'en'; // Default to English
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -143,28 +191,28 @@ const AdminWeddingDressPage = () => {
 
   return (
     <div>
-      <h1>Wedding Dress Page</h1>
+      <h1>{translations[language].weddingDressPage}</h1>
       <div className="d-flex justify-content-end mb-3">
         <button className="ItemAddButn btn btn-primary" onClick={() => handleShow('Add')}>
-          Add
+          {translations[language].add}
         </button>
       </div>
       <div>
         <table className="table table-secondary table-hover table-bordered">
           <thead>
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Size</th>
-              <th scope="col">Brand</th>
-              <th scope="col">Color</th>
-              <th scope="col">Price</th>
-              <th scope="col">Description</th>
-              <th scope="col">Buyable</th>
-              <th scope="col">Rentable</th>
-              <th scope="col">Image</th>
-              <th scope="col">Remove</th>
-              <th scope="col">Edit</th>
+              <th scope="col">{translations[language].id}</th>
+              <th scope="col">{translations[language].name}</th>
+              <th scope="col">{translations[language].size}</th>
+              <th scope="col">{translations[language].brand}</th>
+              <th scope="col">{translations[language].color}</th>
+              <th scope="col">{translations[language].price}</th>
+              <th scope="col">{translations[language].description}</th>
+              <th scope="col">{translations[language].buyable}</th>
+              <th scope="col">{translations[language].rentable}</th>
+              <th scope="col">{translations[language].image}</th>
+              <th scope="col">{translations[language].remove}</th>
+              <th scope="col">{translations[language].edit}</th>
             </tr>
           </thead>
           <tbody>
@@ -178,11 +226,13 @@ const AdminWeddingDressPage = () => {
                   <td>{item.color}</td>
                   <td>{item.price}</td>
                   <td>{item.description}</td>
-                  <td>{item.BuyAble ? 'Yes' : 'No'}</td>
-                  <td>{item.RentAble ? 'Yes' : 'No'}</td>
+                  <td>{item.BuyAble ? translations[language].buyable : 'No'}</td>
+                  <td>{item.RentAble ? translations[language].rentable : 'No'}</td>
                   <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
-                    <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Remove</button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>
+                      {translations[language].remove}
+                    </button>
                   </td>
                   <td>
                     <button
@@ -203,14 +253,14 @@ const AdminWeddingDressPage = () => {
                         })
                       }
                     >
-                      Edit
+                      {translations[language].edit}
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="12">No data available</td>
+                <td colSpan="12">{translations[language].noData}</td>
               </tr>
             )}
           </tbody>
@@ -219,12 +269,12 @@ const AdminWeddingDressPage = () => {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType} Wedding Dress</Modal.Title>
+          <Modal.Title>{modalType === 'Add' ? translations[language].addWeddingDress : translations[language].editWeddingDress}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>{translations[language].name}</Form.Label>
               <Form.Control
                 type="text"
                 name="name"
@@ -233,7 +283,7 @@ const AdminWeddingDressPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formSize">
-              <Form.Label>Size</Form.Label>
+              <Form.Label>{translations[language].size}</Form.Label>
               <Form.Control
                 type="text"
                 name="size"
@@ -242,7 +292,7 @@ const AdminWeddingDressPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formBrand">
-              <Form.Label>Brand</Form.Label>
+              <Form.Label>{translations[language].brand}</Form.Label>
               <Form.Control
                 type="text"
                 name="brand"
@@ -251,7 +301,7 @@ const AdminWeddingDressPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formColor">
-              <Form.Label>Color</Form.Label>
+              <Form.Label>{translations[language].color}</Form.Label>
               <Form.Control
                 type="text"
                 name="color"
@@ -260,7 +310,7 @@ const AdminWeddingDressPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formPrice">
-              <Form.Label>Price</Form.Label>
+              <Form.Label>{translations[language].price}</Form.Label>
               <Form.Control
                 type="text"
                 name="price"
@@ -269,7 +319,7 @@ const AdminWeddingDressPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formDescription">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>{translations[language].description}</Form.Label>
               <Form.Control
                 type="text"
                 name="description"
@@ -281,7 +331,7 @@ const AdminWeddingDressPage = () => {
               <Form.Check 
                 type="checkbox"
                 name="BuyAble"
-                label="Buyable"
+                label={translations[language].buyable}
                 checked={formData.BuyAble}
                 onChange={handleChange}
               />
@@ -290,13 +340,13 @@ const AdminWeddingDressPage = () => {
               <Form.Check 
                 type="checkbox"
                 name="RentAble"
-                label="Rentable"
+                label={translations[language].rentable}
                 checked={formData.RentAble}
                 onChange={handleChange}
               />
             </Form.Group>
             <Form.Group controlId="formImage">
-              <Form.Label>Image</Form.Label>
+              <Form.Label>{translations[language].image}</Form.Label>
               <Form.Control type="file" name="image" onChange={handleImageChange} />
               {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
             </Form.Group>
@@ -304,10 +354,10 @@ const AdminWeddingDressPage = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            {translations[language].close}
           </Button>
           <Button variant="primary" onClick={handleSubmit}>
-            Save Changes
+            {translations[language].saveChanges}
           </Button>
         </Modal.Footer>
       </Modal>

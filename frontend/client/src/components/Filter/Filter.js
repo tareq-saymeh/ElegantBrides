@@ -5,6 +5,23 @@ export function Filter({ filters, onFilterChange, type }) {
     const [uniqueSizes, setUniqueSizes] = useState([]);
     const [uniquebrands, setUniquebrands] = useState([]);
 
+    // Get the selected language from localStorage
+    const language = localStorage.getItem('language') || 'ar'; // Default to Arabic if no language is set
+
+    // Translation object
+    const translations = {
+        en: {
+            size: 'Size',
+            brand: 'Brand',
+            all: 'All'
+        },
+        ar: {
+            size: 'الحجم',
+            brand: 'العلامة التجارية',
+            all: 'الكل'
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -26,7 +43,7 @@ export function Filter({ filters, onFilterChange, type }) {
     return (
         <div className="filter">
             <div className="filter__item">
-                <label>Size:</label>
+                <label>{translations[language].size}:</label>
                 <div>
                     <label>
                         <input
@@ -36,7 +53,7 @@ export function Filter({ filters, onFilterChange, type }) {
                             checked={filters.size === ''}
                             onChange={(e) => onFilterChange('size', e.target.value)}
                         />
-                        All
+                        {translations[language].all}
                     </label>
                     {uniqueSizes.map((size) => (
                         <label key={size}>
@@ -53,7 +70,7 @@ export function Filter({ filters, onFilterChange, type }) {
                 </div>
             </div>
             <div className="filter__item">
-                <label>brand:</label>
+                <label>{translations[language].brand}:</label>
                 <div>
                     <label>
                         <input
@@ -63,7 +80,7 @@ export function Filter({ filters, onFilterChange, type }) {
                             checked={filters.brand === ''}
                             onChange={(e) => onFilterChange('brand', e.target.value)}
                         />
-                        All
+                        {translations[language].all}
                     </label>
                     {uniquebrands.map((brand) => (
                         <label key={brand}>

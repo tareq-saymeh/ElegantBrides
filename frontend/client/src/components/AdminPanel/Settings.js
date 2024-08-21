@@ -11,6 +11,54 @@ const Settings = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Translation object
+  const translations = {
+    en: {
+      settings: 'Settings',
+      selectOption: 'Select Option to Update',
+      updateEmail: 'Update Email',
+      updatePassword: 'Update Password',
+      oldEmail: 'Old Email',
+      newEmail: 'New Email',
+      currentEmail: 'Current Email',
+      currentPassword: 'Current Password',
+      newPassword: 'New Password',
+      confirmNewPassword: 'Confirm New Password',
+      saveChanges: 'Save Changes',
+      enterOldEmail: 'Enter old email',
+      enterNewEmail: 'Enter new email',
+      enterCurrentEmail: 'Enter current email',
+      enterCurrentPassword: 'Enter current password',
+      enterNewPassword: 'Enter new password',
+      confirmNewPasswordPlaceholder: 'Confirm new password',
+      alertPasswordMismatch: 'New password and confirm password do not match',
+      alertError: 'An error occurred'
+    },
+    ar: {
+      settings: 'الإعدادات',
+      selectOption: 'اختر خيارًا للتحديث',
+      updateEmail: 'تحديث البريد الإلكتروني',
+      updatePassword: 'تحديث كلمة المرور',
+      oldEmail: 'البريد الإلكتروني القديم',
+      newEmail: 'البريد الإلكتروني الجديد',
+      currentEmail: 'البريد الإلكتروني الحالي',
+      currentPassword: 'كلمة المرور الحالية',
+      newPassword: 'كلمة المرور الجديدة',
+      confirmNewPassword: 'تأكيد كلمة المرور الجديدة',
+      saveChanges: 'حفظ التغييرات',
+      enterOldEmail: 'أدخل البريد الإلكتروني القديم',
+      enterNewEmail: 'أدخل البريد الإلكتروني الجديد',
+      enterCurrentEmail: 'أدخل البريد الإلكتروني الحالي',
+      enterCurrentPassword: 'أدخل كلمة المرور الحالية',
+      enterNewPassword: 'أدخل كلمة المرور الجديدة',
+      confirmNewPasswordPlaceholder: 'تأكيد كلمة المرور الجديدة',
+      alertPasswordMismatch: 'كلمة المرور الجديدة وتأكيد كلمة المرور لا تتطابق',
+      alertError: 'حدث خطأ'
+    }
+  };
+
+  const language = localStorage.getItem('language') || 'ar'; // Default to English
+
   const handleOptionSelect = (option) => setSelectedOption(option);
   const handleOldEmailChange = (e) => setOldEmail(e.target.value);
   const handleNewEmailChange = (e) => setNewEmail(e.target.value);
@@ -25,14 +73,15 @@ const Settings = () => {
     try {
       if (selectedOption === 'Password') {
         if (newPassword !== confirmPassword) {
-          alert("New password and confirm password do not match");
+          alert(translations[language].alertPasswordMismatch);
           return;
         }
 
         // Make API call to update password
         const response = await axios.patch('http://localhost:3000/api/admin/update-password', {
           currentPassword,
-          newPassword,CurrentEmail
+          newPassword,
+          CurrentEmail
         });
 
         alert(response.data.message);
@@ -48,21 +97,21 @@ const Settings = () => {
         alert(response.data.message);
       }
     } catch (error) {
-      alert(error.response?.data?.message || "An error occurred");
+      alert(error.response?.data?.message || translations[language].alertError);
     }
   };
 
   return (
     <div>
-      <h1>Settings</h1>
+      <h1>{translations[language].settings}</h1>
       <DropdownButton
         id="dropdown-basic-button"
-        title={selectedOption ? `Update ${selectedOption}` : "Select Option to Update"}
+        title={selectedOption ? `${translations[language].updateEmail} / ${translations[language].updatePassword}` : translations[language].selectOption}
         onSelect={handleOptionSelect}
         className="mb-3"
       >
-        <Dropdown.Item eventKey="Email">Email</Dropdown.Item>
-        <Dropdown.Item eventKey="Password">Password</Dropdown.Item>
+        <Dropdown.Item eventKey="Email">{translations[language].updateEmail}</Dropdown.Item>
+        <Dropdown.Item eventKey="Password">{translations[language].updatePassword}</Dropdown.Item>
       </DropdownButton>
 
       {selectedOption && (
@@ -71,22 +120,22 @@ const Settings = () => {
             {selectedOption === 'Email' && (
               <>
                 <Form.Group controlId="formOldEmail" className='AdminFormContant'>
-                  <Form.Label>Old Email</Form.Label>
+                  <Form.Label>{translations[language].oldEmail}</Form.Label>
                   <Form.Control
                     type="email"
                     value={oldEmail}
                     onChange={handleOldEmailChange}
-                    placeholder="Enter old email"
+                    placeholder={translations[language].enterOldEmail}
                     required
                   />
                 </Form.Group>
                 <Form.Group controlId="formNewEmail" className='AdminFormContant'>
-                  <Form.Label>New Email</Form.Label>
+                  <Form.Label>{translations[language].newEmail}</Form.Label>
                   <Form.Control
                     type="email"
                     value={newEmail}
                     onChange={handleNewEmailChange}
-                    placeholder="Enter new email"
+                    placeholder={translations[language].enterNewEmail}
                     required
                   />
                 </Form.Group>
@@ -95,49 +144,48 @@ const Settings = () => {
 
             {selectedOption === 'Password' && (
               <>
-              
-                <Form.Group controlId="formCurrentPassword" className='AdminFormContant'>
-                  <Form.Label>Current Email</Form.Label>
+                <Form.Group controlId="formCurrentEmail" className='AdminFormContant'>
+                  <Form.Label>{translations[language].currentEmail}</Form.Label>
                   <Form.Control
                     type="email"
                     value={CurrentEmail}
                     onChange={handlesetCurrentEmailChange}
-                    placeholder="Enter old email"
+                    placeholder={translations[language].enterCurrentEmail}
                     required
                   />
-                  <Form.Label>Current Password</Form.Label>
+                  <Form.Label>{translations[language].currentPassword}</Form.Label>
                   <Form.Control
                     type="password"
                     value={currentPassword}
                     onChange={handleCurrentPasswordChange}
-                    placeholder="Enter current password"
+                    placeholder={translations[language].enterCurrentPassword}
                     required
                   />
                 </Form.Group>
                 <Form.Group controlId="formNewPassword" className='AdminFormContant'>
-                  <Form.Label>New Password</Form.Label>
+                  <Form.Label>{translations[language].newPassword}</Form.Label>
                   <Form.Control
                     type="password"
                     value={newPassword}
                     onChange={handleNewPasswordChange}
-                    placeholder="Enter new password"
+                    placeholder={translations[language].enterNewPassword}
                     required
                   />
                 </Form.Group>
                 <Form.Group controlId="formConfirmPassword" className='AdminFormContant'>
-                  <Form.Label>Confirm New Password</Form.Label>
+                  <Form.Label>{translations[language].confirmNewPassword}</Form.Label>
                   <Form.Control
                     type="password"
                     value={confirmPassword}
                     onChange={handleConfirmPasswordChange}
-                    placeholder="Confirm new password"
+                    placeholder={translations[language].confirmNewPasswordPlaceholder}
                     required
                   />
                 </Form.Group>
               </>
             )}
             <Button variant="primary" type="submit" className='AdminFormContant'>
-              Save Changes
+              {translations[language].saveChanges}
             </Button>
           </Form>
         </div>

@@ -6,6 +6,33 @@ import { useState } from 'react'; // Import useState for managing state
 
 export function ItemCard(props) {
   const [saved, setSaved] = useState(false); // State to track if item is saved
+  const language = localStorage.getItem('language') || 'ar'; // Get the current language or default to Arabic
+
+  // Translation object
+  const translations = {
+    en: {
+      size: 'Size',
+      collection: "'s collection",
+      quantity: 'Quantity',
+      rentPerDay: '/Day',
+      alertSuccess: 'Successfully added!',
+      alertFailed: 'Failed to add item to cart',
+      errorAdd: 'There was an error adding the item to the cart.',
+      errorSave: 'There was an error saving the item.',
+      rentLabel: 'Rent for',
+    },
+    ar: {
+      size: 'الحجم',
+      collection: 'مجموعة ',
+      quantity: 'الكمية',
+      rentPerDay: '/اليوم',
+      alertSuccess: 'تمت الإضافة بنجاح!',
+      alertFailed: 'فشل في إضافة العنصر إلى السلة',
+      errorAdd: 'حدث خطأ أثناء إضافة العنصر إلى السلة.',
+      errorSave: 'حدث خطأ أثناء حفظ العنصر.',
+      rentLabel: 'استئجار لـ',
+    },
+  };
 
   const addToCart = async () => {
     try {
@@ -17,13 +44,13 @@ export function ItemCard(props) {
         }
       );
       if (response.status === 200) {
-        alert('successfully!');
+        alert(translations[language].alertSuccess);
       } else {
-        alert('Failed to add item to cart');
+        alert(translations[language].alertFailed);
       }
     } catch (error) {
       console.error('Error adding item to cart:', error);
-      alert('There was an error adding the item to the cart.');
+      alert(translations[language].errorAdd);
     }
   };
 
@@ -38,13 +65,13 @@ export function ItemCard(props) {
       );
       if (response.status === 200) {
         setSaved(true); // Update saved state
-        alert('successfully!');
+        alert(translations[language].alertSuccess);
       } else {
-        alert('Failed to save item');
+        alert(translations[language].alertFailed);
       }
     } catch (error) {
       console.error('Error saving item:', error);
-      alert('There was an error saving the item.');
+      alert(translations[language].errorSave);
     }
   };
 
@@ -56,7 +83,6 @@ export function ItemCard(props) {
         </Link>
 
         {/* Connect the addToCart function to the onClick event */}
-        <FaShoppingCart className={"productCard__cart"} onClick={addToCart} />
         <FaRegBookmark 
           className={"productCard__wishlist"} 
           onClick={saveItem}
@@ -66,19 +92,19 @@ export function ItemCard(props) {
         <div className='productCard__content'>
           <h3 className='productName'>{props.name}</h3>
           <div className='displayStack__1'>
-            <div className='productSales'>Size : {props.size} </div>
+            <div className='productSales'>{translations[language].size} : {props.size} </div>
             {props.RentAble  ? (
-              <div className='productPrice'>${props.price}/Day</div>
+              <div className='productPrice'>₪ {props.price}{translations[language].rentPerDay}</div>
             ) : (
-              <div className='productPrice'>${props.price}</div>
+              <div className='productPrice'>₪ {props.price}</div>
             )}
           </div>
           <div className='displayStack__2'>
-            <div className='productTime'>{props.brand}'s collection</div>
+            <div className='productTime'>{props.brand} {translations[language].collection}</div>
             {props.RentAble  ? (
-              <div className='productTime'>  </div>
+              <div className='productTime'></div>
             ) : (
-              <div className='productTime'> quantity: {props.quantity}</div>
+              <div className='productTime'>{translations[language].quantity}: {props.quantity}</div>
             )}
           </div>
         </div>

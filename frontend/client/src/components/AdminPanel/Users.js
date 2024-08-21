@@ -7,6 +7,40 @@ const Users = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
   const navigate = useNavigate();
 
+  // Translation object
+  const translations = {
+    en: {
+      users: 'Users',
+      filterId: 'Filter by _ID',
+      filterName: 'Filter by Name',
+      filterEmail: 'Filter by Email',
+      filterPhone: 'Filter by Phone',
+      viewHistory: 'View History',
+      history: 'History',
+      alertFetchError: 'Failed to fetch users',
+      _ID: "_ID",
+      Name: "Name",
+      Email: "Email",
+      Phone: "Phone"
+    },
+    ar: {
+      users: 'المستخدمين',
+      filterId: 'بحث بواسطة _ID',
+      filterName: 'بحث بواسطة الاسم',
+      filterEmail: 'بحث بواسطة البريد الإلكتروني',
+      filterPhone: 'بحث بواسطة الهاتف',
+      viewHistory: 'عرض التاريخ',
+      history: 'التاريخ',
+      alertFetchError: 'فشل في جلب المستخدمين',
+      _ID: 'الرقم التعريفي',
+      Name: "الاسم",
+      Email: " البريد الإلكتروني",
+      Phone: "الهاتف"
+    }
+  };
+
+  const language = localStorage.getItem('language') || 'ar'; // Default to Arabic
+
   useEffect(() => {
     // Fetch users from the server
     const fetchUsers = async () => {
@@ -15,7 +49,7 @@ const Users = () => {
         const data = await response.json();
         setUsers(data);
       } catch (error) {
-        console.error('Failed to fetch users:', error);
+        console.error(translations[language].alertFetchError, error);
       }
     };
 
@@ -48,62 +82,60 @@ const Users = () => {
     );
   });
 
-  const handleHistoryClick = (user) => {
-    navigate('/history', { state: { user } });
+  const handleHistoryClick = (id) => {
+    navigate('/history', { state: { id, filter } }); // Pass the filter state
   };
 
   return (
     <div>
-      <h1>Users</h1>
-      <div className="d-flex justify-content-end mb-3"></div>
+      <h1>{translations[language].users}</h1>
       <table className="table table-secondary table-hover table-bordered">
         <thead>
           <tr>
             <th scope="col" onClick={() => sortUsers('_id')}>
-              _ID
+              {translations[language]._ID}
               <input
                 type="text"
                 name="_id"
-                placeholder="Filter by _ID"
+                placeholder={translations[language].filterId}
                 value={filter._id}
                 onChange={handleFilterChange}
                 className="form-control"
               />
             </th>
             <th scope="col" onClick={() => sortUsers('name')}>
-              Name
+              {translations[language].Name}
               <input
                 type="text"
                 name="name"
-                placeholder="Filter by Name"
+                placeholder={translations[language].filterName}
                 value={filter.name}
                 onChange={handleFilterChange}
                 className="form-control"
               />
             </th>
             <th scope="col" onClick={() => sortUsers('email')}>
-              Email
+              {translations[language].Email}
               <input
                 type="text"
                 name="email"
-                placeholder="Filter by Email"
+                placeholder={translations[language].filterEmail}
                 value={filter.email}
                 onChange={handleFilterChange}
                 className="form-control"
               />
             </th>
             <th scope="col" onClick={() => sortUsers('Phone')}>
-              Phone
+              {translations[language].Phone}
               <input
                 type="text"
                 name="Phone"
-                placeholder="Filter by Phone"
+                placeholder={translations[language].filterPhone}
                 value={filter.Phone}
                 onChange={handleFilterChange}
                 className="form-control"
               />
             </th>
-            <th scope="col">History</th>
           </tr>
         </thead>
         <tbody>
@@ -113,11 +145,7 @@ const Users = () => {
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>{user.Phone}</td>
-              <td>
-                <button className="btn btn-secondary" onClick={() => handleHistoryClick(user)}>
-                  View History
-                </button>
-              </td>
+              
             </tr>
           ))}
         </tbody>

@@ -11,7 +11,9 @@ function JewerlyPage() {
     const [search, setSearch] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1550);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 720);
-
+    const [language, setLanguage] = useState(() => {
+        return localStorage.getItem('language') || 'ar';
+    });
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -74,7 +76,9 @@ function JewerlyPage() {
                 </button>
                 {isSidebarOpen && (
                     <div className={`sidebar ${isSmallScreen ? 'sidebar-top' : 'sidebar-left'}`}>
-                        <h1>Jewerly</h1>
+                        <h1>
+                           {language === 'ar' ? 'مجوهرات' : 'Jewerly'}
+                        </h1>
                         <div className="search-bar">
                             <input 
                                 type="text" 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 
-const UnderReservations = () => {
+const Reservations = () => {
   const [reservations, setReservations] = useState([]);
   const [filter, setFilter] = useState({
     customer: '',
@@ -11,6 +11,42 @@ const UnderReservations = () => {
     Phone: '',
   });
   const [sortConfig, setSortConfig] = useState({ key: 'receivedDate', direction: 'asc' });
+
+  const language = localStorage.getItem('language') || 'ar'; // Default language is Arabic
+
+  // Translation object
+  const translations = {
+    en: {
+      Reservations: 'Reservations',
+      downloadExcel: 'Download as Excel',
+      customer: 'Customer',
+      items: 'Items',
+      receivedDates: 'Received Dates',
+      returnDates: 'Return Dates',
+      finalAmount: 'Final Amount',
+      phoneNumber: 'Phone Number',
+      filterByCustomer: 'Filter by Customer',
+      filterByItems: 'Filter by Items',
+      filterByPhone: 'Filter by Phone Number',
+      noData: 'No Data Available',
+      return: 'Received'
+    },
+    ar: {
+      Reservations: 'الحجوزات',
+      downloadExcel: 'تنزيل كملف Excel',
+      customer: 'العميل',
+      items: 'الأصناف',
+      receivedDates: 'تواريخ الاستلام',
+      returnDates: 'تواريخ الإرجاع',
+      finalAmount: 'المبلغ النهائي',
+      phoneNumber: 'رقم الهاتف',
+      filterByCustomer: 'البحث حسب العميل',
+      filterByItems: 'البحث حسب الأصناف',
+      filterByPhone: 'البحث حسب رقم الهاتف',
+      noData: 'لا توجد بيانات متاحة',
+      return: 'تم الاستلام'
+    }
+  };
 
   useEffect(() => {
     // Fetch under reservations from the server
@@ -96,16 +132,16 @@ const UnderReservations = () => {
       PhoneNumber: reservation.userId.Phone
     })));
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Under Reservations');
+    XLSX.utils.book_append_sheet(workbook, worksheet, translations[language].Reservations);
     XLSX.writeFile(workbook, 'Under_Reservations.xlsx');
   };
 
   return (
     <div>
-      <h1>Under Reservations</h1>
+      <h1>{translations[language].Reservations}</h1>
       <div className="d-flex justify-content-end mb-3">
         <button onClick={downloadExcel} className="btn btn-primary">
-          Download as Excel
+          {translations[language].downloadExcel}
         </button>
       </div>
       <div>
@@ -113,93 +149,99 @@ const UnderReservations = () => {
           <thead>
             <tr>
               <th scope="col" onClick={() => sortReservations('userId.name')}>
-                Customer
+                {translations[language].customer}
                 <input
                   type="text"
                   name="customer"
                   value={filter.customer}
                   onChange={handleFilterChange}
-                  placeholder="Filter by Customer"
+                  placeholder={translations[language].filterByCustomer}
                   className="form-control"
                 />
               </th>
               <th scope="col" onClick={() => sortReservations('items')}>
-                Items
+                {translations[language].items}
                 <input
                   type="text"
                   name="items"
                   value={filter.items}
                   onChange={handleFilterChange}
-                  placeholder="Filter by Items"
+                  placeholder={translations[language].filterByItems}
                   className="form-control"
                 />
               </th>
               <th scope="col" onClick={() => sortReservations('receivedDate')}>
-                Received Dates
+                {translations[language].receivedDates}
                 <span>{sortConfig.key === 'receivedDate' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
               </th>
               <th scope="col" onClick={() => sortReservations('returnDate')}>
-                Return Dates
+                {translations[language].returnDates}
                 <span>{sortConfig.key === 'returnDate' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
               </th>
               <th scope="col" onClick={() => sortReservations('finalAmount')}>
-                Final Amount
+                {translations[language].finalAmount}
                 <span>{sortConfig.key === 'finalAmount' ? (sortConfig.direction === 'asc' ? ' ↑' : ' ↓') : ''}</span>
               </th>
               <th scope="col">
-                Phone Number
+                {translations[language].phoneNumber}
                 <input
                   type="text"
                   name="Phone"
                   value={filter.Phone}
                   onChange={handleFilterChange}
-                  placeholder="Filter by Phone Number"
+                  placeholder={translations[language].filterByPhone}
                   className="form-control"
                 />
               </th>
-              <th scope="col">Actions</th>
+              <th scope="col">{translations[language].actions}</th>
             </tr>
           </thead>
           <tbody>
-            {filteredReservations.map((reservation) => (
-              <tr key={reservation._id}>
-                <td>{reservation.userId.name}</td>
-                <td>
-                  {reservation.items.map(item => (
-                    <span key={item._id}>{item.itemId.name}</span>
-                  )).reduce((prev, curr) => [prev, ', ', curr])}
-                </td>
-                <td>
-                  {reservation.items.length > 0 ? (
-                    reservation.items
-                      .map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A')
-                      .join(', ')
-                  ) : (
-                    'N/A'
-                  )}
-                </td>
-                <td>
-                  {reservation.items.length > 0 ? (
-                    reservation.items
-                      .map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A')
-                      .join(', ')
-                  ) : (
-                    'N/A'
-                  )}
-                </td>
-                <td>{getFinalAmount(reservation).toFixed(2)}</td>
-                <td>{reservation.userId.Phone}</td>
+            {filteredReservations.length > 0 ? (
+              filteredReservations.map((reservation) => (
+                <tr key={reservation._id}>
+                  <td>{reservation.userId.name}</td>
+                  <td>
+                    {reservation.items.map(item => (
+                      <span key={item._id}>{item.itemId.name}</span>
+                    )).reduce((prev, curr) => [prev, ', ', curr])}
+                  </td>
+                  <td>
+                    {reservation.items.length > 0 ? (
+                      reservation.items
+                        .map(item => item.receivedDate ? new Date(item.receivedDate).toLocaleDateString() : 'N/A')
+                        .join(', ')
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                  <td>
+                    {reservation.items.length > 0 ? (
+                      reservation.items
+                        .map(item => item.returnDate ? new Date(item.returnDate).toLocaleDateString() : 'N/A')
+                        .join(', ')
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                  <td>{getFinalAmount(reservation).toFixed(2)}</td>
+                  <td>{reservation.userId.Phone}</td>
 
-                <td>
-                  <button 
-                    onClick={() => handleReturn(reservation._id)} 
-                    className="btn btn-success"
-                  >
-                    Return
-                  </button>
-                </td>
+                  <td>
+                    <button 
+                      onClick={() => handleReturn(reservation._id)} 
+                      className="btn btn-success"
+                    >
+                      {translations[language].return}
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center">{translations[language].noData}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -207,4 +249,4 @@ const UnderReservations = () => {
   );
 };
 
-export default UnderReservations;
+export default Reservations;

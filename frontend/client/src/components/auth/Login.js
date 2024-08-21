@@ -5,12 +5,53 @@ import Footer from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
 
+// Translation data
+const translations = {
+  en: {
+    createAccount: 'Create Account',
+    useEmailForRegistration: 'or use your email for registration',
+    namePlaceholder: 'Name',
+    phonePlaceholder: 'Phone',
+    emailPlaceholder: 'Email',
+    passwordPlaceholder: 'Password',
+    birthdayPlaceholder: 'Birthday',
+    signUp: 'Sign Up',
+    login: 'Log in',
+    useAccount: 'or use your account',
+    identifierPlaceholder: 'Email or Username',
+    forgotPassword: 'Forgot your password?',
+    signIn: 'Sign In',
+    welcomeBack: 'Welcome Back!',
+    keepConnected: 'To keep connected with us please login with your personal info',
+    helloFriend: 'Hello, Friend!',
+    enterDetails: 'Enter your personal details and start journey with us',
+  },
+  ar: {
+    createAccount: 'إنشاء حساب',
+    useEmailForRegistration: 'أو استخدم بريدك الإلكتروني للتسجيل',
+    namePlaceholder: 'الاسم',
+    phonePlaceholder: 'الهاتف',
+    emailPlaceholder: 'البريد الإلكتروني',
+    passwordPlaceholder: 'كلمة المرور',
+    birthdayPlaceholder: 'تاريخ الميلاد',
+    signUp: 'تسجيل',
+    login: 'تسجيل الدخول',
+    useAccount: 'أو استخدم حسابك',
+    identifierPlaceholder: 'البريد الإلكتروني أو اسم المستخدم',
+    forgotPassword: 'نسيت كلمة المرور؟',
+    signIn: 'تسجيل الدخول',
+    welcomeBack: 'مرحبًا بعودتك!',
+    keepConnected: 'للبقاء على اتصال معنا، يرجى تسجيل الدخول باستخدام معلوماتك الشخصية',
+    helloFriend: 'مرحبًا، صديق!',
+    enterDetails: 'أدخل بياناتك الشخصية وابدأ رحلتك معنا',
+  },
+};
+
 const Login = () => {
   const [rightPanelActive, setRightPanelActive] = useState(false);
-
   const [registerData, setRegisterData] = useState({
     name: '',
-    Phone:'',
+    Phone: '',
     email: '',
     password: '',
     birthday: '',
@@ -21,6 +62,8 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
+  const language = localStorage.getItem('language') || 'ar'; // Default to Arabic
+  const t = translations[language]; // Get the current language's translations
 
   const handleSignUpClick = () => {
     setRightPanelActive(true);
@@ -62,12 +105,12 @@ const Login = () => {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         console.log('Login successful:', response.data);
-        if (response.data.role === 'Admin') { // Ensure the role matches exactly with what the backend sends
+        if (response.data.role === 'Admin') {
           navigate('/dashboard'); // Redirect to dashboard if admin
-          console.log("Admin logged in");
+          console.log('Admin logged in');
         } else {
           navigate('/'); // Redirect to home if user
-          console.log("User logged in");
+          console.log('User logged in');
         }
       } else {
         console.log('Login failed: No token in response');
@@ -87,37 +130,37 @@ const Login = () => {
       <div className={`auth-container ${rightPanelActive ? 'auth-right-panel-active' : ''}`} id="auth-container">
         <div className="auth-form-container auth-sign-up-container">
           <form onSubmit={handleRegisterSubmit}>
-            <h1>Create Account</h1>
-            <span>or use your email for registration</span>
-            <input type="text" name="name" placeholder="Name" value={registerData.name} onChange={handleRegisterChange} required />
-            <input type="text" name="Phone" placeholder="Phone" value={registerData.Phone} onChange={handleRegisterChange} required />
-            <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} required />
-            <input type="password" name="password" placeholder="Password" value={registerData.password} onChange={handleRegisterChange} required />
-            <input type="date" name="birthday" placeholder="Birthday" value={registerData.birthday} onChange={handleRegisterChange} required />
-            <button type="submit">Sign Up</button>
+            <h1>{t.createAccount}</h1>
+            <span>{t.useEmailForRegistration}</span>
+            <input type="text" name="name" placeholder={t.namePlaceholder} value={registerData.name} onChange={handleRegisterChange} required />
+            <input type="text" name="Phone" placeholder={t.phonePlaceholder} value={registerData.Phone} onChange={handleRegisterChange} required />
+            <input type="email" name="email" placeholder={t.emailPlaceholder} value={registerData.email} onChange={handleRegisterChange} required />
+            <input type="password" name="password" placeholder={t.passwordPlaceholder} value={registerData.password} onChange={handleRegisterChange} required />
+            <input type="date" name="birthday" placeholder={t.birthdayPlaceholder} value={registerData.birthday} onChange={handleRegisterChange} required />
+            <button type="submit">{t.signUp}</button>
           </form>
         </div>
         <div className="auth-form-container auth-sign-in-container">
           <form onSubmit={handleLoginSubmit}>
-            <h1>Log in</h1>
-            <span>or use your account</span>
-            <input type="text" name="identifier" placeholder="Email or Username" value={loginData.identifier} onChange={handleLoginChange} required />
-            <input type="password" name="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} required />
-            <a href="#">Forgot your password?</a>
-            <button type="submit">Sign In</button>
+            <h1>{t.login}</h1>
+            <span>{t.useAccount}</span>
+            <input type="text" name="identifier" placeholder={t.identifierPlaceholder} value={loginData.identifier} onChange={handleLoginChange} required />
+            <input type="password" name="password" placeholder={t.passwordPlaceholder} value={loginData.password} onChange={handleLoginChange} required />
+            <a href="#">{t.forgotPassword}</a>
+            <button type="submit">{t.signIn}</button>
           </form>
         </div>
         <div className="auth-overlay-container">
           <div className="auth-overlay">
             <div className="auth-overlay-panel auth-overlay-left">
-              <h1>Welcome Back!</h1>
-              <p>To keep connected with us please login with your personal info</p>
-              <button className="auth-ghost" onClick={handleSignInClick} id="signIn">Sign In</button>
+              <h1>{t.welcomeBack}</h1>
+              <p>{t.keepConnected}</p>
+              <button className="auth-ghost" onClick={handleSignInClick} id="signIn">{t.signIn}</button>
             </div>
             <div className="auth-overlay-panel auth-overlay-right">
-              <h1>Hello, Friend!</h1>
-              <p>Enter your personal details and start journey with us</p>
-              <button className="auth-ghost" onClick={handleSignUpClick} id="signUp">Sign Up</button>
+              <h1>{t.helloFriend}</h1>
+              <p>{t.enterDetails}</p>
+              <button className="auth-ghost" onClick={handleSignUpClick} id="signUp">{t.signUp}</button>
             </div>
           </div>
         </div>

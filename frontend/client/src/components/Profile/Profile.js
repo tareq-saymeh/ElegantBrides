@@ -21,6 +21,59 @@ function Profile() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertVariant, setAlertVariant] = useState('');
 
+  // Get the selected language from localStorage
+  const language = localStorage.getItem('language') || 'ar'; // Default to Arabic if no language is set
+
+  // Translation object
+  const translations = {
+    en: {
+      itemName: 'Item Name',
+      receivedDate: 'Received Date',
+      returnDate: 'Return Date',
+      totalPrice: 'Total Price',
+      status: 'Status',
+      current: 'Current',
+      pending: 'Pending',
+      returned: 'Returned',
+      noSavedItems: 'No saved items found.',
+      accountSettings: 'Account Settings',
+      name: 'Name',
+      email: 'Email',
+      phone: 'Phone',
+      password: 'Password',
+      confirmPassword: 'Confirm Password',
+      saveChanges: 'Save Changes',
+      changePassword: 'Change Password',
+      hidePasswordFields: 'Hide Password Fields',
+      showPasswordFields: 'Show Password Fields',
+      updateSuccess: 'Profile updated successfully!',
+      updateFail: 'Update failed: ',
+    },
+    ar: {
+      itemName: 'اسم العنصر',
+      receivedDate: 'تاريخ الاستلام',
+      returnDate: 'تاريخ الإرجاع',
+      totalPrice: 'السعر الإجمالي',
+      status: 'الحالة',
+      current: 'حالي',
+      pending: 'بانتظار الاستلام',
+      returned: 'تم إرجاعه',
+      noSavedItems: 'لا توجد عناصر محفوظة.',
+      accountSettings: 'إعدادات الحساب',
+      name: 'الاسم',
+      email: 'البريد الإلكتروني',
+      phone: 'الهاتف',
+      password: 'كلمة المرور',
+      confirmPassword: 'تأكيد كلمة المرور',
+      saveChanges: 'حفظ التغييرات',
+      changePassword: 'تغيير كلمة المرور',
+      hidePasswordFields: 'إخفاء حقول كلمة المرور',
+      showPasswordFields: 'عرض حقول كلمة المرور',
+      updateSuccess: 'تم تحديث الملف الشخصي بنجاح!',
+      updateFail: 'فشل التحديث: ',
+    }
+  };
+
   const handlePasswordToggle = () => {
     setShowPasswordFields(!showPasswordFields);
   };
@@ -55,24 +108,21 @@ function Profile() {
       );
 
       // Show success message
-      setAlertMessage('Profile updated successfully!');
+      setAlertMessage(translations[language].updateSuccess);
       setAlertVariant('success');
 
     } catch (error) {
       if (error.response) {
         // Show error message
-        setAlertMessage('Update failed: ' + error.response.data.message);
+        setAlertMessage(translations[language].updateFail + error.response.data.message);
         setAlertVariant('danger');
       } else {
         // Show error message
-        setAlertMessage('Update failed: ' + error.message);
+        setAlertMessage(translations[language].updateFail + error.message);
         setAlertVariant('danger');
       }
     }
   };
-
-  
-  // Other useEffect hooks for fetching reservations, saved items, and logs...
 
   useEffect(() => {
     const userReservations = async () => {
@@ -211,11 +261,11 @@ function Profile() {
           <Table striped bordered hover responsive>
             <thead>
               <tr>
-                <th>Item Name</th>
-                <th>Received Date</th>
-                <th>Return Date</th>
-                <th>Total Price</th>
-                <th>Status</th>
+                <th>{translations[language].itemName}</th>
+                <th>{translations[language].receivedDate}</th>
+                <th>{translations[language].returnDate}</th>
+                <th>{translations[language].totalPrice}</th>
+                <th>{translations[language].status}</th>
               </tr>
             </thead>
             <tbody>
@@ -232,7 +282,7 @@ function Profile() {
                         fontWeight: 'bold',
                       }}
                     >
-                      {reservation.isReceived ? 'Current' : 'Pending'}
+                      {reservation.isReceived ? translations[language].current : translations[language].pending}
                     </td>
                   </tr>
                 ))
@@ -245,8 +295,7 @@ function Profile() {
                     <td>{new Date(logItem.receivedDate).toLocaleDateString()}</td>
                     <td>{new Date(logItem.returnDate).toLocaleDateString()}</td>
                     <td>${calculateTotalPrice(log.items)}</td>
-                    <td style={{ color: 'green', fontWeight: 'bold' }}>Returned</td>
-
+                    <td style={{ color: 'green', fontWeight: 'bold' }}>{translations[language].returned}</td>
                   </tr>
                 ))
               ))}
@@ -254,26 +303,21 @@ function Profile() {
           </Table>
 
           {/* Account Settings */}
-          
-          
-        
-          {/* Show alert if there is a message */}
           {alertMessage && (
             <Alert variant={alertVariant} onClose={() => setAlertMessage('')} dismissible>
               {alertMessage}
             </Alert>
           )}
 
-          
           <div className="col-12">
             <Card>
               <Card.Header>
-                <h2 className="h5">Account Settings</h2>
+                <h2 className="h5">{translations[language].accountSettings}</h2>
               </Card.Header>
               <Card.Body>
                 <Form>
                   <Form.Group className="mb-3" controlId="formName">
-                    <Form.Label>Name</Form.Label>
+                    <Form.Label>{translations[language].name}</Form.Label>
                     <Form.Control
                       type="text"
                       value={name}
@@ -282,7 +326,7 @@ function Profile() {
                   </Form.Group>
 
                   <Form.Group className="mb-3" controlId="formEmail">
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label>{translations[language].email}</Form.Label>
                     <Form.Control
                       type="email"
                       value={email}
@@ -291,7 +335,7 @@ function Profile() {
                   </Form.Group>
 
                   <Form.Group className="mb-3" controlId="formPhone">
-                    <Form.Label>Phone</Form.Label>
+                    <Form.Label>{translations[language].phone}</Form.Label>
                     <Form.Control
                       type="text"
                       value={phone}
@@ -300,13 +344,13 @@ function Profile() {
                   </Form.Group>
 
                   <Button variant="secondary" onClick={handlePasswordToggle}>
-                    {showPasswordFields ? 'Hide Password Fields' : 'Change Password'}
+                    {showPasswordFields ? translations[language].hidePasswordFields : translations[language].changePassword}
                   </Button>
 
                   {showPasswordFields && (
                     <>
                       <Form.Group className="mb-3" controlId="formPassword">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>{translations[language].password}</Form.Label>
                         <Form.Control
                           type="password"
                           value={password}
@@ -315,7 +359,7 @@ function Profile() {
                       </Form.Group>
 
                       <Form.Group className="mb-3" controlId="formConfirmPassword">
-                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Label>{translations[language].confirmPassword}</Form.Label>
                         <Form.Control
                           type="password"
                           value={confirmPassword}
@@ -326,44 +370,43 @@ function Profile() {
                   )}
 
                   <Button variant="primary" onClick={handleSaveChanges}>
-                    Save Changes
+                    {translations[language].saveChanges}
                   </Button>
                 </Form>
               </Card.Body>
             </Card>
           </div>
 
-
-        {/* Saved Items */}
-        <div className="col-12 mb-4">
-          <Card>
-            <Card.Header>
-              <h2 className="h5">Saved Items</h2>
-            </Card.Header>
-            <Card.Body>
-              <div className="row">
-                {savedItems.length === 0 ? (
-                  <p>No saved items found.</p>
-                ) : (
-                  savedItems.map((item) => (
-                    <div key={item._id} className="col-md-4 col-sm-6 mb-4"> {/* Adjust column class */}
-                      <ItemCard
-                        id={item._id}
-                        image={`http://localhost:3000/${item.image}`}
-                        name={item.name}
-                        price={item.price}
-                        size={item.size}
-                        brand={item.brand}
-                        RentAble={item.RentAble}
-                      />
-                    </div>
-                  ))
-                )}
-              </div>
-            </Card.Body>
-          </Card>
+          {/* Saved Items */}
+          <div className="col-12 mb-4">
+            <Card>
+              <Card.Header>
+                <h2 className="h5">{translations[language].savedItems}</h2>
+              </Card.Header>
+              <Card.Body>
+                <div className="row">
+                  {savedItems.length === 0 ? (
+                    <p>{translations[language].noSavedItems}</p>
+                  ) : (
+                    savedItems.map((item) => (
+                      <div key={item._id} className="col-md-4 col-sm-6 mb-4"> {/* Adjust column class */}
+                        <ItemCard
+                          id={item._id}
+                          image={`http://localhost:3000/${item.image}`}
+                          name={item.name}
+                          price={item.price}
+                          size={item.size}
+                          brand={item.brand}
+                          RentAble={item.RentAble}
+                        />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
         </div>
-      </div>
       </div>
       <Footer />
     </>

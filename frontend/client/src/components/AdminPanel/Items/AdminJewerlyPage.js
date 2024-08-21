@@ -15,11 +15,57 @@ const AdminJewerlyPage = () => {
     description: '',
     type: 'Jewelry',
     price: '',
-    quantity: '', // Reset quantity for 'Add' mode
+    quantity: '',
     image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [data, setData] = useState([]);
+
+  // Translation object
+  const translations = {
+    en: {
+      jewelryPage: 'Jewelry Page',
+      add: 'Add',
+      id: 'ID',
+      name: 'Name',
+      size: 'Size',
+      brand: 'Brand',
+      color: 'Color',
+      price: 'Price',
+      quantity: 'Quantity',
+      description: 'Description',
+      image: 'Image',
+      remove: 'Remove',
+      edit: 'Edit',
+      noData: 'No data available',
+      saveChanges: 'Save Changes',
+      close: 'Close',
+      addJewelry: 'Add Jewelry',
+      editJewelry: 'Edit Jewelry'
+    },
+    ar: {
+      jewelryPage: ' المجوهرات',
+      add: 'إضافة',
+      id: 'الرقم التعريفي',
+      name: 'الاسم',
+      size: 'الحجم',
+      brand: 'العلامة التجارية',
+      color: 'اللون',
+      price: 'السعر',
+      quantity: 'الكمية',
+      description: 'الوصف',
+      image: 'الصورة',
+      remove: 'إزالة',
+      edit: 'تعديل',
+      noData: 'لا توجد بيانات متاحة',
+      saveChanges: 'حفظ التغييرات',
+      close: 'إغلاق',
+      addJewelry: 'إضافة مجوهرات',
+      editJewelry: 'تعديل مجوهرات'
+    }
+  };
+
+  const language = localStorage.getItem('language') || 'en'; // Default to English
 
   useEffect(() => {
     fetchData();
@@ -54,7 +100,7 @@ const AdminJewerlyPage = () => {
         RentAble: false,
         description: '',
         type: 'Jewelry',
-        quantity: '', // Reset quantity for 'Add' mode
+        quantity: '',
         price: '',
         image: null
       });
@@ -74,7 +120,7 @@ const AdminJewerlyPage = () => {
       RentAble: false,
       description: '',
       type: 'Jewelry',
-      quantity: '', // Added quantity field
+      quantity: '',
       price: '',
       image: null
     });
@@ -109,7 +155,7 @@ const AdminJewerlyPage = () => {
     dataToSubmit.append('RentAble', formData.RentAble);
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
-    dataToSubmit.append('quantity', formData.quantity); // Include quantity
+    dataToSubmit.append('quantity', formData.quantity);
     dataToSubmit.append('price', formData.price);
     if (formData.image) {
       dataToSubmit.append('image', formData.image);
@@ -147,27 +193,27 @@ const AdminJewerlyPage = () => {
 
   return (
     <div>
-      <h1>Jewelry Page</h1>
+      <h1>{translations[language].jewelryPage}</h1>
       <div className="d-flex justify-content-end mb-3">
         <button className="ItemAddButn btn btn-primary" onClick={() => handleShow('Add')}>
-          Add
+          {translations[language].add}
         </button>
       </div>
       <div>
         <table className="table table-secondary table-hover table-bordered">
           <thead>
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Size</th>
-              <th scope="col">Brand</th>
-              <th scope="col">Color</th>
-              <th scope="col">Price</th>
-              <th scope="col">Description</th>
-              <th scope="col">Quantity</th> 
-              <th scope="col">Image</th>
-              <th scope="col">Remove</th>
-              <th scope="col">Edit</th>
+              <th scope="col">{translations[language].id}</th>
+              <th scope="col">{translations[language].name}</th>
+              <th scope="col">{translations[language].size}</th>
+              <th scope="col">{translations[language].brand}</th>
+              <th scope="col">{translations[language].color}</th>
+              <th scope="col">{translations[language].price}</th>
+              <th scope="col">{translations[language].description}</th>
+              <th scope="col">{translations[language].quantity}</th>
+              <th scope="col">{translations[language].image}</th>
+              <th scope="col">{translations[language].remove}</th>
+              <th scope="col">{translations[language].edit}</th>
             </tr>
           </thead>
           <tbody>
@@ -184,7 +230,9 @@ const AdminJewerlyPage = () => {
                   <td>{item.quantity}</td>
                   <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
-                    <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Remove</button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>
+                      {translations[language].remove}
+                    </button>
                   </td>
                   <td>
                     <button
@@ -201,19 +249,19 @@ const AdminJewerlyPage = () => {
                           description: item.description,
                           type: item.type,
                           price: item.price,
-                          quantity: item.quantity, 
+                          quantity: item.quantity,
                           image: item.image,
                         })
                       }
                     >
-                      Edit
+                      {translations[language].edit}
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="10">No data available</td>
+                <td colSpan="11">{translations[language].noData}</td>
               </tr>
             )}
           </tbody>
@@ -222,12 +270,12 @@ const AdminJewerlyPage = () => {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{modalType} Accessory</Modal.Title>
+          <Modal.Title>{modalType === 'Add' ? translations[language].addJewelry : translations[language].editJewelry}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>{translations[language].name}</Form.Label>
               <Form.Control
                 type="text"
                 name="name"
@@ -236,7 +284,7 @@ const AdminJewerlyPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formSize">
-              <Form.Label>Size</Form.Label>
+              <Form.Label>{translations[language].size}</Form.Label>
               <Form.Control
                 type="text"
                 name="size"
@@ -245,7 +293,7 @@ const AdminJewerlyPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formBrand">
-              <Form.Label>Brand</Form.Label>
+              <Form.Label>{translations[language].brand}</Form.Label>
               <Form.Control
                 type="text"
                 name="brand"
@@ -254,7 +302,7 @@ const AdminJewerlyPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formColor">
-              <Form.Label>Color</Form.Label>
+              <Form.Label>{translations[language].color}</Form.Label>
               <Form.Control
                 type="text"
                 name="color"
@@ -263,7 +311,7 @@ const AdminJewerlyPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formPrice">
-              <Form.Label>Price</Form.Label>
+              <Form.Label>{translations[language].price}</Form.Label>
               <Form.Control
                 type="text"
                 name="price"
@@ -272,7 +320,7 @@ const AdminJewerlyPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formQuantity">
-              <Form.Label>Quantity</Form.Label>
+              <Form.Label>{translations[language].quantity}</Form.Label>
               <Form.Control
                 type="text"
                 name="quantity"
@@ -281,7 +329,7 @@ const AdminJewerlyPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formDescription">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>{translations[language].description}</Form.Label>
               <Form.Control
                 type="text"
                 name="description"
@@ -290,7 +338,7 @@ const AdminJewerlyPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formImage">
-              <Form.Label>Image</Form.Label>
+              <Form.Label>{translations[language].image}</Form.Label>
               <Form.Control type="file" name="image" onChange={handleImageChange} />
               {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
             </Form.Group>
@@ -298,10 +346,10 @@ const AdminJewerlyPage = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            {translations[language].close}
           </Button>
           <Button variant="primary" onClick={handleSubmit}>
-            Save Changes
+            {translations[language].saveChanges}
           </Button>
         </Modal.Footer>
       </Modal>
