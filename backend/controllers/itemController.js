@@ -2,19 +2,16 @@ const Items = require('../models/Items');
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Reservation = require('../models/Reservations');
-const path = require('path');
 
 // Get all items
 exports.getAllItems = async (req, res) => {
   try {
     const { type } = req.query;
-    // Build the filter object
     const filter = {
-      ...(type && { type }), // Include type filter if provided
-      quantity: { $ne: 0 }   // Exclude items with quantity equal to 0
+      ...(type && { type }), 
+      quantity: { $ne: 0 }   
     };
 
-    // Fetch items from the database with the constructed filter
     const items = await Items.find(filter);
     res.json(items);
   } catch (error) {
@@ -59,56 +56,101 @@ exports.savedItem = async (req, res) => {
 // Create a new item
 exports.createItem = async (req, res) => {
   const { name, size, brand, color, BuyAble, RentAble, description, type, price, quantity } = req.body;
-  const images = req.files ? req.files.map(file => file.path) : []; // Handle multiple images
+  const images = req.files.map(file => file.filename);
+  console.log(images);
+  
+  if (!name || !price || images.length === 0) {
+    return res.status(400).json({ message: 'Name, type, images, and price are required.' });
+  }
 
-  if (!name || !price) {
-    return res.status(400).json({ message: 'Name, type, and price are required.' });
+  if (price < 0 || quantity < 0) {
+    return res.status(400).json({ message: 'Price and quantity must be positive values.' });
   }
 
   try {
-    const newItem = new Items({ name, size, brand, color, BuyAble, RentAble, description, type, price, quantity, image: images });
+    const newItem = new Items({
+      name,
+      size,
+      brand,
+      color,
+      BuyAble,
+      RentAble,
+      description,
+      type,
+      price,
+      quantity,
+      image :images
+    });
+
     const savedItem = await newItem.save();
     res.status(201).json(savedItem);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'Error creating item: ' + error.message });
   }
 };
 
 // Update an item
+const fs = require('fs');
+const path = require('path');
+
 exports.updateItem = async (req, res) => {
   const { id } = req.params;
   const { name, size, brand, color, BuyAble, RentAble, description, type, price, quantity } = req.body;
-  const images = req.files ? req.files.map(file => file.path) : null; // Handle multiple images
-
-  try {
-    const updatedItem = await Items.findByIdAndUpdate(
-      id,
-      { name, size, brand, color, BuyAble, RentAble, description, type, quantity, price, ...(images && { image: images }) },
-      { new: true }
-    );
-
-    if (!updatedItem) {
-      return res.status(404).json({ message: 'Item not found' });
+  const images = req.files.map(file => file.filename);
+  
+  let deletedImages = [];
+  if (req.body.deletedImages) {
+    try {
+      deletedImages = JSON.parse(req.body.deletedImages); // Parse the string into an array
+    } catch (error) {
+      return res.status(400).json({ message: 'Invalid format for deletedImages' });
     }
-
-    res.json(updatedItem);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
   }
-};
 
-// Delete an item
-exports.deleteItem = async (req, res) => {
   try {
-    const deletedItem = await Items.findByIdAndDelete(req.params.id);
-    if (!deletedItem) {
+    const item = await Items.findById(id);
+    if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    res.json({ message: 'Item deleted' });
+
+    // Delete specified images from the filesystem and item
+    if (deletedImages.length > 0) {
+      deletedImages.forEach(image => {
+        const imagePath = path.join(__dirname, '..', 'uploads', image);
+        fs.unlink(imagePath, (err) => {
+          if (err) {
+            console.error(`Failed to delete image: ${image}`, err);
+          }
+        });
+        item.image = item.image.filter(img => img !== image);
+      });
+    }
+
+    // Add new images
+    if (images.length > 0) {
+      item.image.push(...images);
+    }
+
+    // Update other fields
+    item.name = name || item.name;
+    item.size = size || item.size;
+    item.brand = brand || item.brand;
+    item.color = color || item.color;
+    item.BuyAble = BuyAble !== undefined ? BuyAble : item.BuyAble;
+    item.RentAble = RentAble !== undefined ? RentAble : item.RentAble;
+    item.description = description || item.description;
+    item.type = type || item.type;
+    item.price = price || item.price;
+    item.quantity = quantity || item.quantity;
+
+    const updatedItem = await item.save();
+    res.json(updatedItem);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 // Get a single item by ID
 exports.getItemById = async (req, res) => {
@@ -134,6 +176,17 @@ exports.getItemById = async (req, res) => {
     });
 
     res.json({ item, unavailableDates });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+exports.deleteItem = async (req, res) => {
+  try {
+    const deletedItem = await Items.findByIdAndDelete(req.params.id);
+    if (!deletedItem) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+    res.json({ message: 'Item deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

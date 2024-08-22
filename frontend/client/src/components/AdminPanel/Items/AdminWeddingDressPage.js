@@ -10,14 +10,16 @@ const AdminWeddingDressPage = () => {
     size: '',
     brand: '',
     color: '',
-    BuyAble: true,
-    RentAble: false,
+    BuyAble: false,
+    RentAble: true,
     description: '',
     type: 'WeddingDress',
     price: '',
-    image: []
+    image: [], // For new images
+    existingImages: [], // For existing images loaded from the server
+    deletedImages: [] // For storing images that the user wants to delete
   });
-  const [imagePreviews, setImagePreviews] = useState([]); // Changed to handle multiple previews
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [data, setData] = useState([]);
 
   // Translation object
@@ -66,7 +68,7 @@ const AdminWeddingDressPage = () => {
     }
   };
 
-  const language = localStorage.getItem('language') || 'en'; // Default to English
+  const language = localStorage.getItem('language') || 'ar';
 
   useEffect(() => {
     fetchData();
@@ -75,7 +77,6 @@ const AdminWeddingDressPage = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/items');
-      console.log('Fetched Data:', response.data);
       const filteredData = response.data.filter(item => item.type === 'WeddingDress');
       setData(filteredData);
     } catch (error) {
@@ -83,57 +84,47 @@ const AdminWeddingDressPage = () => {
     }
   };
 
-  const handleShow = (type, data) => {
+  // When loading existing data
+  const handleShow = (type, data = {}) => {
     setModalType(type);
     if (type === 'Edit') {
       setFormData({
         ...data,
-        image: []
+        image: [],
+      existingImages: data.image || [], // Ensure existingImages is an array
+      deletedImages: [] // Initialize deletedImages as an empty array
       });
-      setImagePreviews(`http://localhost:3000/uploads/${data.image}`);
+      setImagePreviews(data.image.map(img => `http://localhost:3000/${img}`));
     } else {
       setFormData({
         name: '',
         size: '',
         brand: '',
         color: '',
-        BuyAble: true,
-        RentAble: false,
+        BuyAble: false,
+        RentAble: true,
         description: '',
         type: 'WeddingDress',
         price: '',
-        image:  []
+        image: [],
+        existingImages: [],
+        deletedImages: []
       });
       setImagePreviews([]);
     }
     setShowModal(true);
   };
 
-  const handleClose = () => {
-    setShowModal(false);
-    setFormData({
-      name: '',
-      size: '',
-      brand: '',
-      color: '',
-      BuyAble: true,
-      RentAble: false,
-      description: '',
-      type: 'WeddingDress',
-      price: '',
-      image: []
-    });
-    setImagePreviews([]);
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
+  // Handle image deletions
+  const handleDeleteExistingImage = (image) => {
+    setFormData(prevData => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
+      deletedImages: [...(prevData.deletedImages || []), image], // Safely handle deletedImages array
+    existingImages: prevData.existingImages.filter(img => img !== image)
     }));
   };
 
+  // Handle uploading new images
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setFormData((prevData) => ({
@@ -143,6 +134,7 @@ const AdminWeddingDressPage = () => {
     setImagePreviews(files.map(file => URL.createObjectURL(file)));
   };
 
+  // Handle form submission
   const handleSubmit = async () => {
     const dataToSubmit = new FormData();
   
@@ -155,15 +147,18 @@ const AdminWeddingDressPage = () => {
     dataToSubmit.append('description', formData.description);
     dataToSubmit.append('type', formData.type);
     dataToSubmit.append('price', formData.price);
-    Array.from(formData.image).forEach((image, index) => {
-      dataToSubmit.append('images', image);
-    });
+    formData.image.forEach(image => dataToSubmit.append('images', image));
+  
+    // Convert deletedImages array to a string for submission
+    if (formData.deletedImages.length > 0) {
+      dataToSubmit.append('deletedImages', JSON.stringify(formData.deletedImages));
+    }
   
     try {
       if (modalType === 'Add') {
         await axios.post('http://localhost:3000/api/items/add', dataToSubmit, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'multipart/form-data'
           },
         });
       } else {
@@ -174,10 +169,39 @@ const AdminWeddingDressPage = () => {
         });
       }
       fetchData();
+      handleClose();
     } catch (error) {
       console.error('Error saving data:', error.response ? error.response.data : error.message);
     }
-    handleClose();
+  };
+  
+  
+
+  const handleClose = () => {
+    setShowModal(false);
+    setFormData({
+      name: '',
+      size: '',
+      brand: '',
+      color: '',
+      BuyAble: false,
+      RentAble: true,
+      description: '',
+      type: 'WeddingDress',
+      price: '',
+      image: [],
+      existingImages: [],
+      deletedImages: [] // Reset deleted images
+    });
+    setImagePreviews([]);
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const handleDelete = async (id) => {
@@ -188,6 +212,12 @@ const AdminWeddingDressPage = () => {
       console.error('Error deleting data:', error);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+    };
+  }, [imagePreviews]);
 
   return (
     <div>
@@ -228,7 +258,7 @@ const AdminWeddingDressPage = () => {
                   <td>{item.description}</td>
                   <td>{item.BuyAble ? translations[language].buyable : 'No'}</td>
                   <td>{item.RentAble ? translations[language].rentable : 'No'}</td>
-                  <td>{item.image && <img src={`http://localhost:3000/${item.image[0]}`} alt={item.name} width="50" />}</td>
+                  <td>{item.image && item.image.length > 0 && <img src={`http://localhost:3000/${item.image[0]}`} alt={item.name} width="50" />}</td>
                   <td>
                     <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>
                       {translations[language].remove}
@@ -237,21 +267,7 @@ const AdminWeddingDressPage = () => {
                   <td>
                     <button
                       className="btn btn-success"
-                      onClick={() =>
-                        handleShow('Edit', {
-                          _id: item._id,
-                          name: item.name,
-                          size: item.size,
-                          brand: item.brand,
-                          color: item.color,
-                          BuyAble: item.BuyAble,
-                          RentAble: item.RentAble,
-                          description: item.description,
-                          type: item.type,
-                          price: item.price,
-                          image: item.image,
-                        })
-                      }
+                      onClick={() => handleShow('Edit', item)}
                     >
                       {translations[language].edit}
                     </button>
@@ -260,7 +276,9 @@ const AdminWeddingDressPage = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="12">{translations[language].noData}</td>
+                <td colSpan="12" className="text-center">
+                  {translations[language].noData}
+                </td>
               </tr>
             )}
           </tbody>
@@ -268,7 +286,7 @@ const AdminWeddingDressPage = () => {
       </div>
 
       <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton onClick={handleClose}>
           <Modal.Title>{modalType === 'Add' ? translations[language].addWeddingDress : translations[language].editWeddingDress}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -321,14 +339,14 @@ const AdminWeddingDressPage = () => {
             <Form.Group controlId="formDescription">
               <Form.Label>{translations[language].description}</Form.Label>
               <Form.Control
-                type="text"
+                as="textarea"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
               />
             </Form.Group>
             <Form.Group controlId="formBuyAble">
-              <Form.Check 
+              <Form.Check
                 type="checkbox"
                 name="BuyAble"
                 label={translations[language].buyable}
@@ -337,7 +355,7 @@ const AdminWeddingDressPage = () => {
               />
             </Form.Group>
             <Form.Group controlId="formRentAble">
-              <Form.Check 
+              <Form.Check
                 type="checkbox"
                 name="RentAble"
                 label={translations[language].rentable}
@@ -349,10 +367,35 @@ const AdminWeddingDressPage = () => {
               <Form.Label>{translations[language].image}</Form.Label>
               <Form.Control
                 type="file"
+                name="image"
                 multiple
-                onChange={handleImageChange} name="images"  />
-              {imagePreviews && <img src={imagePreviews} alt="Preview" width="100" className="mt-2" />}
+                onChange={handleImageChange}
+              />
+              <div className="image-previews">
+                {imagePreviews.map((preview, index) => (
+                  <img key={index} src={preview} alt="Preview" width="100" />
+                ))}
+              </div>
             </Form.Group>
+            {formData.existingImages.length > 0 && (
+              <Form.Group>
+                <Form.Label>{translations[language].existingImages}</Form.Label>
+                <div className="existing-images">
+                  {formData.existingImages.map((image, index) => (
+                    <div key={index} className="existing-image">
+                      <img src={`http://localhost:3000/${image}`} alt="Existing" width="100" />
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => handleDeleteExistingImage(image)}
+                      >
+                        {translations[language].remove}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </Form.Group>
+            )}
           </Form>
         </Modal.Body>
         <Modal.Footer>

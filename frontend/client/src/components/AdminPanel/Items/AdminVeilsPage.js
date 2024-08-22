@@ -16,9 +16,11 @@ const AdminVeilsPage = () => {
     type: 'Veils',
     price: '',
     quantity: '', // Added quantity field
-    image: null
+    image: [], // For new images
+    existingImages: [], // For existing images loaded from the server
+    deletedImages: []
   });
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [data, setData] = useState([]);
 
   // Translation object
@@ -65,7 +67,7 @@ const AdminVeilsPage = () => {
     }
   };
 
-  const language = localStorage.getItem('language') || 'en'; // Default to English
+  const language = localStorage.getItem('language') || 'ar'; 
 
   useEffect(() => {
     fetchData();
@@ -82,14 +84,16 @@ const AdminVeilsPage = () => {
     }
   };
 
-  const handleShow = (type, data) => {
+  const handleShow = (type, data = {}) => {
     setModalType(type);
     if (type === 'Edit') {
       setFormData({
         ...data,
-        image: null
+        image: [], // Reset new image upload field
+        existingImages: data.image || [], // Ensure existingImages is an array
+        deletedImages: [] // Initialize deletedImages as an empty array
       });
-      setImagePreview(`http://localhost:3000/uploads/${data.image}`);
+      setImagePreviews(data.image ? [`http://localhost:3000/${data.image}`] : []);
     } else {
       setFormData({
         name: '',
@@ -102,46 +106,31 @@ const AdminVeilsPage = () => {
         type: 'Veils',
         price: '',
         quantity: '', // Reset quantity for 'Add' mode
-        image: null
+        image: [],
+        existingImages: [],
+        deletedImages: []
       });
-      setImagePreview(null);
+      setImagePreviews([]);
     }
     setShowModal(true);
   };
 
-  const handleClose = () => {
-    setShowModal(false);
-    setFormData({
-      name: '',
-      size: '',
-      brand: '',
-      color: '',
-      BuyAble: true,
-      RentAble: false,
-      description: '',
-      type: 'Veils',
-      price: '',
-      quantity: '', // Reset quantity
-      image: null
-    });
-    setImagePreview(null);
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
+  const handleDeleteExistingImage = (image) => {
+    setFormData(prevData => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
+      deletedImages: [...(prevData.deletedImages || []), image], // Safely handle deletedImages array
+      existingImages: prevData.existingImages.filter(img => img !== image)
     }));
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setFormData((prevData) => ({
+    const files = Array.from(e.target.files);
+    setFormData(prevData => ({
       ...prevData,
-      image: file,
+      image: [...prevData.image, ...files],
     }));
-    setImagePreview(URL.createObjectURL(file));
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
   };
 
   const handleSubmit = async () => {
@@ -157,10 +146,17 @@ const AdminVeilsPage = () => {
     dataToSubmit.append('type', formData.type);
     dataToSubmit.append('price', formData.price);
     dataToSubmit.append('quantity', formData.quantity); // Include quantity
-    if (formData.image) {
-      dataToSubmit.append('image', formData.image);
+    
+    formData.image.forEach(image => {
+      if (image instanceof File) {
+        dataToSubmit.append('images', image);
+      }
+    });
+
+    // Convert deletedImages array to a string for submission
+    if (formData.deletedImages.length > 0) {
+      dataToSubmit.append('deletedImages', JSON.stringify(formData.deletedImages));
     }
-  
     try {
       if (modalType === 'Add') {
         await axios.post('http://localhost:3000/api/items/add', dataToSubmit, {
@@ -190,6 +186,40 @@ const AdminVeilsPage = () => {
       console.error('Error deleting data:', error);
     }
   };
+
+  const handleClose = () => {
+    setShowModal(false);
+    setFormData({
+      name: '',
+      size: '',
+      brand: '',
+      color: '',
+      BuyAble: true,
+      RentAble: false,
+      description: '',
+      type: 'Veils',
+      price: '',
+      image: [],
+      existingImages: [],
+      deletedImages: [] // Reset deleted images
+    });
+    setImagePreviews([]);
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+    };
+  }, [imagePreviews]);
+
 
   return (
     <div>
@@ -228,8 +258,11 @@ const AdminVeilsPage = () => {
                   <td>{item.price}</td>
                   <td>{item.description}</td>
                   <td>{item.quantity}</td> {/* Display quantity */}
-                  <td>{item.image && <img src={`http://localhost:3000/${item.image}`} alt={item.name} width="50" />}</td>
                   <td>
+                    {item.image && item.image.length > 0 && (
+                      <img src={`http://localhost:3000/${item.image[0]}`} alt={item.name} width="50" />
+                    )}
+                  </td>                  <td>
                     <button className="btn btn-danger" onClick={() => handleDelete(item._id)}>
                       {translations[language].remove}
                     </button>
@@ -237,22 +270,8 @@ const AdminVeilsPage = () => {
                   <td>
                     <button
                       className="btn btn-success"
-                      onClick={() =>
-                        handleShow('Edit', {
-                          _id: item._id,
-                          name: item.name,
-                          size: item.size,
-                          brand: item.brand,
-                          color: item.color,
-                          BuyAble: item.BuyAble,
-                          RentAble: item.RentAble,
-                          description: item.description,
-                          type: item.type,
-                          price: item.price,
-                          quantity: item.quantity, // Include quantity
-                          image: item.image,
-                        })
-                      }
+                      onClick={() => handleShow('Edit', item)}
+
                     >
                       {translations[language].edit}
                     </button>
@@ -261,16 +280,17 @@ const AdminVeilsPage = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="11">{translations[language].noData}</td>
-              </tr>
+   <td colSpan="11" className="text-center">
+                  {translations[language].noData}
+                </td>              </tr>
             )}
           </tbody>
         </table>
       </div>
 
       <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>{modalType === 'Add' ? translations[language].addVeil : translations[language].editVeil}</Modal.Title>
+      <Modal.Header closeButton onClick={handleClose}>
+      <Modal.Title>{modalType === 'Add' ? translations[language].addVeil : translations[language].editVeil}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -331,7 +351,7 @@ const AdminVeilsPage = () => {
             <Form.Group controlId="formDescription">
               <Form.Label>{translations[language].description}</Form.Label>
               <Form.Control
-                type="text"
+                as="textarea"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
@@ -339,9 +359,36 @@ const AdminVeilsPage = () => {
             </Form.Group>
             <Form.Group controlId="formImage">
               <Form.Label>{translations[language].image}</Form.Label>
-              <Form.Control type="file" name="image" onChange={handleImageChange} />
-              {imagePreview && <img src={imagePreview} alt="Preview" width="100" className="mt-2" />}
+              <Form.Control type="file"
+                name="image"
+                multiple
+                onChange={handleImageChange}
+              />
+              <div className="image-previews">
+                {imagePreviews.map((preview, index) => (
+                  <img key={index} src={preview} alt="Preview" width="100" />
+                ))}
+              </div>
             </Form.Group>
+            {formData.existingImages.length > 0 && (
+              <Form.Group>
+                <Form.Label>{translations[language].existingImages}</Form.Label>
+                <div className="existing-images">
+                  {formData.existingImages.map((image, index) => (
+                    <div key={index} className="existing-image">
+                      <img src={`http://localhost:3000/${image}`} alt="Existing" width="100" />
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => handleDeleteExistingImage(image)}
+                      >
+                        {translations[language].remove}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </Form.Group>
+            )}
           </Form>
         </Modal.Body>
         <Modal.Footer>

@@ -20,24 +20,16 @@ const Logs = require('./routes/logRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 
 
-// Example route to upload files
-app.post('/upload', upload.array('images', 5), (req, res) => {
-  // 'images' should match the name attribute of the file input in your form
-  // Handle the request and files here
-  if (!req.files) {
-    return res.status(400).send('No files uploaded.');
-  }
-  res.send('Files uploaded successfully.');
-});
+
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3001', // Allow requests from this origin
-  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  origin: 'http://localhost:3001', 
+  credentials: true, 
 }));
 app.use(bodyParser.json());
-
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'uploads'))); // Serve static files from the uploads directory
+app.use(express.static(path.join(__dirname, 'uploads'))); 
+
 app.use(
   session({
     store: MongoStore.create({
@@ -47,7 +39,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge:  60 * 60 * 1000 }, // 3 hours
+    cookie: { maxAge:  60 * 60 * 1000 }, 
   })
 );
 
@@ -61,10 +53,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/logs', Logs);
 app.use('/api/cart', cartRoutes);
-
-
-
-
 
 // MongoDB connection
 mongoose
