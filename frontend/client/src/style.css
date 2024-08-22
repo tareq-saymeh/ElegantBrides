@@ -507,8 +507,38 @@ footer {
   margin: 1rem ;
 }
 
+/* settings css */
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.settings-card {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.settings-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-card.selected {
+  border: 2px solid var(--primary);
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
+  background-color: var(--primary);
+}
+
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
 
 
+/*  itemSidebar   */
 .itemSidebar{
   background-color: var(--primary);
   color: var(--text-color);

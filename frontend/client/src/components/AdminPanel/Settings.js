@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { Form, Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 
 const Settings = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [oldEmail, setOldEmail] = useState('');
   const [newEmail, setNewEmail] = useState('');
-  const [CurrentEmail, setCurrentEmail] = useState('');
+  const [currentEmail, setCurrentEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [cardColor, setCardColor] = useState('');
+  const [headerColor, setHeaderColor] = useState('');
+  const [backgroundColor, setBackgroundColor] = useState('');
+  const [logoFile, setLogoFile] = useState(null);
 
-  // Translation object
   const translations = {
     en: {
       settings: 'Settings',
-      selectOption: 'Select Option to Update',
       updateEmail: 'Update Email',
       updatePassword: 'Update Password',
       oldEmail: 'Old Email',
@@ -25,18 +27,20 @@ const Settings = () => {
       newPassword: 'New Password',
       confirmNewPassword: 'Confirm New Password',
       saveChanges: 'Save Changes',
-      enterOldEmail: 'Enter old email',
-      enterNewEmail: 'Enter new email',
-      enterCurrentEmail: 'Enter current email',
-      enterCurrentPassword: 'Enter current password',
-      enterNewPassword: 'Enter new password',
-      confirmNewPasswordPlaceholder: 'Confirm new password',
       alertPasswordMismatch: 'New password and confirm password do not match',
-      alertError: 'An error occurred'
+      alertError: 'An error occurred',
+      Customization: 'Customization',
+      enterCustomization: 'Update Name, colors, and titles',
+      Name: 'New Name',
+      enterNewName: 'Enter New Name',
+      cardColor: 'Cards Color',
+      headerColor: 'Header Color',
+      backgroundColor: 'Background Color',
+      uploadLogo: 'Upload New Logo',
+      title :"title"
     },
     ar: {
       settings: 'الإعدادات',
-      selectOption: 'اختر خيارًا للتحديث',
       updateEmail: 'تحديث البريد الإلكتروني',
       updatePassword: 'تحديث كلمة المرور',
       oldEmail: 'البريد الإلكتروني القديم',
@@ -46,26 +50,21 @@ const Settings = () => {
       newPassword: 'كلمة المرور الجديدة',
       confirmNewPassword: 'تأكيد كلمة المرور الجديدة',
       saveChanges: 'حفظ التغييرات',
-      enterOldEmail: 'أدخل البريد الإلكتروني القديم',
-      enterNewEmail: 'أدخل البريد الإلكتروني الجديد',
-      enterCurrentEmail: 'أدخل البريد الإلكتروني الحالي',
-      enterCurrentPassword: 'أدخل كلمة المرور الحالية',
-      enterNewPassword: 'أدخل كلمة المرور الجديدة',
-      confirmNewPasswordPlaceholder: 'تأكيد كلمة المرور الجديدة',
       alertPasswordMismatch: 'كلمة المرور الجديدة وتأكيد كلمة المرور لا تتطابق',
-      alertError: 'حدث خطأ'
+      alertError: 'حدث خطأ',
+      Customization: 'اعدادات التصميم',
+      enterCustomization: 'عدل الاسم، الألوان، والعناوين',
+      Name: 'اسم الموقع الجديد',
+      enterNewName: 'أدخل الاسم الجديد',
+      cardColor: 'لون البطاقات',
+      headerColor: 'لون الرأس',
+      backgroundColor: 'لون الخلفية',
+      uploadLogo: 'رفع شعار جديد',
+      title:"عنوان الصفحه الرئيسيه"
     }
   };
 
-  const language = localStorage.getItem('language') || 'ar'; // Default to English
-
-  const handleOptionSelect = (option) => setSelectedOption(option);
-  const handleOldEmailChange = (e) => setOldEmail(e.target.value);
-  const handleNewEmailChange = (e) => setNewEmail(e.target.value);
-  const handlesetCurrentEmailChange = (e) => setCurrentEmail(e.target.value);
-  const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
-  const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
-  const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
+  const language = localStorage.getItem('language') || 'en';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,21 +76,33 @@ const Settings = () => {
           return;
         }
 
-        // Make API call to update password
         const response = await axios.patch('http://localhost:3000/api/admin/update-password', {
           currentPassword,
           newPassword,
-          CurrentEmail
+          currentEmail
         });
 
         alert(response.data.message);
       } else if (selectedOption === 'Email') {
-        // Make API call to update email
         const response = await axios.patch('http://localhost:3000/api/admin/update-email', {
           oldEmail,
           newEmail,
           currentPassword,
-          CurrentEmail
+          currentEmail
+        });
+
+        alert(response.data.message);
+      } else if (selectedOption === 'custom') {
+        const formData = new FormData();
+        formData.append('cardColor', cardColor);
+        formData.append('headerColor', headerColor);
+        formData.append('backgroundColor', backgroundColor);
+        if (logoFile) {
+          formData.append('logo', logoFile);
+        }
+
+        const response = await axios.post('http://localhost:3000/api/admin/update-customization', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
 
         alert(response.data.message);
@@ -102,93 +113,163 @@ const Settings = () => {
   };
 
   return (
-    <div>
+    <div className="settings-container">
       <h1>{translations[language].settings}</h1>
-      <DropdownButton
-        id="dropdown-basic-button"
-        title={selectedOption ? `${translations[language].updateEmail} / ${translations[language].updatePassword}` : translations[language].selectOption}
-        onSelect={handleOptionSelect}
-        className="mb-3"
-      >
-        <Dropdown.Item eventKey="Email">{translations[language].updateEmail}</Dropdown.Item>
-        <Dropdown.Item eventKey="Password">{translations[language].updatePassword}</Dropdown.Item>
-      </DropdownButton>
+      <Row className="mt-4">
+        <Col md={4} className="mb-4">
+          <Card className={`settings-card ${selectedOption === 'Email' ? 'selected' : ''}`} onClick={() => setSelectedOption('Email')}>
+            <Card.Body>
+              <Card.Title>{translations[language].updateEmail}</Card.Title>
+              <Card.Text>{translations[language].newEmail}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className="mb-4">
+          <Card className={`settings-card ${selectedOption === 'Password' ? 'selected' : ''}`} onClick={() => setSelectedOption('Password')}>
+            <Card.Body>
+              <Card.Title>{translations[language].updatePassword}</Card.Title>
+              <Card.Text>{translations[language].newPassword}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} className="mb-4">
+          <Card className={`settings-card ${selectedOption === 'custom' ? 'selected' : ''}`} onClick={() => setSelectedOption('custom')}>
+            <Card.Body>
+              <Card.Title>{translations[language].Customization}</Card.Title>
+              <Card.Text>{translations[language].enterCustomization}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {selectedOption && (
-        <div className='AdminSettingForm'>
-          <Form onSubmit={handleSubmit}>
-            {selectedOption === 'Email' && (
-              <>
-                <Form.Group controlId="formOldEmail" className='AdminFormContant'>
-                  <Form.Label>{translations[language].oldEmail}</Form.Label>
-                  <Form.Control
-                    type="email"
-                    value={oldEmail}
-                    onChange={handleOldEmailChange}
-                    placeholder={translations[language].enterOldEmail}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group controlId="formNewEmail" className='AdminFormContant'>
-                  <Form.Label>{translations[language].newEmail}</Form.Label>
-                  <Form.Control
-                    type="email"
-                    value={newEmail}
-                    onChange={handleNewEmailChange}
-                    placeholder={translations[language].enterNewEmail}
-                    required
-                  />
-                </Form.Group>
-              </>
-            )}
+        <Form onSubmit={handleSubmit} className="mt-4">
+          {selectedOption === 'Email' && (
+            <>
+              <Form.Group controlId="formOldEmail" className="mb-3">
+                <Form.Label>{translations[language].oldEmail}</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={oldEmail}
+                  onChange={(e) => setOldEmail(e.target.value)}
+                  placeholder={translations[language].enterOldEmail}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formNewEmail" className="mb-3">
+                <Form.Label>{translations[language].newEmail}</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder={translations[language].enterNewEmail}
+                  required
+                />
+              </Form.Group>
+            </>
+          )}
 
-            {selectedOption === 'Password' && (
-              <>
-                <Form.Group controlId="formCurrentEmail" className='AdminFormContant'>
-                  <Form.Label>{translations[language].currentEmail}</Form.Label>
-                  <Form.Control
-                    type="email"
-                    value={CurrentEmail}
-                    onChange={handlesetCurrentEmailChange}
-                    placeholder={translations[language].enterCurrentEmail}
-                    required
-                  />
-                  <Form.Label>{translations[language].currentPassword}</Form.Label>
-                  <Form.Control
-                    type="password"
-                    value={currentPassword}
-                    onChange={handleCurrentPasswordChange}
-                    placeholder={translations[language].enterCurrentPassword}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group controlId="formNewPassword" className='AdminFormContant'>
-                  <Form.Label>{translations[language].newPassword}</Form.Label>
-                  <Form.Control
-                    type="password"
-                    value={newPassword}
-                    onChange={handleNewPasswordChange}
-                    placeholder={translations[language].enterNewPassword}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group controlId="formConfirmPassword" className='AdminFormContant'>
-                  <Form.Label>{translations[language].confirmNewPassword}</Form.Label>
-                  <Form.Control
-                    type="password"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                    placeholder={translations[language].confirmNewPasswordPlaceholder}
-                    required
-                  />
-                </Form.Group>
-              </>
-            )}
-            <Button variant="primary" type="submit" className='AdminFormContant'>
-              {translations[language].saveChanges}
-            </Button>
-          </Form>
-        </div>
+          {selectedOption === 'Password' && (
+            <>
+              <Form.Group controlId="formCurrentEmail" className="mb-3">
+                <Form.Label>{translations[language].currentEmail}</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={currentEmail}
+                  onChange={(e) => setCurrentEmail(e.target.value)}
+                  placeholder={translations[language].enterCurrentEmail}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formCurrentPassword" className="mb-3">
+                <Form.Label>{translations[language].currentPassword}</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder={translations[language].enterCurrentPassword}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formNewPassword" className="mb-3">
+                <Form.Label>{translations[language].newPassword}</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder={translations[language].enterNewPassword}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formConfirmPassword" className="mb-3">
+                <Form.Label>{translations[language].confirmNewPassword}</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder={translations[language].confirmNewPasswordPlaceholder}
+                  required
+                />
+              </Form.Group>
+            </>
+          )}
+
+          {selectedOption === 'custom' && (
+            <>
+            
+              <Form.Group controlId="formCardColor" className="mb-3">
+                <Form.Label>{translations[language].cardColor}</Form.Label>
+                <Form.Control
+                  type="color"
+                  value={cardColor}
+                  onChange={(e) => setCardColor(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group controlId="formHeaderColor" className="mb-3">
+                <Form.Label>{translations[language].headerColor}</Form.Label>
+                <Form.Control
+                  type="color"
+                  value={headerColor}
+                  onChange={(e) => setHeaderColor(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group controlId="formBackgroundColor" className="mb-3">
+                <Form.Label>{translations[language].backgroundColor}</Form.Label>
+                <Form.Control
+                  type="color"
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group controlId="formLogo" className="mb-3">
+                <Form.Label>{translations[language].uploadLogo}</Form.Label>
+                <Form.Control
+                  type="file"
+                  accept="image/*"
+                  
+                />
+              </Form.Group>
+              <Form.Group controlId="formName" className="mb-3">
+                <Form.Label>{translations[language].Name}</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder={translations[language].Name}
+                />
+              </Form.Group>
+              <Form.Group controlId="formTitle" className="mb-3">
+                <Form.Label>{translations[language].title}</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder={translations[language].title}
+                />
+              </Form.Group>
+            </>
+          )}
+
+          <Button variant="primary" type="submit" className="mt-3">
+            {translations[language].saveChanges}
+          </Button>
+        </Form>
       )}
     </div>
   );
