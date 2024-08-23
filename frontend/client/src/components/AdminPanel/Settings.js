@@ -14,6 +14,7 @@ const Settings = () => {
   const [headerColor, setHeaderColor] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('');
   const [title, setTitle] = useState('');
+  const [name, setName] = useState('');
   const [arabicTitle, setArabicTitle] = useState('');
   const [logoFile, setLogoFile] = useState(null);
 
@@ -41,6 +42,7 @@ const Settings = () => {
       uploadLogo: 'Upload New Logo',
       title: 'Page Title',
       arabicTitle: 'Arabic Page Title',
+      webTitle: "Website Name"
     },
     ar: {
       settings: 'الإعدادات',
@@ -65,6 +67,7 @@ const Settings = () => {
       uploadLogo: 'رفع شعار جديد',
       title: 'عنوان الصفحة',
       arabicTitle: 'عنوان الصفحة بالعربية',
+      webTitle: "اسم الموقع"
     },
   };
 
@@ -75,8 +78,7 @@ const Settings = () => {
     const fetchCustomization = async () => {
       try {
         const response = await axios.get('http://localhost:3000/api/custom/get-customization');
-        const { title, arabicTitle, cardColor, headerColor, backgroundColor } = response.data;
-        setTitle(title);
+        const { title,  arabicTitle, cardColor, headerColor, backgroundColor , name} = response.data;
         setArabicTitle(arabicTitle);
         setCardColor(cardColor);
         setHeaderColor(headerColor);
@@ -87,7 +89,7 @@ const Settings = () => {
     };
 
     fetchCustomization();
-  });
+  }, [language, translations]); // Include language and translations as dependencies for accurate updates
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,6 +123,7 @@ const Settings = () => {
         formData.append('headerColor', headerColor);
         formData.append('backgroundColor', backgroundColor);
         formData.append('title', title);
+        formData.append('name', name);
         formData.append('arabicTitle', arabicTitle);
         if (logoFile) {
           formData.append('logo', logoFile);
@@ -241,36 +244,23 @@ const Settings = () => {
 
           {selectedOption === 'custom' && (
             <>
-              <Form.Group controlId="formCardColor" className="mb-3">
-                <Form.Label>{translations[language].cardColor}</Form.Label>
+              <Form.Group controlId="formName" className="mb-3">
+                <Form.Label>{translations[language].name}</Form.Label>
                 <Form.Control
-                  type="color"
-                  value={cardColor}
-                  onChange={(e) => setCardColor(e.target.value)}
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={translations[language].enterNewName}
                 />
               </Form.Group>
-              <Form.Group controlId="formHeaderColor" className="mb-3">
-                <Form.Label>{translations[language].headerColor}</Form.Label>
+              
+              <Form.Group controlId="formArabicTitle" className="mb-3">
+                <Form.Label>{translations[language].arabicTitle}</Form.Label>
                 <Form.Control
-                  type="color"
-                  value={headerColor}
-                  onChange={(e) => setHeaderColor(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group controlId="formBackgroundColor" className="mb-3">
-                <Form.Label>{translations[language].backgroundColor}</Form.Label>
-                <Form.Control
-                  type="color"
-                  value={backgroundColor}
-                  onChange={(e) => setBackgroundColor(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group controlId="formLogo" className="mb-3">
-                <Form.Label>{translations[language].uploadLogo}</Form.Label>
-                <Form.Control
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setLogoFile(e.target.files[0])}
+                  type="text"
+                  value={arabicTitle}
+                  onChange={(e) => setArabicTitle(e.target.value)}
+                  placeholder={translations[language].arabicTitle}
                 />
               </Form.Group>
               <Form.Group controlId="formTitle" className="mb-3">
@@ -280,23 +270,45 @@ const Settings = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder={translations[language].title}
-                  required
                 />
               </Form.Group>
-              <Form.Group controlId="formArabicTitle" className="mb-3">
-                <Form.Label>{translations[language].arabicTitle}</Form.Label>
+              <Form.Group controlId="formCardColor" className="mb-3">
+                <Form.Label>{translations[language].cardColor}</Form.Label>
                 <Form.Control
-                  type="text"
-                  value={arabicTitle}
-                  onChange={(e) => setArabicTitle(e.target.value)}
-                  placeholder={translations[language].arabicTitle}
-                  required
+                  type="color"
+                  value={cardColor}
+                  onChange={(e) => setCardColor(e.target.value)}
+                  placeholder={translations[language].cardColor}
+                />
+              </Form.Group>
+              <Form.Group controlId="formHeaderColor" className="mb-3">
+                <Form.Label>{translations[language].headerColor}</Form.Label>
+                <Form.Control
+                  type="color"
+                  value={headerColor}
+                  onChange={(e) => setHeaderColor(e.target.value)}
+                  placeholder={translations[language].headerColor}
+                />
+              </Form.Group>
+              <Form.Group controlId="formBackgroundColor" className="mb-3">
+                <Form.Label>{translations[language].backgroundColor}</Form.Label>
+                <Form.Control
+                  type="color"
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  placeholder={translations[language].backgroundColor}
+                />
+              </Form.Group>
+              <Form.Group controlId="formLogoFile" className="mb-3">
+                <Form.Label>{translations[language].uploadLogo}</Form.Label>
+                <Form.Control
+                  type="file"
+                  onChange={(e) => setLogoFile(e.target.files[0])}
                 />
               </Form.Group>
             </>
           )}
-
-          <Button variant="primary" type="submit" className="mt-3">
+          <Button variant="primary" type="submit">
             {translations[language].saveChanges}
           </Button>
         </Form>

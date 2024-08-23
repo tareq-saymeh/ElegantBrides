@@ -4,6 +4,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import './App.css';
 import './style.css'
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Pages/Home';
 import WeddingDressPage from './components/Pages/WeddingDressPage';
@@ -32,17 +33,59 @@ import Preloader from './components/Preloader/Preloader'
 import Profile from './components/Profile/Profile';
 
 function App() {
-  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+ 
 
   useEffect(() => {
-    // Fetch data from the backend when the component mounts
-    fetch('http://localhost:3000/backend/data')
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+    const fetchLogo = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/custom/get-customization');
+        const logo = `http://localhost:3000/${response.data.faviconUrl}`;
+        const sitename = response.data.name;
+        const bodycolor= response.data.backgroundColor;
+        
+  
+        // Dynamically set the favicon
+        const favicon = document.getElementById('favicon');
+        if (favicon) {
+          favicon.href = logo;
+        }
+  
+        // Update the site name
+        const webName = document.getElementById('siteName');
+        if (webName) {
+          webName.textContent = sitename; // Update the site name dynamically
+        }
+  
+        const header = document.querySelector('.Home-Background'); 
+      if (header) {
+        header.style.backgroundColor = bodycolor; 
+      }
+      const body = document.querySelector('.home-header'); 
+      if (body) {
+        body.style.backgroundColor = bodycolor; 
+      }
+      const pages = document.querySelector('.struct-page'); 
+      if (pages) {
+        pages.style.backgroundColor = bodycolor; 
+      }
 
+      const profileColor = document.querySelector('.profileBackground'); 
+      if (profileColor) {
+        profileColor.style.backgroundColor = bodycolor; 
+      }
+        
+        
+        
+      } catch (error) {
+        console.error('Error fetching the logo and customization:', error);
+      }
+    };
+  
+    fetchLogo();
+  }, []);
+  
+ 
   
   useEffect(() => {
     if (!sessionStorage.getItem('visited')) {
@@ -80,7 +123,7 @@ function App() {
     <Route path="/History" element={<AdminPanel><History /></AdminPanel>} />
     <Route path="/Reservations" element={<AdminPanel><Reservations /></AdminPanel>} />
     <Route path="/UnderReservations" element={<AdminPanel><UnderReservations /></AdminPanel>} />
-    <Route path="/item/:id" element={<ItemDetailPage data={data} />} /> 
+    <Route path="/item/:id" element={<ItemDetailPage  />} /> 
     <Route path="/items/dresses" element={<AdminPanel><AdminWeddingDressPage /></AdminPanel>} />
     <Route path="/items/accessories" element={<AdminPanel><AdminAccessoriesPage /></AdminPanel>} />
     <Route path="/items/shoes" element={<AdminPanel><AdminShoesPage /></AdminPanel>} />

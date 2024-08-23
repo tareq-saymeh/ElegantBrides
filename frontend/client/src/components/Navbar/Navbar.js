@@ -5,9 +5,39 @@ import axios from 'axios';
 function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [warningShown, setWarningShown] = useState(false);
+  const [sitename, setSitename] = useState(false);
   const navigate = useNavigate();
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'ar'); // Default language is Arabic
-
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/custom/get-customization');
+        
+        const headerColor = response.data.headerColor;
+        const ename = response.data.name;
+        setSitename(ename)
+     
+  
+        
+  
+        // Dynamically set the background color of the navbar
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+          navbar.style.backgroundColor = headerColor; // Apply the header color to the navbar
+        }
+        const foote = document.querySelector('.mainFooter');
+        if (foote) {
+          foote.style.backgroundColor = headerColor; // Apply the header color to the navbar
+        }
+        
+      } catch (error) {
+        console.error('Error fetching the logo and customization:', error);
+      }
+    };
+  
+    fetchLogo();
+  }, []);
+  
   // Translation object
   const translations = {
     en: {
@@ -97,7 +127,7 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg sticky-top">
       <div className="container-fluid">
-        <a className="navbar-brand text-white" href="/">Elegant Bride</a>
+        <a className="navbar-brand text-white" href="/">{sitename}</a>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label={translations[language].toggleNavigation}>
           <span className="navbar-toggler-icon"></span>
         </button>

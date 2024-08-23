@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Table, Form, Alert } from 'react-bootstrap';
-import { Link, Navigate } from 'react-router-dom';
+import {  Navigate } from 'react-router-dom';
 import Footer from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar';
 import axios from 'axios';
@@ -253,12 +253,12 @@ function Profile() {
   }
 
   return (
-    <>
+    <div className='profileBackground'>
       <Navbar />
-      <div className="container mt-4">
-        <div className="row">
+      <div className="container mt-4 " >
+        <div className="row ">
           {/* Order History */}
-          <Table striped bordered hover responsive>
+          <Table striped bordered hover responsive className='cheeat'>
             <thead>
               <tr>
                 <th>{translations[language].itemName}</th>
@@ -410,7 +410,7 @@ function Profile() {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 }
 

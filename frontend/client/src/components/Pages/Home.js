@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import '../../style.css';
 import Footer from '../Footer/Footer.js';
 import ItemCard from '../ItemCard/ItemCard.js';
+import axios from 'axios';
 
 import dressimg from '../images/Dress.png';
 import Veilsimg from '../images/Veils.png';
@@ -15,7 +16,6 @@ import Flowersimg from '../images/Flowers.png';
 // Translation data
 const translations = {
   en: {
-    headerText: 'Discover the perfect dress for your special day',
     weddingDress: 'Wedding Dress',
     accessories: 'Accessories',
     shoes: 'Shoes',
@@ -24,7 +24,6 @@ const translations = {
     veils: 'Veils',
   },
   ar: {
-    headerText: 'اكتشف الفستان المثالي ليومك الخاص',
     weddingDress: 'فساتين الزفاف',
     accessories: 'اكسسوارات',
     shoes: 'أحذية',
@@ -39,7 +38,27 @@ const Home = () => {
   const [shoes, setShoes] = useState([]);
   const [jewelry, setJewelry] = useState([]);
   const [language, setLanguage] = useState(localStorage.getItem('language') || 'ar'); // Default to Arabic
+  const [artitle, setArtitle] = useState(null);
+  const [entitle, setEntitle] = useState(null);
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/custom/get-customization');
+        const arabicText = response.data.arabictitle
+        setArtitle(arabicText)
+        const enText = response.data.title
+        setEntitle(enText)
 
+
+
+
+      } catch (error) {
+        console.error('Error fetching the logo and customization:', error);
+      }
+    };
+
+    fetchLogo();
+  }, []);
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -62,7 +81,7 @@ const Home = () => {
     fetchItems();
   }, []);
 
-  const t = translations[language]; // Get the current language's translations
+  const t = translations[language];
 
   return (
     <div className='Home-Background'>
@@ -71,7 +90,10 @@ const Home = () => {
       <div className="home-header">
         <div className="home-header-content">
           <div className="home-header-text">
-            <h1>{t.headerText}</h1>
+            <h1>
+              {language === 'ar' ? artitle : entitle}
+            </h1>
+
           </div>
         </div>
       </div>
@@ -109,19 +131,18 @@ const Home = () => {
         <h2 className='HomeItemFilter-text'>{t.weddingDress}</h2>
         <hr />
         <div className="row">
-          {weddingDresses.map(item => (
-            <div key={item._id} className="col-md-3 col-sm-6 mb-4">
-              <ItemCard
-                id={item._id}
-                image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : dressimg}
-                name={item.name}
-                price={item.price}
-                size={item.size}
-                brand={item.brand}
-                RentAble={item.RentAble}
-              />
-            </div>
-          ))}
+        {weddingDresses.map((items) => (
+                        <div key={items._id} className="col-lg-3 col-md-6 col-sm-6 mb-4">
+                        <ItemCard
+                          id={items._id}
+                          image={items.image && items.image.length > 0 ? `http://localhost:3000/${items.image[0]}` : "dressimg"}
+                          name={items.name}
+                          price={items.price}
+                          size={items.size}
+                          brand={items.brand}
+                        />
+                      </div>
+                    ))}
         </div>
       </div>
 
@@ -132,7 +153,7 @@ const Home = () => {
         <hr />
         <div className="row">
           {shoes.map(item => (
-            <div key={item._id} className="col-md-3 col-sm-6 mb-4">
+            <div key={item._id} className="col-lg-3 col-md-6 col-sm-6 mb-4">
               <ItemCard
                 id={item._id}
                 image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : Shoesimg}
@@ -154,7 +175,7 @@ const Home = () => {
         <hr />
         <div className="row">
           {jewelry.map(item => (
-            <div key={item._id} className="col-md-3 col-sm-6 mb-4">
+            <div key={item._id} className="col-lg-3 col-md-6 col-sm-6 mb-4">
               <ItemCard
                 id={item._id}
                 image={item.image && item.image.length > 0 ? `http://localhost:3000/${item.image[0]}` : Jewelryimg}

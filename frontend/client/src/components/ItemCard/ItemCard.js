@@ -10,7 +10,32 @@ export function ItemCard(props) {
   const [currentImage, setCurrentImage] = useState(0);
   const language = localStorage.getItem('language') || 'ar';
 
-
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/custom/get-customization');
+        const headerColor = response.data.headerColor;
+  
+        // Apply the header color to all elements with the class 'weddingDressCard'
+        const cards = document.querySelectorAll('.weddingDressCard');
+        cards.forEach(card => {
+          card.style.backgroundColor = headerColor;
+        });
+  
+        // Apply the header color to all elements with the class 'weddingDressCard__actions'
+        const actionCards = document.querySelectorAll('.weddingDressCard__actions');
+        actionCards.forEach(actionCard => {
+          actionCard.style.backgroundColor = headerColor;
+        });
+  
+      } catch (error) {
+        console.error('Error fetching the logo and customization:', error);
+      }
+    };
+  
+    fetchLogo();
+  }, []);
+  
 
   const translations = {
     en: {
@@ -87,7 +112,7 @@ export function ItemCard(props) {
           src={props.image}
           alt={props.name}
           className="weddingDressCard__image"
-         
+          loading="lazy"
         />
       </Link>
       <div className="weddingDressCard__content">

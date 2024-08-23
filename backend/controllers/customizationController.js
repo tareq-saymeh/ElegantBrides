@@ -5,7 +5,6 @@ const Customization = require('../models/customization'); // Assuming you have a
 // GET /api/custom/get-customization
 const getCustomization = async (req, res) => {
   try {
-    console.log("on get controller");
     
     // Fetch the customization data from the database
     const customization = await Customization.findOne();
@@ -21,8 +20,7 @@ const getCustomization = async (req, res) => {
 // POST /api/custom/update-customization
 const updateCustomization = async (req, res) => {
   try {
-    const { title, faviconUrl, cardColor, headerColor, backgroundColor,arabictitle } = req.body;
-    console.log("in controller");
+    const { title, faviconUrl, cardColor, headerColor, backgroundColor,arabictitle,name } = req.body;
     
     // If a logo file is uploaded, save it to the server
     let logoUrl = '';
@@ -35,6 +33,7 @@ const updateCustomization = async (req, res) => {
     if (customization) {
       // Update existing settings
       customization.title = title || customization.title;
+      customization.name = name || customization.name;
       customization.arabictitle = arabictitle || customization.arabictitle;
       customization.faviconUrl = faviconUrl || customization.faviconUrl;
       customization.cardColor = cardColor || customization.cardColor;
@@ -45,6 +44,7 @@ const updateCustomization = async (req, res) => {
       // Create new settings
       customization = new Customization({
         title,
+        name,
         arabictitle,
         faviconUrl,
         cardColor,

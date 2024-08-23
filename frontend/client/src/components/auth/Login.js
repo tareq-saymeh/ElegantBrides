@@ -40,9 +40,9 @@ const translations = {
     identifierPlaceholder: 'البريد الإلكتروني أو اسم المستخدم',
     forgotPassword: 'نسيت كلمة المرور؟',
     signIn: 'تسجيل الدخول',
-    welcomeBack: 'مرحبًا بعودتك!',
+    welcomeBack: 'مرحبًا بعودتك',
     keepConnected: 'للبقاء على اتصال معنا، يرجى تسجيل الدخول باستخدام معلوماتك الشخصية',
-    helloFriend: 'مرحبًا، صديق!',
+    helloFriend: 'مرحبًا ',
     enterDetails: 'أدخل بياناتك الشخصية وابدأ رحلتك معنا',
   },
 };

@@ -5,7 +5,6 @@
   }
 
   .navbar{
-    background-color: var(--primary);
     z-index: 1000; /* Ensure the navbar stays on top */
   }
   
@@ -43,13 +42,8 @@ footer {
 }
 
 
-/*  */
-.Home-Background{
-  background-color: var(--secondary); /* Dark background */
 
-}
 .home-header {
-  background-color: var(--secondary); /* Dark background */
   padding: 150px;
   text-align: center;
   color: var(--text-color);
@@ -90,14 +84,7 @@ footer {
   margin-right: 10px;
 }
 
-.home-search-bar button {
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: none;
-  background-color: var(--primary); /* Button color */
-  color: var(--text-color);
-  cursor: pointer;
-}
+
 
 .home-search-bar button:hover {
   color: var(--secondary);
@@ -258,12 +245,12 @@ footer {
 /* items page  */
 .struct-page {
   display: flex;
-  background-color: var(--secondary);
 }
+
+
 @media only screen and (max-width: 720px) {
   .struct-page {
     display: flex;
-    background-color: var(--secondary);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -542,4 +529,8 @@ footer {
 .itemSidebar{
   background-color: var(--primary);
   color: var(--text-color);
+}
+
+.cheeat{
+  background-color: #fff;
 }
