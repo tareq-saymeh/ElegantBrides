@@ -141,10 +141,52 @@ const returnReservation = async (req, res) => {
 };
 
 
+
+const getUnAvailableDates = async (req, res) => {
+  const { id } = req.params; // Extract item id from request params
+
+  try {
+    // Find all reservations related to the item
+    const reservations = await Reservations.find({ 'items.itemId': id });
+
+    // Extract all dates from the reservations
+    let unavailableDates = [];
+
+    reservations.forEach(reservation => {
+      reservation.items.forEach(item => {
+        if (item.itemId.toString() === id) {
+          const startDate = new Date(item.receivedDate);
+          const endDate = new Date(item.returnDate);
+
+          // Generate all dates between start and end date
+          let currentDate = startDate;
+          while (currentDate <= endDate) {
+            unavailableDates.push(new Date(currentDate));
+            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+          }
+        }
+      });
+    });
+
+    // Send the unavailable dates as response
+    res.status(200).json({ unavailableDates });
+  } catch (error) {
+    console.error('Error fetching unavailable dates:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = {
+  getUnAvailableDates,
+};
+
+
+
 module.exports = {
     getFutureReservations,
     getUnderReservations,
     updateReservationStatus,
     returnReservation,
-    getUserData
+    getUserData,
+    getUnAvailableDates
 };

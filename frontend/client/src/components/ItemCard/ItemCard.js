@@ -66,7 +66,7 @@ export function ItemCard(props) {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:3000/api/cart/add',
-        { itemId: props.id },
+        { itemId: props.id  },
         {
           headers: { 'Authorization': `Bearer ${token}` }
         }
@@ -86,7 +86,8 @@ export function ItemCard(props) {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:3000/api/items/saved',
-        { id: props.id },
+        { id: props.id 
+        },
         {
           headers: { 'Authorization': `Bearer ${token}` }
         }
@@ -127,9 +128,9 @@ export function ItemCard(props) {
       </div>
       <div className="weddingDressCard__actions">
         <FaRegBookmark
-          className={`weddingDressCard__icon ${saved ? 'saved' : ''}`}
+          className={`saved_icon weddingDressCard__icon saved_icon `}
           onClick={saveItem}
-          style={{ color: saved ? 'gold' : 'gray' }}
+          
         />
         <FaShoppingCart className="weddingDressCard__icon" onClick={addToCart} />
       </div>

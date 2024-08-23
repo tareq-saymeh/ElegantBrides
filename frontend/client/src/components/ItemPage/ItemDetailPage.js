@@ -50,16 +50,29 @@ function ItemDetailPage() {
       rentLabel: 'الأيام الرمادية غير متاحة',
     },
   };
+  useEffect(() => {
+    const fetchItemData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/reservations/unavailableDates/${id}`);
+        if (response.data.unavailableDates) {
+          // Convert dates from the response to JavaScript Date objects
+          setUnavailableDates(response.data.unavailableDates.map(date => new Date(date)));
+        }
+      } catch (error) {
+        console.error('Error fetching item', error);
+      }
+    };
+  
+    fetchItemData();
+  }, [id]);
+  
 
   useEffect(() => {
     const fetchItemData = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/items/${id}`);
-        console.log(response.data); // Debugging: Log the fetched data
         setItem(response.data.item);
-        if (response.data.unavailableDates) {
-          setUnavailableDates(response.data.unavailableDates.map(date => new Date(date)));
-        }
+        
       } catch (error) {
         console.error('Error fetching item', error);
       }
@@ -77,18 +90,28 @@ function ItemDetailPage() {
     setStartDate(start);
     setEndDate(end);
   };
-
   const isDateUnavailable = (date) => {
-    return (
-      date < new Date() ||
-      unavailableDates.some(
-        (unavailableDate) =>
-          date.getFullYear() === unavailableDate.getFullYear() &&
-          date.getMonth() === unavailableDate.getMonth() &&
-          date.getDate() === unavailableDate.getDate()
-      )
+    const today = new Date(); // Current date
+    
+    // Start of today for comparison
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    
+    // Return true if the date is in the past or today
+    if (date < startOfToday) {
+      return false;
+    }
+  
+    // Check if the date is in the unavailableDates array
+    return !unavailableDates.some(
+      (unavailableDate) => 
+        date.getFullYear() === unavailableDate.getFullYear() &&
+        date.getMonth() === unavailableDate.getMonth() &&
+        date.getDate() === unavailableDate.getDate()
     );
   };
+  
+  
+  
 
   const handleCompleteRent = async () => {
     if (!startDate || !endDate) {
@@ -113,7 +136,6 @@ function ItemDetailPage() {
         }
       );
 
-      console.log('Item added to cart successfully!');
       navigate('/Cart');
     } catch (error) {
       console.error('Error adding item to cart', error);
@@ -142,7 +164,6 @@ function ItemDetailPage() {
         }
       );
 
-      console.log('Item added to cart successfully!');
       navigate('/Cart');
     } catch (error) {
       console.error('Error adding item to cart', error);
@@ -253,7 +274,7 @@ function ItemDetailPage() {
                         startDate={startDate}
                         endDate={endDate}
                         selectsRange
-                        filterDate={isDateUnavailable}
+                        filterDate={ isDateUnavailable}
                         inline
                       />
                       <p>** {translations[language].rentLabel}</p>

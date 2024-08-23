@@ -9,6 +9,9 @@
   --unavailable-color: #e74c3c;
 }
 
+.saved_icon:hover{
+  color: gold;
+}
 .weddingDressCard {
   border-radius: 15px;
   overflow: hidden;

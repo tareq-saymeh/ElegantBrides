@@ -80,7 +80,9 @@ const confirmCart = async (req, res) => {
 
 // Add item to cart
 const addItemToCart = async (req, res) => {
-  const { items } = req.body; // `items` should include `itemId`, `quantity`, and other details
+  
+  const  items  = req.body;
+   // `items` should include `itemId`, `quantity`, and other details
   try {
     const itemDetails = await Item.findById(items.itemId);
     
@@ -96,6 +98,9 @@ const addItemToCart = async (req, res) => {
       
       items.quantity = rentDuration; // quantity in cart corresponds to the number of days rented
     } else if (itemDetails.BuyAble) {
+      if(!items.quantity){
+        items.quantity=1
+      }
       // For purchases, ensure requested quantity is available
       if (items.quantity > itemDetails.quantity) {
         return res.status(400).json({ message: 'Not enough items in stock for purchase.' });
