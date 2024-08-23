@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 
@@ -13,6 +13,8 @@ const Settings = () => {
   const [cardColor, setCardColor] = useState('');
   const [headerColor, setHeaderColor] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('');
+  const [title, setTitle] = useState('');
+  const [arabicTitle, setArabicTitle] = useState('');
   const [logoFile, setLogoFile] = useState(null);
 
   const translations = {
@@ -29,15 +31,16 @@ const Settings = () => {
       saveChanges: 'Save Changes',
       alertPasswordMismatch: 'New password and confirm password do not match',
       alertError: 'An error occurred',
-      Customization: 'Customization',
+      customization: 'Customization',
       enterCustomization: 'Update Name, colors, and titles',
-      Name: 'New Name',
+      name: 'New Name',
       enterNewName: 'Enter New Name',
       cardColor: 'Cards Color',
       headerColor: 'Header Color',
       backgroundColor: 'Background Color',
       uploadLogo: 'Upload New Logo',
-      title :"title"
+      title: 'Page Title',
+      arabicTitle: 'Arabic Page Title',
     },
     ar: {
       settings: 'الإعدادات',
@@ -52,19 +55,39 @@ const Settings = () => {
       saveChanges: 'حفظ التغييرات',
       alertPasswordMismatch: 'كلمة المرور الجديدة وتأكيد كلمة المرور لا تتطابق',
       alertError: 'حدث خطأ',
-      Customization: 'اعدادات التصميم',
+      customization: 'اعدادات التصميم',
       enterCustomization: 'عدل الاسم، الألوان، والعناوين',
-      Name: 'اسم الموقع الجديد',
+      name: 'اسم الموقع الجديد',
       enterNewName: 'أدخل الاسم الجديد',
       cardColor: 'لون البطاقات',
       headerColor: 'لون الرأس',
       backgroundColor: 'لون الخلفية',
       uploadLogo: 'رفع شعار جديد',
-      title:"عنوان الصفحه الرئيسيه"
-    }
+      title: 'عنوان الصفحة',
+      arabicTitle: 'عنوان الصفحة بالعربية',
+    },
   };
 
   const language = localStorage.getItem('language') || 'en';
+
+  useEffect(() => {
+    // Fetch the existing customization settings when the component mounts
+    const fetchCustomization = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/custom/get-customization');
+        const { title, arabicTitle, cardColor, headerColor, backgroundColor } = response.data;
+        setTitle(title);
+        setArabicTitle(arabicTitle);
+        setCardColor(cardColor);
+        setHeaderColor(headerColor);
+        setBackgroundColor(backgroundColor);
+      } catch (error) {
+        alert(translations[language].alertError);
+      }
+    };
+
+    fetchCustomization();
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,7 +102,7 @@ const Settings = () => {
         const response = await axios.patch('http://localhost:3000/api/admin/update-password', {
           currentPassword,
           newPassword,
-          currentEmail
+          currentEmail,
         });
 
         alert(response.data.message);
@@ -88,7 +111,7 @@ const Settings = () => {
           oldEmail,
           newEmail,
           currentPassword,
-          currentEmail
+          currentEmail,
         });
 
         alert(response.data.message);
@@ -97,12 +120,14 @@ const Settings = () => {
         formData.append('cardColor', cardColor);
         formData.append('headerColor', headerColor);
         formData.append('backgroundColor', backgroundColor);
+        formData.append('title', title);
+        formData.append('arabicTitle', arabicTitle);
         if (logoFile) {
           formData.append('logo', logoFile);
         }
 
-        const response = await axios.post('http://localhost:3000/api/admin/update-customization', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+        const response = await axios.post('http://localhost:3000/api/custom/update-customization', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
         });
 
         alert(response.data.message);
@@ -135,7 +160,7 @@ const Settings = () => {
         <Col md={4} className="mb-4">
           <Card className={`settings-card ${selectedOption === 'custom' ? 'selected' : ''}`} onClick={() => setSelectedOption('custom')}>
             <Card.Body>
-              <Card.Title>{translations[language].Customization}</Card.Title>
+              <Card.Title>{translations[language].customization}</Card.Title>
               <Card.Text>{translations[language].enterCustomization}</Card.Text>
             </Card.Body>
           </Card>
@@ -152,7 +177,7 @@ const Settings = () => {
                   type="email"
                   value={oldEmail}
                   onChange={(e) => setOldEmail(e.target.value)}
-                  placeholder={translations[language].enterOldEmail}
+                  placeholder={translations[language].oldEmail}
                   required
                 />
               </Form.Group>
@@ -162,7 +187,7 @@ const Settings = () => {
                   type="email"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder={translations[language].enterNewEmail}
+                  placeholder={translations[language].newEmail}
                   required
                 />
               </Form.Group>
@@ -177,7 +202,7 @@ const Settings = () => {
                   type="email"
                   value={currentEmail}
                   onChange={(e) => setCurrentEmail(e.target.value)}
-                  placeholder={translations[language].enterCurrentEmail}
+                  placeholder={translations[language].currentEmail}
                   required
                 />
               </Form.Group>
@@ -187,7 +212,7 @@ const Settings = () => {
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder={translations[language].enterCurrentPassword}
+                  placeholder={translations[language].currentPassword}
                   required
                 />
               </Form.Group>
@@ -197,7 +222,7 @@ const Settings = () => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder={translations[language].enterNewPassword}
+                  placeholder={translations[language].newPassword}
                   required
                 />
               </Form.Group>
@@ -207,7 +232,7 @@ const Settings = () => {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder={translations[language].confirmNewPasswordPlaceholder}
+                  placeholder={translations[language].confirmNewPassword}
                   required
                 />
               </Form.Group>
@@ -216,7 +241,6 @@ const Settings = () => {
 
           {selectedOption === 'custom' && (
             <>
-            
               <Form.Group controlId="formCardColor" className="mb-3">
                 <Form.Label>{translations[language].cardColor}</Form.Label>
                 <Form.Control
@@ -246,21 +270,27 @@ const Settings = () => {
                 <Form.Control
                   type="file"
                   accept="image/*"
-                  
-                />
-              </Form.Group>
-              <Form.Group controlId="formName" className="mb-3">
-                <Form.Label>{translations[language].Name}</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder={translations[language].Name}
+                  onChange={(e) => setLogoFile(e.target.files[0])}
                 />
               </Form.Group>
               <Form.Group controlId="formTitle" className="mb-3">
                 <Form.Label>{translations[language].title}</Form.Label>
                 <Form.Control
                   type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   placeholder={translations[language].title}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formArabicTitle" className="mb-3">
+                <Form.Label>{translations[language].arabicTitle}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={arabicTitle}
+                  onChange={(e) => setArabicTitle(e.target.value)}
+                  placeholder={translations[language].arabicTitle}
+                  required
                 />
               </Form.Group>
             </>
