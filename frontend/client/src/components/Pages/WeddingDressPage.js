@@ -15,7 +15,38 @@ function WeddingDressPage() {
     });
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1550);
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 720);
-
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const response = await axios.get('http://localhost:3000/api/custom/get-customization');
+            const bodycolor= response.data.backgroundColor;
+    
+            const header = document.querySelector('.Home-Background'); 
+                  if (header) {
+            header.style.backgroundColor = bodycolor; 
+          }
+          const body = document.querySelector('.home-header'); 
+          if (body) {
+            body.style.backgroundColor = bodycolor; 
+          }
+          const pages = document.querySelector('.struct-page'); 
+          if (pages) {
+            pages.style.backgroundColor = bodycolor; 
+          }
+    
+          const profileColor = document.querySelector('.profileBackground'); 
+          if (profileColor) {
+            profileColor.style.backgroundColor = bodycolor; 
+          }
+    
+    
+          } catch (error) {
+            console.error('Error fetching the logo and customization:', error);
+          }
+        };
+    
+        fetchData();
+      }, []);
     useEffect(() => {
         const fetchData = async () => {
           try {

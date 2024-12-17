@@ -4,6 +4,7 @@
     --text-color: #fff;
   }
 
+
   .navbar{
     z-index: 1000; /* Ensure the navbar stays on top */
   }

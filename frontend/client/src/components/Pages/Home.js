@@ -34,6 +34,7 @@ const translations = {
 };
 
 const Home = () => {
+  
   const [weddingDresses, setWeddingDresses] = useState([]);
   const [shoes, setShoes] = useState([]);
   const [jewelry, setJewelry] = useState([]);
@@ -41,15 +42,33 @@ const Home = () => {
   const [artitle, setArtitle] = useState(null);
   const [entitle, setEntitle] = useState(null);
   useEffect(() => {
-    const fetchLogo = async () => {
+    const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:3000/api/custom/get-customization');
+
         const arabicText = response.data.arabictitle
         setArtitle(arabicText)
         const enText = response.data.title
         setEntitle(enText)
+        const bodycolor= response.data.backgroundColor;
 
+        const header = document.querySelector('.Home-Background'); 
+              if (header) {
+        header.style.backgroundColor = bodycolor; 
+      }
+      const body = document.querySelector('.home-header'); 
+      if (body) {
+        body.style.backgroundColor = bodycolor; 
+      }
+      const pages = document.querySelector('.struct-page'); 
+      if (pages) {
+        pages.style.backgroundColor = bodycolor; 
+      }
 
+      const profileColor = document.querySelector('.profileBackground'); 
+      if (profileColor) {
+        profileColor.style.backgroundColor = bodycolor; 
+      }
 
 
       } catch (error) {
@@ -57,7 +76,7 @@ const Home = () => {
       }
     };
 
-    fetchLogo();
+    fetchData();
   }, []);
   useEffect(() => {
     const fetchItems = async () => {
@@ -85,6 +104,7 @@ const Home = () => {
 
   return (
     <div className='Home-Background'>
+      
       <Navbar />
 
       <div className="home-header">

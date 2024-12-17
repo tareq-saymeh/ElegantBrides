@@ -11,6 +11,7 @@
     "axios": "^1.7.5",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
+    "client": "file:",
     "date-fns": "^3.6.0",
     "mdb-react-ui-kit": "^8.0.0",
     "nth-check": "^2.1.1",

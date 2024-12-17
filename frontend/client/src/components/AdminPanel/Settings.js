@@ -77,16 +77,17 @@ const Settings = () => {
     // Fetch the existing customization settings when the component mounts
     const fetchCustomization = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/custom/get-customization');
-        const { title,  arabicTitle, cardColor, headerColor, backgroundColor , name} = response.data;
-        setArabicTitle(arabicTitle);
-        setCardColor(cardColor);
-        setHeaderColor(headerColor);
-        setBackgroundColor(backgroundColor);
+        const response = await axios.get('/api/custom/get-customization');
+        setArabicTitle(response.data.arabicTitle);
+        setCardColor(response.data.cardColor);
+        setHeaderColor(response.data.headerColor);
+        setBackgroundColor(backgroundColor || '#C0C0C0');
       } catch (error) {
+        console.error('Error fetching customization:', error.message);
         alert(translations[language].alertError);
       }
     };
+    
 
     fetchCustomization();
   }, [language, translations]); // Include language and translations as dependencies for accurate updates
